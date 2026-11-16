@@ -1,0 +1,1 @@
+<footer>&copy; <?= date('Y') ?> My Shop</footer>
