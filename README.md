@@ -76,6 +76,7 @@ Aplikasi ini dibuat menggunakan PHP native dengan konsep MVC sederhana dan mendu
 ## Konsep CSS dan JavaScript (2 Main & 2 Spesifik)
 
 Aplikasi ini menggunakan sistem 2 lapis CSS dan 2 lapis JS:
+
 1. File Main (Global):
    - CSS Main: `public/assets/css/main.css` (berlaku untuk seluruh aplikasi).
    - JS Main: `public/assets/js/main.js` (berlaku untuk seluruh aplikasi).
@@ -85,9 +86,9 @@ Aplikasi ini menggunakan sistem 2 lapis CSS dan 2 lapis JS:
 
 ---
 
-## Panduan Menambah Halaman Baru (Untuk Frontend Pemula)
+## Panduan Menambah Halaman Baru
 
-Frontend pemula tidak perlu menyentuh folder public untuk mengatur CSS/JS halaman baru. Semua file halaman terkumpul jadi satu di dalam folder view-nya.
+Frontend tidak perlu menyentuh folder public untuk mengatur CSS/JS halaman baru. Semua file halaman terkumpul jadi satu di dalam folder view-nya.
 
 Sebagai contoh, jika Anda ingin membuat halaman baru bernama "kategori" untuk peran "owner" (alamat URL: /owner/kategori):
 
@@ -95,11 +96,11 @@ Sebagai contoh, jika Anda ingin membuat halaman baru bernama "kategori" untuk pe
    Buat struktur folder berikut di dalam `app/views/owner/kategori/`:
 
    app/views/owner/kategori/
-   ├── index.php             (Wajib: Berisi HTML tampilan konten)
+   ├── index.php (Wajib: Berisi HTML tampilan konten)
    ├── style/
-   │   └── style.css         (Opsional: Berisi CSS khusus halaman ini)
+   │ └── style.css (Opsional: Berisi CSS khusus halaman ini)
    └── script/
-       └── script.js         (Opsional: Berisi JS khusus halaman ini)
+   └── script.js (Opsional: Berisi JS khusus halaman ini)
 
 2. Isi File index.php:
    Hanya tulis isi kontennya saja (tanpa tag html, head, atau body), contoh:
@@ -109,7 +110,7 @@ Sebagai contoh, jika Anda ingin membuat halaman baru bernama "kategori" untuk pe
 3. Isi File style.css & script.js (Jika Dibutuhkan):
    - Masukkan gaya tampilan khusus di `style/style.css`.
    - Masukkan logika JavaScript khusus di `script/script.js`.
-   Sistem Controller akan otomatis memuat file CSS dan JS tersebut ke dalam layout halaman tanpa Anda harus mengetik tag link atau script secara manual.
+     Sistem Controller akan otomatis memuat file CSS dan JS tersebut ke dalam layout halaman tanpa Anda harus mengetik tag link atau script secara manual.
 
 4. Buat File Controller:
    Buat file pengendali di `app/controllers/owner/KategoriController.php`:
