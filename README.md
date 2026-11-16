@@ -16,12 +16,21 @@ Aplikasi ini dibuat menggunakan PHP native dengan konsep MVC sederhana dan mendu
 
 ## Pengaturan Database
 
-1. Buka phpMyAdmin di browser Anda.
-2. Buat database baru bernama: `warungku`
-3. Pastikan tabel utama sudah tersedia:
-   - tblstore (data toko/warung)
-   - tbluser (data akun pemilik dan kasir)
-   - tblProduct (data produk dan stok)
+1. Buka phpMyAdmin di browser Anda melalui alamat:
+   http://localhost/phpmyadmin
+
+2. Buat database baru:
+   - Klik menu "Basis data" atau "New" di panel sebelah kiri.
+   - Masukkan nama database: `warungku`
+   - Klik tombol "Buat" / "Create".
+
+3. Import file database:
+   - Klik database `warungku` yang baru saja dibuat.
+   - Klik tab menu "Impor" / "Import" di bagian atas (atau langsung ke http://localhost/phpmyadmin/index.php?route=/database/import&db=warungku).
+   - Pada bagian "Berkas yang diimpor" / "File to import", klik tombol "Choose File" / "Browse".
+   - Pilih file `warungku.sql` yang ada di folder proyek ini.
+   - Gulir ke bawah lalu klik tombol "Impor" / "Import" / "Kirim".
+
 4. Pengaturan koneksi database ada di file: `app/config/database.php`
    - Host: localhost
    - Database: warungku
@@ -31,9 +40,9 @@ Aplikasi ini dibuat menggunakan PHP native dengan konsep MVC sederhana dan mendu
 ---
 
 ## Cara Menjalankan Aplikasi
-1. Jalankan XAMPP dan Nyalakan Apache dan MySQL
-2. Buka Terminal atau Command Prompt di folder utama.
-3. Ketik perintah berikut:
+
+1. Buka Terminal atau Command Prompt di folder utama proyek (D:\E).
+2. Ketik perintah berikut:
 
    php run
 
@@ -76,9 +85,9 @@ Aplikasi ini menggunakan sistem 2 lapis CSS dan 2 lapis JS:
 
 ---
 
-## Panduan Menambah Halaman Baru
+## Panduan Menambah Halaman Baru (Untuk Frontend Pemula)
 
-Frontend tidak perlu menyentuh folder public untuk mengatur CSS/JS halaman baru. Semua file halaman terkumpul jadi satu di dalam folder view-nya.
+Frontend pemula tidak perlu menyentuh folder public untuk mengatur CSS/JS halaman baru. Semua file halaman terkumpul jadi satu di dalam folder view-nya.
 
 Sebagai contoh, jika Anda ingin membuat halaman baru bernama "kategori" untuk peran "owner" (alamat URL: /owner/kategori):
 
@@ -126,3 +135,4 @@ Sebagai contoh, jika Anda ingin membuat halaman baru bernama "kategori" untuk pe
 - app/views/ : Berisi seluruh tampilan (HTML view, serta folder style/ dan script/ per halaman).
 - public/assets/ : Hanya berisi aset global (main.css, main.js, dan gambar logo).
 - run.php : File pembantu untuk menjalankan server lokal dengan cepat.
+- warungku.sql : Berkas database awal untuk diimpor ke phpMyAdmin.
