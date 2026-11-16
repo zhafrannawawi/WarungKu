@@ -24,23 +24,42 @@ require APP_PATH . '/core/Controller.php';
 $url_path  = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
 $url_parts = explode('/', $url_path);
 
-// [5] Halaman utama diarahkan ke login.
+// [5] Bersihkan input: hanya huruf kecil a-z yang diizinkan.
+$role_name = preg_replace('/[^a-z]/', '', strtolower($url_parts[0] ?? ''));
+$page_name = preg_replace('/[^a-z]/', '', strtolower($url_parts[1] ?? 'dashboard'));
+
+$action_name = preg_replace('/[^a-z0-9_]/', '', strtolower($url_parts[2] ?? 'index'));
+if ($action_name === '') {
+    $action_name = 'index';
+}
+
+// [6] Jika sudah punya sesi aktif dan membuka root, login, atau register -> lempar langsung ke dashboard
+if ($url_path === '' || in_array($role_name, ['login', 'register'], true)) {
+    foreach (['owner', 'cashier'] as $active_role) {
+        if (isset($_COOKIE[$active_role . '_session'])) {
+            session_name($active_role . '_session');
+            session_start();
+            if (!empty($_SESSION['user_id']) && ($_SESSION['role'] ?? '') === $active_role) {
+                header('Location: /' . $active_role . '/dashboard');
+                exit;
+            }
+            session_write_close();
+        }
+    }
+}
+
+// [7] Jika belum login dan membuka root '/', arahkan ke /login
 if ($url_path === '') {
     header('Location: /login');
     exit;
 }
 
-// [6] Bersihkan input: hanya huruf kecil a-z yang diizinkan.
-//     Mencegah URL seperti "../../config".
-$role_name = preg_replace('/[^a-z]/', '', strtolower($url_parts[0]));
-$page_name = preg_replace('/[^a-z]/', '', strtolower($url_parts[1] ?? 'dashboard'));
-
-// [7] Halaman umum (tanpa login): /login dan /register.
+// [8] Halaman umum: /login, /register, dan /logout.
 //     Controller-nya mengatur sesinya sendiri.
-if (in_array($role_name, ['login', 'register'], true)) {
+if (in_array($role_name, ['login', 'register', 'logout'], true)) {
     require APP_PATH . '/controllers/auth/' . ucfirst($role_name) . 'Controller.php';
 
-    $class_name = 'Auth' . ucfirst($role_name) . 'Controller'; // AuthLoginController
+    $class_name = 'Auth' . ucfirst($role_name) . 'Controller';
     $controller = new $class_name();
     $controller->index();
     exit;
@@ -77,7 +96,20 @@ if (($_SESSION['role'] ?? '') !== $role_name) {
     exit;
 }
 
-// [13] Semua lolos: jalankan controller.
+// [13] Cegah browser menyimpan cache halaman (agar tombol 'Go Forward' tidak bisa masuk setelah logout).
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Pragma: no-cache');
+header('Expires: 0');
+
+// [14] Semua lolos: jalankan controller.
 require $file_path;
 $controller = new $class_name();
-$controller->index();
+
+// Baca nama function dari URL bagian ke-3 (contoh: /owner/akun-kasir/save -> 'save')
+// Hanya huruf kecil a-z dan underscore yang diizinkan
+$action_name = preg_replace('/[^a-z_]/', '', strtolower($url_parts[2] ?? 'index'));
+if ($action_name === '' || !method_exists($controller, $action_name)) {
+    $action_name = 'index';
+}
+
+$controller->$action_name();

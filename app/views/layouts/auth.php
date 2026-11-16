@@ -51,6 +51,14 @@
 
     <script>
         lucide.createIcons();
+
+        // Jika halaman dipanggil dari memori beku browser (bfcache saat tombol Go Back ditekan),
+        // paksa reload agar server langsung melempar kembali ke dashboard
+        window.addEventListener("pageshow", function (event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
     </script>
 </body>
 

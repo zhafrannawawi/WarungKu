@@ -68,12 +68,7 @@
             <p class="text-muted small mb-0">Isi informasi warung dan akun pemilik untuk mulai.</p>
         </div>
 
-        <?php if ($error_text): ?>
-            <div class="alert alert-danger py-2 px-3 small rounded-3 mb-3" role="alert">
-                <i data-lucide="alert-circle" class="icon-xs me-1"></i>
-                <?= htmlspecialchars($error_text) ?>
-            </div>
-        <?php endif; ?>
+        <?php require APP_PATH . '/views/components/alerts/alert_message.php'; ?>
 
         <form method="post" action="/register">
 

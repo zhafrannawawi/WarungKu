@@ -3,6 +3,10 @@ class AuthRegisterController extends Controller
 {
     public function index()
     {
+        // Beritahu browser agar tidak menyimpan cache formulir pendaftaran
+        header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+        header('Pragma: no-cache');
+
         $error_text = '';
         $old_input  = [];
 
@@ -34,8 +38,6 @@ class AuthRegisterController extends Controller
                 $error_text = 'Password minimal 6 karakter.';
             } elseif ($password != $pass_again) {
                 $error_text = 'Konfirmasi password tidak cocok.';
-            } elseif ($user_model->find_user($user_name)) {
-                $error_text = 'Username sudah digunakan.';
             } else {
                 $saved = $user_model->add_owner($store_name, $store_address, $full_name, $email, $phone_number, $user_name, $password);
                 if ($saved) {

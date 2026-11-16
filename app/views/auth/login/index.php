@@ -58,21 +58,10 @@
             <p class="text-muted small mb-0">Masukkan username dan password akun Anda.</p>
         </div>
 
-        <?php if ($error_text): ?>
-            <div class="alert alert-danger py-2 px-3 small rounded-3 mb-3" role="alert">
-                <i data-lucide="alert-circle" class="icon-xs me-1"></i>
-                <?= htmlspecialchars($error_text) ?>
-            </div>
-        <?php endif; ?>
-
-        <?php if ($success_text): ?>
-            <div class="alert alert-success py-2 px-3 small rounded-3 mb-3" role="alert">
-                <i data-lucide="check-circle" class="icon-xs me-1"></i>
-                <?= htmlspecialchars($success_text) ?>
-            </div>
-        <?php endif; ?>
+        <?php require APP_PATH . '/views/components/alerts/alert_message.php'; ?>
 
         <form method="post" action="/login">
+            <input type="hidden" name="action" value="login">
             
             <div class="mb-3">
                 <label for="user_name" class="form-label text-muted">Username</label>
@@ -83,8 +72,13 @@
                 </div>
             </div>
 
-            <div class="mb-4">
-                <label for="user_password" class="form-label text-muted">Password</label>
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label for="user_password" class="form-label text-muted mb-0">Password</label>
+                    <a href="javascript:void(0)" class="small text-primary text-decoration-none" data-bs-toggle="modal" data-bs-target="#modalResetPassword" style="font-size: 0.775rem;">
+                        Lupa password?
+                    </a>
+                </div>
                 <div class="position-relative">
                     <input type="password" id="user_password" name="user_password"
                            class="form-control form-control-standard pe-5"
@@ -95,13 +89,13 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-standard w-100 py-2 fw-semibold shadow-sm mb-3">
+            <button type="submit" class="btn btn-primary btn-standard w-100 py-2 fw-semibold shadow-sm mt-3 mb-2">
                 <i data-lucide="log-in" class="icon-sm me-1"></i> Masuk Sekarang
             </button>
 
         </form>
 
-        <div class="text-center pt-3 border-top">
+        <div class="text-center pt-3 mt-3 border-top">
             <p class="text-muted mb-0" style="font-size: 0.775rem;">
                 Belum punya akun warung? 
                 <a href="/register" class="text-primary text-decoration-none fw-semibold">Daftar Warung Baru</a>
@@ -111,3 +105,7 @@
     </div>
 
 </div>
+
+<!-- Memanggil Modal dari folder components/modals -->
+<?php require APP_PATH . '/views/auth/login/modals/modal_reset_password.php'; ?>
+<?php require APP_PATH . '/views/auth/login/modals/modal_new_password.php'; ?>

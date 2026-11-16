@@ -9,6 +9,13 @@ class Controller
 
     public function view($role_name, $page_name, $data = [], $layout_name = 'main')
     {
+        // Auto-inject data toko ke semua view yang pakai layout main
+        if ($layout_name === 'main' && !empty($_SESSION['store_id'])) {
+            require_once APP_PATH . '/models/StoreModel.php';
+            $store_model = new StoreModel();
+            $data['store_data'] = $store_model->get_store($_SESSION['store_id']);
+        }
+
         extract($data);
 
         // Path folder view halaman

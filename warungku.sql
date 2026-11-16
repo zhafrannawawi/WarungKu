@@ -130,7 +130,7 @@ CREATE TABLE `tbluser` (
   `StoreID` int(11) NOT NULL,
   `Username` varchar(50) NOT NULL,
   `Email` varchar(100) NOT NULL,
-  `Password` varchar(255) NOT NULL,
+  `Password` varchar(255) NULL,
   `Fullname` varchar(100) NOT NULL,
   `PhoneNumber` varchar(15) DEFAULT NULL,
   `Role` varchar(10) NOT NULL,
@@ -193,8 +193,7 @@ ALTER TABLE `tbltransactiondetail`
 --
 ALTER TABLE `tbluser`
   ADD PRIMARY KEY (`UserID`),
-  ADD UNIQUE KEY `uq_user_username` (`Username`),
-  ADD UNIQUE KEY `uq_user_email` (`Email`),
+  ADD UNIQUE KEY `uq_user_store_username` (`StoreID`,`Username`),
   ADD KEY `fk_user_store` (`StoreID`);
 
 --
@@ -288,6 +287,19 @@ ALTER TABLE `tbltransactiondetail`
 ALTER TABLE `tbluser`
   ADD CONSTRAINT `fk_user_store` FOREIGN KEY (`StoreID`) REFERENCES `tblstore` (`StoreID`);
 COMMIT;
+
+-- --------------------------------------------------------
+-- Jalankan query ini jika database sudah ada sebelumnya
+-- (untuk migrasi dari schema lama ke schema baru)
+-- --------------------------------------------------------
+
+-- Hapus unique global username & email, ubah jadi unique per toko
+-- ALTER TABLE `tbluser` DROP INDEX `uq_user_username`;
+-- ALTER TABLE `tbluser` DROP INDEX `uq_user_email`;
+-- ALTER TABLE `tbluser` ADD UNIQUE KEY `uq_user_store_username` (`StoreID`, `Username`);
+
+-- Izinkan Password NULL (untuk kasir yang belum set password)
+-- ALTER TABLE `tbluser` MODIFY `Password` VARCHAR(255) NULL;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

@@ -30,6 +30,10 @@
   --topbar-height: 70px;
 }
 
+html {
+  font-size: 90%;
+}
+
 body,
 .bg-body-app {
   font-family: var(--font-family);
@@ -550,4 +554,20 @@ body,
 
 .user-dropdown-btn:hover {
   background-color: var(--bg-subtle);
+}
+
+
+/* ============================================================
+   Alert — fixed pojok kanan bawah topbar
+   ============================================================ */
+.alert-fixed-container {
+  position: fixed;
+  top: calc(var(--topbar-height) + 0.75rem);
+  right: 1.25rem;
+  z-index: 9999;
+  width: 320px;
+  max-width: calc(100vw - 2rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
