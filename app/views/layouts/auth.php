@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($page_title ?? 'WarungKu') ?> — WarungKu</title>
+    <title>WarungKu | <?= htmlspecialchars($page_title ?? 'WarungKu') ?></title>
 
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,6 +27,7 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
+
 <body class="bg-body-app">
 
     <div class="auth-container auth-container-<?= htmlspecialchars($page_name ?? '') ?>">
@@ -47,6 +49,9 @@
         </script>
     <?php endif; ?>
 
-    <script>lucide.createIcons();</script>
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
+
 </html>

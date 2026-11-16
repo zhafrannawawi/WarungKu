@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= htmlspecialchars($page_title ?? 'WarungKu') ?></title>
+    <title>WarungKu | <?= htmlspecialchars($page_title ?? '-')?></title>
 
     <!-- 1. CSS Main (Global) -->
     <link rel="stylesheet" href="/assets/css/main.css">

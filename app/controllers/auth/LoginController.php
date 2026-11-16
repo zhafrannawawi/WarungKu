@@ -40,4 +40,5 @@ class AuthLoginController extends Controller
             'success_text' => $success_text,
         ], 'auth');
     }
+
 }
