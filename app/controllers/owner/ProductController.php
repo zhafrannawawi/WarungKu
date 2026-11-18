@@ -5,7 +5,7 @@ class OwnerProductController extends Controller
     {
         $product_model = $this->model('ProductModel');
 
-        $this->view('owner', 'product', [
+        $this->view('owner', 'daftar-product', [
             'page_title'   => 'Product List',
             'product_list' => $product_model->get_all(),
         ]);
