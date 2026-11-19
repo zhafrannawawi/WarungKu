@@ -79,11 +79,11 @@ $kategoriDipakai = array_unique(array_column($products, 'kategori'));
     <p class="text-muted mb-0">Kelola data inventaris, harga jual, kategori, dan pantau stok barang warung.</p>
   </div>
   <div class="d-flex gap-2">
-    <button type="button" class="btn btn-outline-secondary">
-      <i class="bi bi-download"></i> Export Excel
+    <button type="button" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2">
+      <i data-lucide="download" width="16" height="16"></i> Export Excel
     </button>
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAddProduct">
-      <i class="bi bi-plus-lg"></i> Tambah Produk
+    <button type="button" class="btn btn-primary d-inline-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalAddProduct">
+      <i data-lucide="plus" width="16" height="16"></i> Tambah Produk
     </button>
   </div>
 </div>
@@ -95,12 +95,12 @@ $kategoriDipakai = array_unique(array_column($products, 'kategori'));
     <div class="card h-100 shadow-sm">
       <div class="card-body">
         <div class="d-flex justify-content-between text-secondary">
-          <span>Total Produk</span><i class="bi bi-box-seam"></i>
+          <span>Total Produk</span><i data-lucide="package" width="16" height="16"></i>
         </div>
         <div class="d-flex justify-content-between align-items-center my-2">
           <h4 class="fw-bold mb-0"><?= $totalProduk ?> Item</h4>
-          <span class="badge text-success border border-success-subtle bg-success-subtle">
-            <i class="bi bi-check2"></i> Aktif
+          <span class="badge text-success border border-success-subtle bg-success-subtle d-inline-flex align-items-center gap-1">
+            <i data-lucide="check" width="12" height="12"></i> Aktif
           </span>
         </div>
         <small class="text-muted">Semua terdaftar</small>
@@ -112,7 +112,7 @@ $kategoriDipakai = array_unique(array_column($products, 'kategori'));
     <div class="card h-100 shadow-sm">
       <div class="card-body">
         <div class="d-flex justify-content-between text-secondary">
-          <span>Total Nilai Stok</span><i class="bi bi-cash-stack"></i>
+          <span>Total Nilai Stok</span><i data-lucide="banknote" width="16" height="16"></i>
         </div>
         <h4 class="fw-bold my-2"><?= rupiah($totalNilai) ?></h4>
         <small class="text-muted">Estimasi modal barang</small>
@@ -124,7 +124,7 @@ $kategoriDipakai = array_unique(array_column($products, 'kategori'));
     <div class="card h-100 shadow-sm">
       <div class="card-body">
         <div class="d-flex justify-content-between text-secondary">
-          <span>Stok Menipis</span><i class="bi bi-exclamation-triangle"></i>
+          <span>Stok Menipis</span><i data-lucide="triangle-alert" width="16" height="16"></i>
         </div>
         <div class="d-flex justify-content-between align-items-center my-2">
           <h4 class="fw-bold mb-0 <?= $menipis ? 'text-danger' : '' ?>"><?= count($menipis) ?> Item</h4>
@@ -143,7 +143,7 @@ $kategoriDipakai = array_unique(array_column($products, 'kategori'));
     <div class="card h-100 shadow-sm">
       <div class="card-body">
         <div class="d-flex justify-content-between text-secondary">
-          <span>Kategori Aktif</span><i class="bi bi-layers"></i>
+          <span>Kategori Aktif</span><i data-lucide="layers" width="16" height="16"></i>
         </div>
         <h4 class="fw-bold my-2"><?= count($kategoriDipakai) ?> Kategori</h4>
         <small class="text-muted">
@@ -163,7 +163,7 @@ $kategoriDipakai = array_unique(array_column($products, 'kategori'));
     <div class="row g-2 align-items-center">
       <div class="col-12 col-md">
         <div class="input-group" style="max-width: 360px;">
-          <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+          <span class="input-group-text bg-white"><i data-lucide="search" width="16" height="16"></i></span>
           <input type="text" id="cariProduk" class="form-control" placeholder="Cari nama produk, kode...">
         </div>
       </div>
@@ -183,8 +183,8 @@ $kategoriDipakai = array_unique(array_column($products, 'kategori'));
         </select>
       </div>
       <div class="col-auto">
-        <button type="button" id="resetFilter" class="btn btn-outline-secondary" title="Reset filter">
-          <i class="bi bi-arrow-counterclockwise"></i>
+        <button type="button" id="resetFilter" class="btn btn-outline-secondary d-inline-flex align-items-center" title="Reset filter">
+          <i data-lucide="rotate-ccw" width="16" height="16"></i>
         </button>
       </div>
     </div>
@@ -194,14 +194,14 @@ $kategoriDipakai = array_unique(array_column($products, 'kategori'));
   <div class="table-responsive">
     <table class="table table-hover align-middle mb-0">
       <thead class="table-light">
-        <tr class="text-uppercase small text-secondary">
-          <th class="ps-4">Produk</th>
-          <th>Kode</th>
-          <th>Kategori</th>
-          <th class="text-end">Harga Modal</th>
-          <th class="text-end">Harga Jual</th>
-          <th class="text-center">Stok</th>
-          <th class="text-center pe-4">Aksi</th>
+        <tr class="text-uppercase small text-secondary fw-normal">
+          <th class="ps-4 text-secondary fw-semibold">Produk</th>
+          <th class="text-secondary fw-semibold">Kode</th>
+          <th class="text-secondary fw-semibold">Kategori</th>
+          <th class="text-end text-secondary fw-semibold">Harga Modal</th>
+          <th class="text-end text-secondary fw-semibold">Harga Jual</th>
+          <th class="text-center text-secondary fw-semibold">Stok</th>
+          <th class="text-center pe-4 text-secondary fw-semibold">Aksi</th>
         </tr>
       </thead>
       <tbody id="tabelProduk">
@@ -232,7 +232,7 @@ $kategoriDipakai = array_unique(array_column($products, 'kategori'));
               </span>
             </td>
             <td class="text-center pe-4">
-              <button type="button" class="btn btn-sm btn-outline-secondary btn-edit"
+              <button type="button" class="btn btn-sm btn-outline-secondary btn-edit d-inline-flex align-items-center justify-content-center me-1" style="width: 32px; height: 32px;" title="Edit"
                       data-bs-toggle="modal" data-bs-target="#modalEditProduct"
                       data-product-id="<?= $pr['id'] ?>"
                       data-name="<?= htmlspecialchars($pr['nama']) ?>"
@@ -245,13 +245,13 @@ $kategoriDipakai = array_unique(array_column($products, 'kategori'));
                       data-expired="<?= htmlspecialchars($pr['expired']) ?>"
                       data-location="<?= htmlspecialchars($pr['lokasi']) ?>"
                       data-note="<?= htmlspecialchars($pr['catatan']) ?>">
-                <i class="bi bi-pencil-square"></i>
+                <i data-lucide="pencil-line" width="15" height="15"></i>
               </button>
-              <button type="button" class="btn btn-sm btn-outline-danger btn-hapus"
+              <button type="button" class="btn btn-sm btn-outline-danger btn-hapus d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="Hapus"
                       data-bs-toggle="modal" data-bs-target="#modalDeleteProduct"
                       data-product-id="<?= $pr['id'] ?>"
                       data-name="<?= htmlspecialchars($pr['nama']) ?>">
-                <i class="bi bi-trash"></i>
+                <i data-lucide="trash-2" width="15" height="15"></i>
               </button>
             </td>
           </tr>
@@ -290,7 +290,3 @@ $kategoriDipakai = array_unique(array_column($products, 'kategori'));
 <?php include __DIR__ . '/modals/modal_add_product.php'; ?>
 <?php include __DIR__ . '/modals/modal_edit_product.php'; ?>
 <?php include __DIR__ . '/modals/modal_delete_product.php'; ?>
-
-<!-- ============================ JAVASCRIPT ============================ -->
-<!-- LETAKKAN DI SINI pemanggilan script.js, sama persis seperti yang sudah
-     kamu pasang di index.php-mu sekarang. File ini tidak mengubah script.js. -->

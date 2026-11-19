@@ -66,4 +66,11 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
+  // ----- Ikon Lucide -----
+  // Mengubah semua <i data-lucide="..."> di halaman ini menjadi ikon.
+  // Dicek dulu supaya tidak error kalau library Lucide belum dimuat layout.
+  if (window.lucide) {
+    lucide.createIcons();
+  }
+
 });
