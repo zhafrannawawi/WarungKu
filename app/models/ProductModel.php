@@ -5,7 +5,7 @@ class ProductModel
     {
         $db    = Database::connect();
         $query = $db->prepare('SELECT * FROM tblProduct WHERE StoreId = ?');
-        $query->execute([$_SESSION['store_id']]); // ← filter per toko
+        $query->execute([$_SESSION['store_id']]);
         return $query->fetchAll();
     }
 }

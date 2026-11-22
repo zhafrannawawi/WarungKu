@@ -133,7 +133,7 @@
                                 <td class="text-end fw-bold text-dark">-</td>
                                 <td class="text-center pe-4">
                                     <button class="btn btn-sm btn-outline-warning rounded-btn-sm p-1" title="Edit Akun"
-                                        onclick="openEditModal('<?= $u['UserID'] ?>','<?= htmlspecialchars($u['Fullname'], ENT_QUOTES) ?>','<?= htmlspecialchars($u['Username'], ENT_QUOTES) ?>','<?= htmlspecialchars($u['PhoneNumber'] ?? '', ENT_QUOTES) ?>','<?= $u['IsActive'] ?>')">
+                                        onclick="('<?= $u['UserID'] ?>','<?= htmlspecialchars($u['Fullname'], ENT_QUOTES) ?>','<?= htmlspecialchars($u['Username'], ENT_QUOTES) ?>','<?= htmlspecialchars($u['PhoneNumber'] ?? '', ENT_QUOTES) ?>','<?= $u['IsActive'] ?>')">
                                         <i data-lucide="edit-3" class="icon-xs"></i>
                                     </button>
                                     <?php if ($u['Role'] !== 'owner'): ?>

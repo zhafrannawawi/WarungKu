@@ -41,6 +41,17 @@ class UserModel
         $query->execute([$store_id]);
         return $query->fetch();
     }
+
+    public function get_store_phone_numbers($store_id, $exclude_user_id = 0)
+{
+    $db = Database::connect();
+    $query = $db->prepare(
+        'SELECT PhoneNumber FROM tblUser
+         WHERE StoreID = ? AND UserID <> ? AND PhoneNumber IS NOT NULL AND PhoneNumber <> ""'
+    );
+    $query->execute([$store_id, $exclude_user_id]);
+    return $query->fetchAll(PDO::FETCH_COLUMN);
+}
     // END GET
 
     // STORE
@@ -112,9 +123,9 @@ class UserModel
         $db = Database::connect();
         $query = $db->prepare(
             'INSERT INTO tbluser (StoreID, Username, Email, Password, Fullname, PhoneNumber, Role, IsActive, CreatedAt)
-             VALUES (?, ?, ?, NULL, ?, ?, "kasir", 1, NOW())'
+             VALUES (?, ?, ?, ?, ?, ?, "kasir", 1, NOW())'
         );
-        return $query->execute([$store_id, $user_name, $email, $full_name, $phone_number]);
+        return $query->execute([$store_id, $user_name, $email, $phone_number, $full_name, $phone_number]);
     }
     // END STORE
 }

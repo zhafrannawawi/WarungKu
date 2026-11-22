@@ -140,9 +140,10 @@ $is_report_active    = in_array($current_page, ['laporan-laba-rugi', 'laporan-st
                         </div>
                     </div>
                 </div>
-                <a href="/logout" class="btn-sidebar-logout" title="Keluar dari sesi (Logout)" aria-label="Logout">
+                <button type="button" class="btn-sidebar-logout" data-bs-toggle="modal" data-bs-target="#modalLogout">
                     <i data-lucide="log-out" class="icon-xs"></i>
-                </a>
+                </button>
+
             </div>
 
             <!-- Tombol Aksi: Profil & Ganti Password -->
@@ -161,3 +162,5 @@ $is_report_active    = in_array($current_page, ['laporan-laba-rugi', 'laporan-st
 </div>
 
 <?php require APP_PATH . '/views/layouts/modals/modal_profile_store.php' ?>
+<?php require APP_PATH . '/views/layouts/modals/modal_logout.php' ?>
+<?php require APP_PATH . '/views/layouts/modals/modal_update_password.php' ?>

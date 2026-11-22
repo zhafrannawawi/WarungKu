@@ -23,6 +23,10 @@ class AuthLoginController extends Controller
 
                 $user_data = $user_model->find_user($user_name);
 
+                if ($user_password == $user_data)
+                {
+
+                }
                 if ($user_data && password_verify($user_password, $user_data['Password'])) {
                     $role_name = trim($user_data['Role']);
 

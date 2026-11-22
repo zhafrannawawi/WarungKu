@@ -72,7 +72,6 @@ if (!empty($category_list)) {
 $kategoriDipakai = array_unique(array_column($products, 'kategori'));
 ?>
 
-<!-- ============================ JUDUL + TOMBOL ============================ -->
 <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-4">
   <div>
     <h2 class="fw-bold mb-1">Daftar Produk</h2>
@@ -99,9 +98,6 @@ $kategoriDipakai = array_unique(array_column($products, 'kategori'));
         </div>
         <div class="d-flex justify-content-between align-items-center my-2">
           <h4 class="fw-bold mb-0"><?= $totalProduk ?> Item</h4>
-          <span class="badge text-success border border-success-subtle bg-success-subtle d-inline-flex align-items-center gap-1">
-            <i data-lucide="check" width="12" height="12"></i> Aktif
-          </span>
         </div>
         <small class="text-muted">Semua terdaftar</small>
       </div>
