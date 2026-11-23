@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 16, 2026 at 05:05 AM
+-- Generation Time: Nov 17, 2026 at 02:27 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -50,7 +50,6 @@ CREATE TABLE `tblproduct` (
   `SellingPrice` decimal(12,2) NOT NULL,
   `Stock` int(11) NOT NULL DEFAULT 0,
   `MinimumStock` int(11) NOT NULL DEFAULT 0,
-  `ExpiredDate` date DEFAULT NULL,
   `Location` varchar(50) DEFAULT NULL,
   `Note` text DEFAULT NULL,
   `EntryDate` date NOT NULL,
@@ -86,6 +85,13 @@ CREATE TABLE `tblstore` (
   `Address` varchar(255) DEFAULT NULL,
   `CreatedAt` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tblstore`
+--
+
+INSERT INTO `tblstore` (`StoreID`, `StoreName`, `Address`, `CreatedAt`) VALUES
+(1, 'Warung Berkah', 'Jl. Merdeka No.10', '2026-11-16 16:10:27');
 
 -- --------------------------------------------------------
 
@@ -130,13 +136,21 @@ CREATE TABLE `tbluser` (
   `StoreID` int(11) NOT NULL,
   `Username` varchar(50) NOT NULL,
   `Email` varchar(100) NOT NULL,
-  `Password` varchar(255) NULL,
+  `Password` varchar(255) DEFAULT NULL,
   `Fullname` varchar(100) NOT NULL,
   `PhoneNumber` varchar(15) DEFAULT NULL,
   `Role` varchar(10) NOT NULL,
   `IsActive` tinyint(1) NOT NULL DEFAULT 1,
   `CreatedAt` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tbluser`
+--
+
+INSERT INTO `tbluser` (`UserID`, `StoreID`, `Username`, `Email`, `Password`, `Fullname`, `PhoneNumber`, `Role`, `IsActive`, `CreatedAt`) VALUES
+(4, 1, 'Zhafran', 'zhafran@mail.com', '$2y$10$cCaR4usSXKoVjm.r0Lm.duMlP35mZ/xP8BHUu7sSLZcZ.k/ZXkCLe', 'Zhafran An-Nawawi', '081234567890', 'owner', 1, '2026-11-16 16:10:27'),
+(5, 1, 'iqbaldez', '', NULL, 'Iqbal', '0812345678', 'kasir', 1, '2026-11-16 16:11:08');
 
 --
 -- Indexes for dumped tables
@@ -222,7 +236,7 @@ ALTER TABLE `tblrestock`
 -- AUTO_INCREMENT for table `tblstore`
 --
 ALTER TABLE `tblstore`
-  MODIFY `StoreID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `StoreID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `tbltransaction`
@@ -240,7 +254,7 @@ ALTER TABLE `tbltransactiondetail`
 -- AUTO_INCREMENT for table `tbluser`
 --
 ALTER TABLE `tbluser`
-  MODIFY `UserID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `UserID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Constraints for dumped tables
@@ -287,19 +301,6 @@ ALTER TABLE `tbltransactiondetail`
 ALTER TABLE `tbluser`
   ADD CONSTRAINT `fk_user_store` FOREIGN KEY (`StoreID`) REFERENCES `tblstore` (`StoreID`);
 COMMIT;
-
--- --------------------------------------------------------
--- Jalankan query ini jika database sudah ada sebelumnya
--- (untuk migrasi dari schema lama ke schema baru)
--- --------------------------------------------------------
-
--- Hapus unique global username & email, ubah jadi unique per toko
--- ALTER TABLE `tbluser` DROP INDEX `uq_user_username`;
--- ALTER TABLE `tbluser` DROP INDEX `uq_user_email`;
--- ALTER TABLE `tbluser` ADD UNIQUE KEY `uq_user_store_username` (`StoreID`, `Username`);
-
--- Izinkan Password NULL (untuk kasir yang belum set password)
--- ALTER TABLE `tbluser` MODIFY `Password` VARCHAR(255) NULL;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

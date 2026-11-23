@@ -1,0 +1,4361 @@
+<div id="fk-panel">
+  <div style="padding: 12px; color: #6c757d; font-size: 13px">Memuat...</div>
+</div>
+<script>
+  (() => {
+    // ===== PENGATURAN =====
+    const KELAS_LIST = ["1A", "1B", "1C", "1D"];
+    const SHIFT_LIST = ["Pagi", "Malam"];
+    const DEFAULT_KELAS = "1A";
+    const DEFAULT_SHIFT = "Malam";
+    const AMBANG_NOTIF_JAM = 5;
+    const NAMA_MASKOT = "Hoot";
+    const LEBAR_SEMPIT = 400; // panel lebih sempit dari ini = mode HP
+    const TARGET_MINGGUAN = 5; // target tugas selesai per minggu
+    const FOKUS_MENIT = 25; // lama satu sesi fokus (Pomodoro)
+    const ISTIRAHAT_MENIT = 5; // istirahat pendek
+    const ISTIRAHAT_PANJANG = 15; // istirahat panjang setiap SESI_PANJANG sesi
+    const SESI_PANJANG = 4;
+    const IDLE_TIDUR_DETIK = 120; // Hoot mengantuk lalu tidur setelah tidak ada interaksi sekian detik
+    const CACHE_MENIT = 45; // data lebih tua dari ini diperbarui di latar belakang (data lama tetap tampil)
+    // Isi dengan tanggal Senin minggu kuliah pertama (format "YYYY-MM-DD") agar Materi minggu ini
+    // bisa dicari walau course tidak menandai minggu berjalan. Contoh: "2026-09-07". Kosongkan jika tidak perlu.
+    const SEMESTER_MULAI = "";
+    // Kelasmu = KELAS "1A" + SHIFT "Malam" (TRPL 1A MALAM). Jika ada prodi lain yang memakai label kelas sama, isi singkatannya, contoh: ["TI","SI"]
+    const PRODI_LAIN = [];
+    // Tema: [warna utama, latar lembut, garis, teks, badan Hoot, sayap Hoot]
+    const TEMA = {
+      biru: ["#2f6fed", "#e8f0ff", "#c9dbff", "#1f3a7a", "#5b8def", "#3f73d9"],
+      hijau: ["#12a05f", "#e6f7ee", "#b7e6cc", "#0b5d38", "#34c07f", "#1d9a62"],
+      ungu: ["#7a5af8", "#f1edff", "#d9cffd", "#4a2fb0", "#9b82fa", "#6a48e0"],
+      oranye: [
+        "#f08a1c",
+        "#fff3e3",
+        "#fcd9ad",
+        "#8a4a07",
+        "#f7a54a",
+        "#e07f10",
+      ],
+      pink: ["#e0518f", "#fdecf3", "#f7c6dc", "#9a2a5e", "#ee7fae", "#d04581"],
+    };
+    const AKSESORI = [
+      ["polos", "Polos"],
+      ["glasses", "Kacamata"],
+      ["cap", "Topi wisuda"],
+      ["bow", "Pita"],
+    ];
+    const HOOT_TERBANG = true; // Hoot terbang membawa tugas yang dicentang ke tombol Selesai
+    const HOOT_BERTENGGER = true; // Hoot kecil bertengger di kartu dengan tenggat terdekat
+    // Pakaian harian Hoot. Kunci: 0=Minggu ... 6=Sabtu. Pilihan: coffee, glasses, party (party = setelah kuliah terakhir hari itu)
+    const OUTFIT_HARI = {
+      1: "coffee",
+      3: "glasses",
+      5: "party",
+    };
+
+    // Format: [mulai, selesai, kode, nama matkul, inisial dosen (pisah "/" jika lebih dari satu), ruang ("Online" = daring), praktikum?]
+    const JADWAL = {
+      senin: [
+        [
+          "18:50",
+          "19:40",
+          "RPL101",
+          "Pengantar Rekayasa Perangkat Lunak",
+          "MS",
+          "Online",
+          false,
+        ],
+        [
+          "20:30",
+          "23:00",
+          "RPL101",
+          "Pengantar Rekayasa Perangkat Lunak",
+          "IQ",
+          "TA 11.4",
+          true,
+        ],
+      ],
+      selasa: [
+        [
+          "18:00",
+          "20:30",
+          "RPL102",
+          "Algoritma dan Pemrograman",
+          "NA",
+          "TA 12.4",
+          true,
+        ],
+        [
+          "21:20",
+          "22:10",
+          "RPL102",
+          "Algoritma dan Pemrograman",
+          "NA",
+          "Online",
+          false,
+        ],
+        [
+          "22:10",
+          "23:00",
+          "RPL105",
+          "Pemrograman Berbasis Web",
+          "NR",
+          "Online",
+          false,
+        ],
+      ],
+      rabu: [
+        [
+          "18:00",
+          "20:30",
+          "RPL105",
+          "Pemrograman Berbasis Web",
+          "NR",
+          "TA 12.4",
+          true,
+        ],
+        [
+          "21:20",
+          "23:00",
+          "RPL103",
+          "Matematika Diskrit",
+          "RK",
+          "Online",
+          false,
+        ],
+      ],
+      kamis: [
+        [
+          "18:00",
+          "18:50",
+          "RPL104",
+          "Analisis dan Spesifikasi Kebutuhan Perangkat Lunak",
+          "SP",
+          "Online",
+          false,
+        ],
+        [
+          "18:50",
+          "19:40",
+          "RPL106",
+          "Pengantar Basis Data",
+          "AM",
+          "Online",
+          false,
+        ],
+        [
+          "20:30",
+          "23:00",
+          "RPL104",
+          "Analisis dan Spesifikasi Kebutuhan Perangkat Lunak",
+          "SP",
+          "TA 11.4",
+          true,
+        ],
+      ],
+      jumat: [
+        [
+          "18:00",
+          "19:40",
+          "PK001RPL",
+          "Pendidikan Agama",
+          "Ester/Laurensius",
+          "Online",
+          false,
+        ],
+        [
+          "20:30",
+          "23:00",
+          "RPL106",
+          "Pengantar Basis Data",
+          "AM",
+          "TA 12.4",
+          true,
+        ],
+      ],
+    };
+
+    // Hanya dosen yang mengajar di jadwal Kelas 1A Malam. Format: "NIK|Inisial|Nama|No HP"
+    const DOSEN_DATA = [
+      "100017|MS|Metta Santiputri, S.T., M.Sc, Ph.D|0895365618212",
+      "222332|IQ|Iqbal Afif, A.Md.Kom|82176549521",
+      "122279|NA|Alena Uperiati, S.T, M.Cs|82284070171",
+      "122277|NR|Noper Ardi, S.Pd., M.Eng|85376166392",
+      "118208|RK|Farouki Dinda Rassarandi, S.T., M.Eng|85726537978",
+      "113105|SP|Supardianto, S.ST., M.Eng|85762315262",
+      "122275|AM|Ahmadi Irmansyah Lubis, S.kom., M.kom.|82273083850",
+      "|Ester|Ester Melati S.Th., M.Pd.K|8116665079",
+      "|Laurensius|Laurensius Dihe Sanga S.Ag., M.H|82283084071",
+    ];
+    // Alamat dipecah supaya tidak diubah jadi tautan otomatis oleh filter Moodle
+    const CDN_IKON =
+      "https:" +
+      "//cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css";
+    const CDN_FONT =
+      "https:" +
+      "//fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap";
+    const WA = "https:" + "//wa.me/";
+
+    // ===== DASAR =====
+    const $ = (id) => document.getElementById(id);
+    const panel = $("fk-panel");
+    if (!panel || panel.dataset.fk === "1") return;
+    panel.dataset.fk = "1";
+    const judulAsli = document.title;
+    const REDUCE = !!(
+      window.matchMedia &&
+      matchMedia("(prefers-reduced-motion: reduce)").matches
+    );
+
+    window.addEventListener("error", (e) => {
+      if (panel.textContent.indexOf("Memuat") !== -1)
+        panel.innerHTML =
+          '<div style="padding:12px;color:#842029;font-size:13px">Error skrip: ' +
+          String(e.message).replace(/</g, "&lt;") +
+          " (baris " +
+          e.lineno +
+          ")</div>";
+    });
+
+    const store = {
+      get(k, d) {
+        try {
+          const v = localStorage.getItem(k);
+          return v === null ? d : v;
+        } catch (e) {
+          return d;
+        }
+      },
+      set(k, v) {
+        try {
+          localStorage.setItem(k, v);
+        } catch (e) {}
+      },
+    };
+    const getObj = (k) => {
+      let o = {};
+      try {
+        o = JSON.parse(store.get(k, "{}")) || {};
+      } catch (e) {}
+      const batas = Date.now() - 90 * 864e5;
+      Object.keys(o).forEach((x) => {
+        if (o[x] < batas) delete o[x];
+      });
+      return o;
+    };
+    const getRek = () => {
+      let o = {};
+      try {
+        o = JSON.parse(store.get("fk_rek", "{}")) || {};
+      } catch (e) {}
+      const b = Date.now() - 90 * 864e5;
+      Object.keys(o).forEach((k) => {
+        if (!o[k] || o[k][0] < b) delete o[k];
+      });
+      return o;
+    };
+    const ic = (n, c) => `<i class="bi bi-${n}${c ? " " + c : ""}"></i>`;
+    const esc = (s) =>
+      String(s == null ? "" : s).replace(
+        /[&<>"']/g,
+        (c) =>
+          ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#" + "39;",
+          })[c],
+      );
+    const bersih = (s) =>
+      String(s || "")
+        .replace(/\s+/g, " ")
+        .trim();
+    const norm = (s) =>
+      s
+        .toLowerCase()
+        .replace(/['’`´]/g, "")
+        .trim();
+    // ID stabil: tugas yang sama dari Timeline, halaman course, atau kalender selalu punya ID sama (cmid Moodle)
+    const MOD_RE = /\/mod\/[^\/?#]+\/view\.php\?(?:[^#]*&)?id=(\d+)/;
+    const idStabil = (url, nama) => {
+      const m = String(url).match(MOD_RE);
+      return m ? "cm" + m[1] : url + "|" + nama;
+    };
+    const unikId = (arr) => {
+      const p = {};
+      arr.forEach((d) => {
+        const o = p[d.id];
+        if (!o || (d.ts !== null && (o.ts === null || d.ts > o.ts)))
+          p[d.id] = d;
+      });
+      return Object.keys(p).map((k) => p[k]);
+    };
+    const pad = (n) => ("0" + n).slice(-2);
+    const hhmm = (m) => pad(Math.floor(m / 60)) + ":" + pad(m % 60);
+    const menit = (t) => {
+      const m = String(t).split(":");
+      return +m[0] * 60 + +m[1];
+    };
+    const fmtJam = (ts) => {
+      const d = new Date(ts);
+      return pad(d.getHours()) + ":" + pad(d.getMinutes());
+    };
+    const fmtTanggal = (ts) =>
+      new Date(ts).toLocaleDateString("id-ID", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+    const fmtHari = (d) =>
+      d.toLocaleDateString("id-ID", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+      });
+    const pilih = (a) => a[Math.floor(Math.random() * a.length)];
+    const hasM = () => typeof M !== "undefined" && M.cfg;
+    const menyebut = (t, k) =>
+      new RegExp(
+        "(^|[^A-Za-z0-9])" +
+          k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") +
+          "($|[^A-Za-z0-9])",
+        "i",
+      ).test(t);
+    const urut = (a, b) =>
+      a.ts === null ? 1 : b.ts === null ? -1 : a.ts - b.ts;
+    const hariKalender = (ts) => {
+      const a = new Date(ts),
+        b = new Date();
+      a.setHours(0, 0, 0, 0);
+      b.setHours(0, 0, 0, 0);
+      return Math.round((a - b) / 864e5);
+    };
+    // Memberi efek sekali jalan lewat class
+    const anim = (el, c, ms) => {
+      if (REDUCE) return;
+      el.classList.remove(c);
+      void el.offsetWidth;
+      el.classList.add(c);
+      setTimeout(() => el.classList.remove(c), ms || 900);
+    };
+    const muatCss = (id, href) => {
+      if ($(id)) return;
+      const l = document.createElement("link");
+      Object.assign(l, {
+        id,
+        rel: "stylesheet",
+        href,
+      });
+      document.head.appendChild(l);
+    };
+    muatCss("fk-cdn-icons", CDN_IKON);
+    muatCss("fk-cdn-font", CDN_FONT);
+
+    // ===== CSS (otomatis diberi awalan #fk-panel; "&" = panel itu sendiri) =====
+    const CSS = `
+&{--ink:#1b2430;--mute:#667085;--line:#e4e7ec;--soft:#f6f8fb;--brand:#2f6fed;--brand-soft:#e8f0ff;--ok:#12b76a;--bel:#2f6fed;--pro:#f79009;--brand-line:#c9dbff;--brand-ink:#1f3a7a;--mc1:#5b8def;--mc2:#3f73d9;
+  font-family:'Plus Jakarta Sans','Segoe UI',Roboto,Arial,sans-serif;font-size:13px;line-height:1.4;background:#fff;border:1px solid var(--line);
+  border-radius:12px;padding:12px;color:var(--ink);box-sizing:border-box;max-width:100%;overflow:hidden;position:relative;box-shadow:0 1px 2px rgba(16,24,40,.05)}
+*{box-sizing:border-box}
+i.bi{line-height:1;vertical-align:-.125em}
+[hidden]{display:none!important}
+a:focus-visible,button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.fk-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.fk-title{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700}
+.fk-logo{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--brand);color:#fff;font-size:14px}
+.fk-sub{font-size:11px;color:var(--mute);overflow-wrap:anywhere}
+.fk-tools{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px}
+.fk-tools select,.fk-tools input[type=search]{padding:6px 9px;border:1px solid var(--line);border-radius:8px;font:inherit;background:#fff;color:var(--ink);width:auto;max-width:100%;min-width:0;height:auto;margin:0;outline:0}
+.fk-tools select{flex:1 1 90px}
+.fk-tools select:focus,.fk-tools input[type=search]:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(47,111,237,.15)}
+.fk-searchbox{position:relative;flex:1 1 100%;min-width:0}
+.fk-searchbox i{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--mute);pointer-events:none}
+.fk-searchbox input{width:100%!important;padding-left:30px!important}
+.fk-lbl{font-size:12px;cursor:pointer;margin:0;display:inline-flex;align-items:center;gap:5px}
+.fk-lbl input{accent-color:var(--brand);margin:0}
+.fk-btn{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:8px;padding:5px 10px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;text-decoration:none;white-space:nowrap;line-height:1.2;margin:0;transition:background .15s,transform .1s}
+.fk-btn:hover{background:var(--soft);text-decoration:none;color:var(--ink)}
+.fk-btn:active{transform:scale(.96)}
+.fk-btn:disabled{opacity:.7;cursor:default}
+.fk-btn.wa{color:#128c4a;border-color:#bfe6cf}
+.fk-btn.go{background:var(--brand-soft);border-color:var(--brand-line);color:var(--brand-ink)}
+.fk-chips{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0}
+.fk-chip,.fk-tag,.fk-badge{display:inline-flex;align-items:center;gap:4px;border-radius:99px;padding:3px 9px;font-size:11px;font-weight:600;white-space:nowrap}
+.fk-urgent{display:flex;gap:7px;align-items:flex-start;background:#fef3f2;color:#b42318;border:1px solid #fecdca;border-radius:10px;padding:8px 10px;margin:8px 0;font-size:12px;overflow-wrap:anywhere;cursor:pointer}
+.fk-urgent i{margin-top:2px;animation:fkBell 2s ease-in-out infinite}
+.fk-tabs{display:flex;gap:3px;background:var(--soft);border-radius:10px;padding:3px;margin:8px 0 10px}
+.fk-tab{position:relative;flex:1 1 0;min-width:0;display:flex;align-items:center;justify-content:center;gap:5px;border:0;background:none;color:var(--mute);border-radius:8px;padding:7px 4px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;margin:0;transition:background .15s,color .15s}
+.fk-tab.on{background:#fff;color:var(--ink);box-shadow:0 0 0 1px var(--line)}
+.fk-tab:active{transform:scale(.97)}
+.fk-tab span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fk-tabw{position:relative;flex:1 1 0;min-width:0;display:flex}
+.fk-tabw .fk-tab{flex:1 1 0}
+.fk-allbox{position:absolute;top:3px;right:4px;z-index:2;width:14px;height:14px;margin:0;padding:0;cursor:pointer;accent-color:var(--brand)}
+&[data-w=s] .fk-tab{flex-direction:column;gap:2px;font-size:10px;padding:6px 1px}
+.fk-h{font-size:12px;font-weight:700;color:var(--mute);margin:0 0 8px;display:flex;align-items:center;gap:6px}
+.fk-dot{width:5px;height:5px;border-radius:50%;display:inline-block}
+.fk-dot.k{background:#2f6fed}
+.fk-dot.d{background:#d92d20}
+.fk-ag{display:flex;gap:8px;margin-bottom:6px}
+.fk-ag.past{opacity:.5}
+.fk-ag .t{flex:0 0 38px;text-align:right;font-size:11px;font-weight:700;padding-top:7px;line-height:1.25}
+.fk-ag .t small{display:block;font-weight:400;color:var(--mute);font-size:11px}
+.fk-ag .c{flex:1 1 0;min-width:0;border:1px solid var(--line);border-left:3px solid #2f6fed;border-radius:8px;padding:6px 9px;background:#fff;transition:transform .15s}
+.fk-ag .c:hover{transform:translateX(2px)}
+.fk-ag .c.pr{border-left-color:#12b76a}
+.fk-ag .c.tm{border-left-color:#7a5af8}
+.fk-ag .nm{font-size:13px;font-weight:600;overflow-wrap:anywhere}
+.fk-ag .fk-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:5px}
+.fk-card{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-left:3px solid #adb5bd;border-radius:10px;padding:7px 10px;margin-bottom:6px;transition:box-shadow .15s}
+.fk-card:hover{box-shadow:0 2px 8px rgba(16,24,40,.08)}
+.fk-card.done{opacity:.55}
+.fk-card.done .fk-name{text-decoration:line-through}
+.fk-chk{flex:0 0 auto;width:17px;height:17px;margin:0;cursor:pointer;accent-color:var(--brand)}
+.fk-time{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;background:var(--soft);border-radius:6px;padding:3px 7px}
+.fk-main{flex:1 1 130px;min-width:0}
+.fk-name{color:var(--brand);text-decoration:none;font-weight:600;font-size:13px;overflow-wrap:anywhere}
+.fk-name:hover{text-decoration:underline}
+.fk-meta{margin-top:1px}
+.fk-extra{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-left:auto}
+&[data-w=s] .fk-extra{margin-left:0;width:100%;padding-left:25px}
+.fk-empty{padding:20px 8px;text-align:center;color:var(--mute);font-size:13px}
+.fk-empty i{display:block;font-size:26px;color:var(--ok);margin-bottom:5px}
+.fk-jday{border:1px solid var(--line);border-radius:10px;margin-bottom:6px;overflow:hidden;background:#fff}
+.fk-jday.now{border-color:#c9dbff}
+.fk-jsum{display:flex;width:100%;align-items:center;justify-content:space-between;gap:6px;border:0;background:var(--soft);padding:9px 11px;font-family:inherit;font-size:13px;color:var(--ink);cursor:pointer;margin:0;text-align:left}
+.fk-jsum .chev{transition:transform .25s;color:var(--mute)}
+.fk-jsum[aria-expanded=true] .chev{transform:rotate(180deg)}
+.fk-mh{padding:9px 11px;background:var(--soft);font-size:13px}
+.fk-mi{display:flex;align-items:flex-start;gap:7px;padding:6px 0;border-bottom:1px solid var(--soft);font-size:12px}
+.fk-mi:last-child{border-bottom:0}
+.fk-mi i{color:var(--brand);margin-top:2px}
+.fk-mi a{color:var(--ink);text-decoration:none;overflow-wrap:anywhere}
+.fk-mi a:hover{color:var(--brand);text-decoration:underline}
+.fk-set{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:9px 10px;margin-bottom:8px}
+.fk-sw{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.fk-sw:last-child{margin-bottom:0}
+.fk-swatch{width:24px;height:24px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--line);cursor:pointer;padding:0;margin:0;transition:transform .15s}
+.fk-swatch:hover{transform:scale(1.12)}
+.fk-swatch.on{box-shadow:0 0 0 2px var(--ink)}
+.b1{fill:var(--mc1)}
+.b2{fill:var(--mc2)}
+.b3{fill:var(--brand-soft)}
+.acc{display:none}
+.fk-mascot[data-ac=glasses] .a-glasses,.fk-mascot[data-ac=cap] .a-cap,.fk-mascot[data-ac=bow] .a-bow{display:inline}
+.fk-crs{display:inline-block;border-radius:6px;padding:1px 7px;font-size:11px;font-weight:600;overflow-wrap:anywhere}
+.fk-group{margin:10px 0 6px}
+.fk-bdg2{border-radius:99px;padding:0 7px;font-size:11px}
+.fk-errbox{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#fef3f2;color:#b42318;border:1px solid #fecdca;border-radius:10px;padding:8px 10px;margin:8px 0;font-size:12px}
+.fk-errbox span{flex:1 1 140px}
+.fk-skel{display:grid;gap:7px;border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:6px}
+.fk-skel i{display:block;height:9px;border-radius:99px;background:linear-gradient(90deg,var(--soft) 25%,#e9edf3 50%,var(--soft) 75%);background-size:200% 100%;animation:fkShim 1.3s linear infinite}
+.fk-top{position:fixed;right:16px;bottom:16px;z-index:1000;width:40px;height:40px;border-radius:50%;border:0;background:var(--brand);color:#fff;font-size:18px;display:grid;place-items:center;cursor:pointer;box-shadow:0 4px 12px rgba(16,24,40,.25);padding:0;margin:0}
+.fk-streak{background:var(--soft);border-radius:10px;padding:9px 11px;margin-top:10px}
+.fk-sr{display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:4px}
+.fk-jbody{padding:9px 9px 3px;border-top:1px solid var(--line)}
+.fk-seg{display:flex;gap:6px;justify-content:center;margin-bottom:10px}
+.fk-donut{position:relative;width:min(100%,170px);margin:4px auto 10px}
+.fk-donut svg{display:block;width:100%;transform:rotate(-90deg)}
+.fk-donut circle{fill:none;stroke-width:14}
+.fk-donut .mid{position:absolute;inset:0;display:grid;place-content:center;text-align:center;line-height:1.1}
+.fk-donut .mid b{font-size:26px}
+.fk-donut .mid span{font-size:11px;color:var(--mute)}
+.fk-lg{display:flex;flex-wrap:wrap;gap:8px 14px;justify-content:center;font-size:12px;font-weight:600;margin-bottom:6px}
+.fk-lg i.sq{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px}
+.fk-brow{margin-bottom:10px}
+.fk-bl{font-size:12px;font-weight:600;margin-bottom:3px;overflow-wrap:anywhere}
+.fk-bl2{display:grid;grid-template-columns:1fr 24px;gap:6px;align-items:center;margin-bottom:3px}
+.fk-bl2 b{font-size:11px;text-align:right}
+.fk-bar{height:8px;border-radius:99px;background:var(--soft);overflow:hidden}
+.fk-bar i{display:block;height:100%;border-radius:99px}
+.fk-guide{display:flex;align-items:flex-start;gap:10px;margin:2px 0 8px}
+.fk-mbtn{flex:0 0 auto;width:52px;border:0;background:none;padding:0;margin:0;cursor:pointer;border-radius:14px;line-height:0;transition:width .25s,transform .12s;transform-origin:50% 100%}
+.fk-mbtn:active{transform:scale(.9)}
+.fk-guide.min .fk-mbtn{width:38px}
+.fk-guide.min .fk-bubble{display:none}
+.fk-bubble{position:relative;flex:1 1 0;min-width:0;background:var(--brand-soft);border:1px solid var(--brand-line);color:var(--brand-ink);border-radius:12px;padding:8px 28px 8px 11px;font-size:12px;line-height:1.5;min-height:38px;margin-top:4px;overflow-wrap:anywhere;transition:background .3s,border-color .3s,color .3s}
+.fk-bubble::before{content:'';position:absolute;left:-6px;top:14px;width:10px;height:10px;background:inherit;border:1px solid;border-color:inherit;border-right:0;border-top:0;transform:rotate(45deg)}
+.fk-guide.g-worry .fk-bubble{background:#fef3f2;border-color:#fecdca;color:#912018}
+.fk-guide.g-happy .fk-bubble{background:#ecfdf3;border-color:#abefc6;color:#067647}
+.fk-bmin{position:absolute;top:4px;right:4px;width:20px;height:20px;border:0;background:none;color:inherit;opacity:.55;cursor:pointer;border-radius:6px;font-size:15px;line-height:1;padding:0;margin:0}
+.fk-bmin:hover{opacity:1}
+.fk-mascot{overflow:visible;display:block;width:100%;height:auto;pointer-events:none}
+.fk-mascot *{transform-box:fill-box}
+.fk-mascot .eh,.fk-mascot .es,.fk-mascot .ex,.fk-mascot .br,.fk-mascot .sw,.fk-mascot .zz,.fk-mascot .sp,.fk-mascot .ch{opacity:0;transition:opacity .2s}
+.fk-mascot .eo{transition:opacity .2s;transform-origin:50% 50%;animation:fkBlink 4.6s infinite}
+.fk-mascot .pp{transform:translate(var(--px,0),var(--py,0));transition:transform .12s ease-out}
+.fk-mbtn:hover .ch{opacity:.85}
+.fk-bob{transform-origin:50% 100%;animation:fkBob 3.2s ease-in-out infinite}
+.m-happy .eo,.m-cheer .eo,.m-sleep .eo,.m-dizzy .eo{opacity:0}
+.m-happy .eh,.m-cheer .eh{opacity:1}
+.m-sleep .es,.m-dizzy .ex{opacity:1}
+.m-happy .ch,.m-cheer .ch,.m-dizzy .ch{opacity:.85}
+.m-worry .br{opacity:1}
+.m-worry .fk-bob{animation:fkBob 1.4s ease-in-out infinite}
+.m-worry .sw{opacity:1;animation:fkDrip 1.6s ease-in infinite}
+.m-sleep .fk-bob{animation:fkSleep 4.5s ease-in-out infinite}
+.m-sleep .zz{opacity:1;animation:fkZz 2.4s ease-in-out infinite}
+.m-dizzy .fk-bob{animation:fkDizzy .5s ease-in-out infinite}
+.m-cheer .fk-bob{animation:fkJump .55s ease-out 3}
+.m-cheer .wl,.fk-flap .wl{transform-origin:80% 15%;animation:fkWl .2s ease-in-out infinite alternate}
+.m-cheer .wr,.fk-flap .wr{transform-origin:20% 15%;animation:fkWr .2s ease-in-out infinite alternate}
+.fk-flap .wl,.fk-flap .wr{animation-iteration-count:6}
+.m-cheer .sp{opacity:1;animation:fkTw .6s ease-in-out infinite alternate}
+.fk-wig{animation:fkWig .5s ease}
+.fk-spin{animation:fkSpin .8s ease}
+.fk-tilt{animation:fkTilt 1s ease}
+.fk-pop{animation:fkPopB .3s ease}
+.fk-live::before{content:'';width:7px;height:7px;border-radius:50%;background:#12b76a;animation:fkPulse 1.4s infinite}
+.fk-in .fk-ag,.fk-in .fk-card,.fk-in .fk-group,.fk-in .fk-brow,.fk-in .fk-jday{animation:fkUp .38s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0) * 45ms)}
+.fk-in .fk-bar i{animation:fkBar .7s ease-out both}
+.fk-in .fk-arc{animation:fkArc .9s ease-out both}
+.fk-swap{animation:fkFade .3s ease both}
+.fk-popdone{animation:fkDone .6s ease}
+.fk-popdone .fk-chk{animation:fkTick .4s ease}
+.fk-cf{position:absolute;width:7px;height:10px;border-radius:2px;pointer-events:none;z-index:5;animation:fkCf .9s ease-out forwards}
+.fk-mascot[data-fit~=coffee] .d-coffee,.fk-mascot[data-fit~=glasses] .d-glasses,.fk-mascot[data-fit~=party] .d-party,.fk-mascot[data-fit~=scarf] .d-scarf{display:inline}
+.sc{fill:var(--scarf,#f79009)}
+.fk-steam{animation:fkSteam 2.2s ease-in-out infinite}
+.fk-fly{position:fixed;left:0;top:0;width:46px;z-index:1001;pointer-events:none;will-change:transform}
+.fk-ghost{position:fixed;left:0;top:0;margin:0;z-index:1000;pointer-events:none;box-shadow:0 8px 20px rgba(16,24,40,.22);will-change:transform,opacity}
+.fk-perch{position:absolute;left:0;top:0;width:30px;z-index:3;pointer-events:none}
+@keyframes fkSteam{0%,100%{opacity:.15}50%{opacity:.9}}
+@keyframes fkBob{0%,100%{transform:translateY(0) scaleY(1)}50%{transform:translateY(-2px) scaleY(1.02)}}
+@keyframes fkBlink{0%,90%,100%{transform:scaleY(1)}94%{transform:scaleY(.1)}}
+@keyframes fkJump{0%,100%{transform:translateY(0) rotate(0)}40%{transform:translateY(-10px) rotate(-4deg)}70%{transform:translateY(0) rotate(3deg)}}
+@keyframes fkWl{from{transform:rotate(0)}to{transform:rotate(30deg)}}
+@keyframes fkWr{from{transform:rotate(0)}to{transform:rotate(-30deg)}}
+@keyframes fkTw{from{transform:scale(.6);opacity:.5}to{transform:scale(1.15);opacity:1}}
+@keyframes fkSleep{0%,100%{transform:scaleY(.98)}50%{transform:scaleY(1.03)}}
+@keyframes fkZz{0%{opacity:0;transform:translate(0,4px)}50%{opacity:1}100%{opacity:0;transform:translate(3px,-6px)}}
+@keyframes fkDrip{0%{transform:translateY(-2px);opacity:0}20%{opacity:1}100%{transform:translateY(10px);opacity:0}}
+@keyframes fkDizzy{0%,100%{transform:rotate(-9deg)}50%{transform:rotate(9deg)}}
+@keyframes fkWig{0%{transform:rotate(0)}25%{transform:rotate(-10deg)}60%{transform:rotate(8deg)}100%{transform:rotate(0)}}
+@keyframes fkSpin{to{transform:rotate(360deg)}}
+@keyframes fkTilt{0%,100%{transform:rotate(0)}35%{transform:rotate(-9deg)}70%{transform:rotate(7deg)}}
+@keyframes fkPopB{from{opacity:.4;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+@keyframes fkUp{from{opacity:0;transform:translate(var(--dx,0),12px)}to{opacity:1;transform:none}}
+@keyframes fkFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes fkDone{0%{box-shadow:0 0 0 0 rgba(18,183,106,.45)}40%{transform:scale(1.02)}100%{box-shadow:0 0 0 10px rgba(18,183,106,0);transform:none}}
+@keyframes fkTick{0%{transform:scale(1)}45%{transform:scale(1.55)}100%{transform:scale(1)}}
+@keyframes fkPulse{0%{box-shadow:0 0 0 0 rgba(18,183,106,.5)}100%{box-shadow:0 0 0 7px rgba(18,183,106,0)}}
+@keyframes fkBell{0%,100%{transform:rotate(0)}10%,30%{transform:rotate(-14deg)}20%,40%{transform:rotate(14deg)}50%{transform:rotate(0)}}
+@keyframes fkCf{0%{opacity:1;transform:translate(0,0) rotate(0)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--r))}}
+@keyframes fkBar{from{width:0}}
+@keyframes fkShim{to{background-position:-200% 0}}
+@keyframes fkArc{from{stroke-dasharray:0 var(--c)}}
+.fk-mbtn{touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.fk-mbtn.fk-peek{animation:fkPeek 2.4s ease-in-out}
+.fk-flip{animation:fkFlip .8s ease-in-out}
+.fk-sneeze{animation:fkSneeze .9s ease}
+.fk-preen .wl{transform-origin:80% 15%;animation:fkPreen 1.4s ease-in-out 1}
+.fk-dance{animation:fkDance 1.8s ease-in-out}
+.fk-startle{animation:fkStartle .7s ease}
+.m-yawn .eo{opacity:0}
+.m-yawn .es{opacity:1}
+.m-yawn .bk{transform-origin:50% 0;animation:fkYawn 2.2s ease-in-out}
+.m-yawn .fk-bob{animation:fkSleep 2.2s ease-in-out}
+.m-panic .br{opacity:1}
+.m-panic .sw{opacity:1;animation:fkDrip .8s ease-in infinite}
+.m-panic .fk-bob{animation:fkShake .14s linear infinite}
+.m-elus .eo{opacity:0}
+.m-elus .eh{opacity:1}
+.m-elus .ch{opacity:1}
+.m-elus .fk-bob{animation:fkBob 1.6s ease-in-out infinite}
+.m-fokus .br{opacity:1}
+.m-fokus .fk-bob{animation:fkBob 6s ease-in-out infinite}
+.m-tenang .fk-bob{animation:fkBob 7s ease-in-out infinite}
+.m-siap .eo{opacity:0}
+.m-siap .eh{opacity:1}
+.m-siap .ch{opacity:.85}
+.m-siap .fk-bob{animation:fkJump .7s ease-out 6}
+.m-siap .wl{transform-origin:80% 15%;animation:fkWl .2s ease-in-out infinite alternate}
+.m-siap .wr{transform-origin:20% 15%;animation:fkWr .2s ease-in-out infinite alternate}
+.m-ngetik .fk-bob{animation:none}
+.m-ngetik .wl{transform-origin:80% 15%;animation:fkTypeL .16s ease-in-out infinite alternate}
+.m-ngetik .wr{transform-origin:20% 15%;animation:fkTypeR .16s ease-in-out infinite alternate .08s}
+.fk-mascot[data-fit~=bag] .d-bag,.fk-mascot[data-fit~=laptop] .d-laptop,.fk-mascot[data-flag="1"] .d-flag{display:inline}
+.fk-flagw{transform-origin:0 50%;animation:fkWave 1s ease-in-out infinite alternate}
+.fk-heart{position:absolute;color:#f04438;font-size:14px;pointer-events:none;z-index:5;animation:fkHeart 1.3s ease-out forwards}
+.fk-target{outline:2px dashed var(--brand);outline-offset:2px;background:var(--brand-soft)}
+.fk-focus{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:9px 11px;margin:0 0 8px}
+.fk-focus .fk-btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+@keyframes fkPeek{0%{transform:translateX(0) rotate(0)}30%{transform:translateX(-70px) rotate(-25deg)}65%{transform:translateX(-70px) rotate(-25deg)}85%{transform:translateX(-14px) rotate(-8deg)}100%{transform:translateX(0) rotate(0)}}
+@keyframes fkFlip{0%{transform:translateY(0) rotate(0)}40%{transform:translateY(-14px) rotate(180deg)}75%{transform:translateY(-4px) rotate(340deg)}100%{transform:translateY(0) rotate(360deg)}}
+@keyframes fkSneeze{0%,100%{transform:none}25%{transform:scale(1.06,.92) translateY(2px)}45%{transform:scale(.94,1.1) translateY(-6px) rotate(-6deg)}60%{transform:translateX(2px) rotate(4deg)}80%{transform:none}}
+@keyframes fkPreen{0%,100%{transform:rotate(0)}25%{transform:rotate(35deg)}50%{transform:rotate(8deg)}75%{transform:rotate(35deg)}}
+@keyframes fkDance{0%,100%{transform:translateX(0) rotate(0)}15%{transform:translateX(-5px) rotate(-8deg)}30%{transform:translateX(5px) rotate(8deg)}45%{transform:translateX(-5px) rotate(-8deg)}60%{transform:translateX(5px) rotate(8deg)}80%{transform:translateY(-8px) rotate(0)}}
+@keyframes fkStartle{0%{transform:translateY(0) scale(1)}30%{transform:translateY(-10px) scale(1.12)}60%{transform:translateY(0) scale(.96)}100%{transform:none}}
+@keyframes fkYawn{0%,100%{transform:scaleY(1)}40%,65%{transform:scaleY(2)}}
+@keyframes fkShake{0%{transform:translate(-1px,0) rotate(-2deg)}50%{transform:translate(1px,0) rotate(2deg)}100%{transform:translate(-1px,0) rotate(-2deg)}}
+@keyframes fkHeart{0%{opacity:0;transform:translate(0,0) scale(.6)}20%{opacity:1}100%{opacity:0;transform:translate(var(--dx,0),-42px) scale(1.2)}}
+@keyframes fkTypeL{from{transform:rotate(6deg)}to{transform:rotate(26deg)}}
+@keyframes fkTypeR{from{transform:rotate(-26deg)}to{transform:rotate(-6deg)}}
+@keyframes fkWave{from{transform:skewY(-8deg) scaleX(1)}to{transform:skewY(8deg) scaleX(.85)}}
+@media (prefers-reduced-motion:reduce){*,*::before{animation:none!important;transition:none!important}}`;
+    const prefiks = (css) =>
+      css.replace(/([^{}]+)\{/g, (m, s) =>
+        /^\s*(@|from|to|\d)/.test(s)
+          ? m
+          : s
+              .split(",")
+              .map((x) => {
+                x = x.trim();
+                return x[0] === "&"
+                  ? "#fk-panel" + x.slice(1)
+                  : "#fk-panel " + x;
+              })
+              .join(",") + "{",
+      );
+    if (!$("fk-style")) {
+      const st = document.createElement("style");
+      st.id = "fk-style";
+      st.textContent = prefiks(CSS);
+      document.head.appendChild(st);
+    }
+
+    // ===== MASKOT =====
+    const SVG_MASKOT = `<svg id="fk-mascot" class="fk-mascot m-neutral" viewBox="0 0 64 64" aria-hidden="true">
+<ellipse cx="32" cy="61.5" rx="14" ry="2.3" fill="#1b2430" opacity=".12"/>
+<g class="fk-bob">
+<path d="M16 19 L13 5 L27 13 Z" class="b2"/><path d="M48 19 L51 5 L37 13 Z" class="b2"/>
+<ellipse cx="25" cy="59" rx="5" ry="2.2" fill="#f79009"/><ellipse cx="39" cy="59" rx="5" ry="2.2" fill="#f79009"/>
+<ellipse cx="32" cy="37" rx="22" ry="22" class="b1"/><ellipse cx="32" cy="44" rx="13" ry="14" class="b3"/>
+<g class="wl"><ellipse cx="10.5" cy="41" rx="5" ry="10" class="b2"/></g>
+<g class="wr"><ellipse cx="53.5" cy="41" rx="5" ry="10" class="b2"/></g>
+<circle cx="23" cy="29" r="8.2" fill="#fff"/><circle cx="41" cy="29" r="8.2" fill="#fff"/>
+<g class="eo"><g class="pp"><circle cx="24" cy="30" r="3.7" fill="#1b2430"/><circle cx="40" cy="30" r="3.7" fill="#1b2430"/>
+<circle cx="25.3" cy="28.6" r="1.1" fill="#fff"/><circle cx="41.3" cy="28.6" r="1.1" fill="#fff"/></g></g>
+<g class="eh" fill="none" stroke="#1b2430" stroke-width="2.4" stroke-linecap="round"><path d="M18.5 31 Q23 24.5 27.5 31"/><path d="M36.5 31 Q41 24.5 45.5 31"/></g>
+<g class="es" fill="none" stroke="#1b2430" stroke-width="2.4" stroke-linecap="round"><path d="M18.5 29 Q23 33.5 27.5 29"/><path d="M36.5 29 Q41 33.5 45.5 29"/></g>
+<g class="ex" fill="none" stroke="#1b2430" stroke-width="2.2" stroke-linecap="round"><path d="M19.5 26l7 7M26.5 26l-7 7"/><path d="M37.5 26l7 7M44.5 26l-7 7"/></g>
+<g class="br" fill="none" stroke="#1b2430" stroke-width="2.2" stroke-linecap="round"><path d="M16.5 18.5 L28.5 22.5"/><path d="M47.5 18.5 L35.5 22.5"/></g>
+<path class="bk" d="M28.5 36 L35.5 36 L32 41.5 Z" fill="#f79009"/>
+<g class="acc a-glasses" fill="none" stroke="#1b2430" stroke-width="1.6"><circle cx="23" cy="29" r="9"/><circle cx="41" cy="29" r="9"/></g>
+<g class="acc a-cap"><path d="M19 15 L32 9 L45 15 L32 21 Z" fill="#1b2430"/><path d="M25 18 v5 q7 4 14 0 v-5" fill="#2b3544"/><path d="M45 15 v8" stroke="#fdb022" stroke-width="1.4"/><circle cx="45" cy="24" r="1.6" fill="#fdb022"/></g>
+<g class="acc a-bow"><path d="M32 53 L25 49 L25 57 Z M32 53 L39 49 L39 57 Z" fill="#f04438"/><circle cx="32" cy="53" r="2.2" fill="#d92d20"/></g>
+<g class="acc d-glasses" fill="none" stroke="#1b2430" stroke-width="1.6"><circle cx="23" cy="29" r="9"/><circle cx="41" cy="29" r="9"/></g>
+<g class="acc d-party"><path d="M32 1.5 L24.5 17 Q32 20 39.5 17 Z" fill="#7a5af8"/><path d="M28.3 10.5 L35.7 10.5 M26.6 14 L37.4 14" stroke="#fdb022" stroke-width="1.4" stroke-linecap="round"/><circle cx="32" cy="1.5" r="2" fill="#fdb022"/></g>
+<g class="acc d-scarf"><path class="sc" d="M13.5 46 Q32 55 50.5 46 L50.5 51.5 Q32 61 13.5 51.5 Z"/><path class="sc" d="M42 55 L47 63 L40.5 64 L37.5 57.5 Z"/><path d="M13.5 50 Q32 59 50.5 50" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="1.2"/></g>
+<g class="acc d-coffee"><path d="M49.5 44 h9.5 v6 q0 4.5 -4.75 4.5 q-4.75 0 -4.75 -4.5z" fill="#fff" stroke="#1b2430" stroke-width="1.2" stroke-linejoin="round"/><path d="M59 46 q3.2 0 3.2 2.8 q0 2.8 -3.2 2.8" fill="none" stroke="#1b2430" stroke-width="1.2"/><path class="fk-steam" d="M52 42 q1.4 -2 0 -3.8 M56 42 q1.4 -2 0 -3.8" fill="none" stroke="#98a2b3" stroke-width="1" stroke-linecap="round"/></g>
+<g class="acc d-bag"><path d="M14 41 Q22 44 24 54" fill="none" stroke="#c46b05" stroke-width="2" stroke-linecap="round"/><rect x="1.5" y="38" width="12" height="16" rx="3.5" fill="#f79009"/><rect x="3.5" y="42" width="8" height="4.5" rx="1.5" fill="#fff" opacity=".35"/><rect x="1.5" y="38" width="12" height="16" rx="3.5" fill="none" stroke="#c46b05" stroke-width="1"/></g>
+<g class="acc d-laptop"><rect x="19" y="51" width="26" height="11" rx="1.6" fill="#344054"/><rect x="21" y="52.6" width="22" height="7.4" rx="1" fill="#7cc4ff"/><path d="M16 62 h32 l-2.4 2.2 h-27.2z" fill="#98a2b3"/></g>
+<g class="acc d-flag"><path d="M58.5 20 V47" stroke="#98a2b3" stroke-width="1.5" stroke-linecap="round"/><g class="fk-flagw"><path d="M58.5 20 L66 22.8 L58.5 25.6 Z" fill="#f04438"/></g></g>
+<ellipse class="ch" cx="15.5" cy="38" rx="3.2" ry="2" fill="#ff9ab0"/><ellipse class="ch" cx="48.5" cy="38" rx="3.2" ry="2" fill="#ff9ab0"/>
+<path class="sw" d="M51 17 q3.5 5 0 7.5 q-3.5 -2.5 0 -7.5z" fill="#7cc4ff"/>
+<g class="zz" fill="#667085" font-family="sans-serif" font-weight="700"><text x="46" y="14" font-size="9">z</text><text x="52" y="7" font-size="7">z</text></g>
+</g>
+<g class="sp" fill="#fdb022"><path transform="translate(1,3)" d="M5 0 L6.4 3.6 L10 5 L6.4 6.4 L5 10 L3.6 6.4 L0 5 L3.6 3.6Z"/>
+<path transform="translate(52,2)" d="M4 0 L5.1 2.9 L8 4 L5.1 5.1 L4 8 L2.9 5.1 L0 4 L2.9 2.9Z"/>
+<path transform="translate(55,26)" d="M3 0 L3.9 2.1 L6 3 L3.9 3.9 L3 6 L2.1 3.9 L0 3 L2.1 2.1Z"/></g></svg>`;
+
+    // ===== KERANGKA =====
+    const TABS = [
+      ["tugas", "list-task", "Tugas"],
+      ["materi", "journal-bookmark", "Materi"],
+      ["jadwal", "mortarboard", "Jadwal"],
+      ["grafik", "pie-chart", "Grafik"],
+    ];
+    panel.innerHTML = `
+<div class="fk-head"><div class="fk-title"><span class="fk-logo">${ic("journal-check")}</span>Tugas &amp; Materi</div><button type="button" class="fk-btn" id="fk-set" aria-label="Pengaturan" title="Warna tema dan aksesori">${ic("gear")}</button></div>
+<div class="fk-tools" hidden><select id="fk-kelas" hidden></select><select id="fk-shift" hidden></select></div>
+<div id="fk-settings" class="fk-set" hidden>
+<div class="fk-h">${ic("palette")} Warna tema</div><div class="fk-sw">${Object.keys(
+      TEMA,
+    )
+      .map(
+        (k) =>
+          `<button type="button" class="fk-swatch" data-tema="${k}" style="background:${TEMA[k][0]}" title="${k}" aria-label="Tema ${k}"></button>`,
+      )
+      .join("")}</div>
+<div class="fk-h">${ic("emoji-smile")} Aksesori ${NAMA_MASKOT}</div><div class="fk-sw">${AKSESORI.map((a) => `<button type="button" class="fk-btn" data-aks="${a[0]}">${a[1]}</button>`).join("")}</div>
+<div class="fk-h">${ic("lightning-charge")} Gerakan iseng &amp; tidur ${NAMA_MASKOT}</div><div class="fk-sw"><button type="button" class="fk-btn" id="fk-iseng" data-iseng></button></div></div>
+<div id="fk-status" class="fk-sub"></div>
+<div id="fk-guide" class="fk-guide"><button type="button" id="fk-mascot-btn" class="fk-mbtn" title="${NAMA_MASKOT}, pemandumu" aria-label="Ketuk ${NAMA_MASKOT} untuk saran berikutnya">${SVG_MASKOT}</button>
+<div id="fk-bubble" class="fk-bubble" role="status"><span id="fk-btext"></span><button type="button" id="fk-gmin" class="fk-bmin" aria-label="Kecilkan pemandu" title="Kecilkan">&minus;</button></div></div>
+<div id="fk-urgent"></div>
+<div id="fk-focuswrap"></div>
+<div class="fk-tabs" role="tablist">${TABS.map((t) => {
+      const b = `<button type="button" class="fk-tab" data-tab="${t[0]}">${ic(t[1])}<span>${t[2]}</span></button>`;
+      return t[0] === "tugas"
+        ? `<div class="fk-tabw">${b}<input type="checkbox" id="fk-all" class="fk-allbox" title="Semua kelas" aria-label="Tampilkan tugas semua kelas"></div>`
+        : b;
+    }).join("")}</div>
+<section id="fk-v-tugas"><div class="fk-tools"><div class="fk-searchbox">${ic("search")}<input type="search" id="fk-q" placeholder="Cari tugas atau matkul..."></div></div>
+<div class="fk-tools"><button type="button" class="fk-btn go" id="fk-notif"></button>
+<button type="button" class="fk-btn" id="fk-copy">${ic("clipboard")} Salin</button>
+<button type="button" class="fk-btn wa" id="fk-wa">${ic("whatsapp")} WhatsApp</button></div>
+<div id="fk-err"></div><div id="fk-chips" class="fk-chips"></div><div id="fk-list"></div><div id="fk-cekwrap"></div><div id="fk-nodatewrap"></div><div id="fk-donewrap"></div></section>
+<section id="fk-v-materi"><div id="fk-materi"></div></section>
+<section id="fk-v-jadwal"><div id="fk-jadwal"></div></section>
+<section id="fk-v-grafik"><div id="fk-grafik"></div></section>
+<button type="button" class="fk-top" id="fk-top" hidden aria-label="Kembali ke atas" title="Kembali ke atas">${ic("arrow-up")}</button>`;
+
+    const selK = $("fk-kelas"),
+      selS = $("fk-shift"),
+      inQ = $("fk-q"),
+      all = $("fk-all"),
+      btnN = $("fk-notif"),
+      statEl = $("fk-status"),
+      materiEl = $("fk-materi"),
+      grafikEl = $("fk-grafik"),
+      guide = $("fk-guide"),
+      gSvg = $("fk-mascot"),
+      gText = $("fk-btext"),
+      gBubble = $("fk-bubble"),
+      mBtn = $("fk-mascot-btn");
+
+    // ===== STATE =====
+    const done = getObj("fk_done"),
+      notified = getObj("fk_notif"),
+      proses = getObj("fk_proses"),
+      kirim = getObj("fk_kirim"),
+      belum = getObj("fk_belum"),
+      tdk = getObj("fk_tdk"),
+      rek = getRek();
+    // Migrasi: ID lama (url|nama) diubah ke ID stabil (cmid) supaya centang lama tidak hilang
+    (function migrasi() {
+      [
+        [done, "fk_done"],
+        [proses, "fk_proses"],
+        [kirim, "fk_kirim"],
+        [belum, "fk_belum"],
+        [tdk, "fk_tdk"],
+        [notified, "fk_notif"],
+        [rek, "fk_rek"],
+      ].forEach((p) => {
+        const o = p[0];
+        let u = false;
+        Object.keys(o).forEach((k) => {
+          const i = k.indexOf("|");
+          if (i < 0) return;
+          const m = k.slice(0, i).match(MOD_RE);
+          if (!m) return;
+          const n = "cm" + m[1];
+          if (o[n] === undefined) o[n] = o[k];
+          delete o[k];
+          u = true;
+        });
+        if (u) store.set(p[1], JSON.stringify(o));
+      });
+    })();
+    // Grup tugas yang dilipat (1 = tertutup). Saat dimuat, hanya "Minggu ini" ("minggu") yang terbuka.
+    let tutup = {
+      ter: 1,
+      hari: 1,
+      besok: 1,
+      lain: 1,
+      tbd: 1,
+    };
+    let showDone = false,
+      showNodate = false,
+      showCek = false,
+      sesiHabis = false,
+      tab = store.get("fk_tab", "tugas"),
+      chartMode = store.get("fk_chart", "donut"),
+      gMin = store.get("fk_gmin", "0") === "1",
+      daftarMateri = [],
+      justDone = null,
+      jdOpen = null,
+      timelineGagal = false,
+      extraGagal = 0,
+      tema = store.get("fk_tema", "biru"),
+      aks = store.get("fk_ac", "polos"),
+      cache = [],
+      extra = [],
+      extraStatus = "idle",
+      lastSemua = [],
+      gMsg = "",
+      gMood = "neutral",
+      gTemp = 0,
+      gTimer = null,
+      gTyp = null,
+      tipIdx = 0,
+      taps = [];
+    const animNext = {
+      tugas: true,
+      materi: true,
+      grafik: true,
+    };
+    // Interaksi Hoot
+    let isengOn = store.get("fk_iseng", "1") === "1",
+      gTidur = false,
+      menguap = false,
+      lastAct = Date.now(),
+      tahan = false,
+      drag = null,
+      holdT = null,
+      elusT = null,
+      skipClick = false,
+      seret = null,
+      perchPaksa = null,
+      perchPaksaT = null;
+    let fokus = {
+      fase: "",
+      akhir: 0,
+      total: 0,
+      sesi: 0,
+      hari: "",
+    };
+    try {
+      const o = JSON.parse(store.get("fk_focus", "null"));
+      if (o) {
+        fokus = Object.assign(fokus, o);
+        if (fokus.hari !== new Date().toDateString()) fokus.sesi = 0;
+        if (fokus.fase && fokus.akhir <= Date.now()) {
+          fokus.fase = "";
+          fokus.akhir = 0;
+        }
+      }
+    } catch (e) {}
+    if (!TABS.some((t) => t[0] === tab)) tab = "tugas";
+
+    const isi = (sel, arr, label, key, def) => {
+      sel.innerHTML = arr
+        .map((k) => `<option value="${k}">${label} ${k}</option>`)
+        .join("");
+      sel.value = store.get(key, def);
+      if (!sel.value) sel.value = def;
+    };
+    isi(selK, KELAS_LIST, "Kelas", "fk_kelas", DEFAULT_KELAS);
+    isi(selS, SHIFT_LIST, "Shift", "fk_shift", DEFAULT_SHIFT);
+    all.checked = store.get("fk_all", "0") === "1";
+
+    // ===== FILTER =====
+    // Membaca kelas & shift dari teks. Contoh yang dikenali: "1A", "TRPL 1A MALAM", "kelas C Malam", "(B dan C Malam)",
+    // "kelas A, B, C Malam", "Malam B", "Malam (A, B, C)", "(Malam)". Hasilnya disimpan agar tidak dihitung ulang.
+    const memoKelas = new Map();
+
+    function infoKelas(t) {
+      t = String(t || "");
+      const hit = memoKelas.get(t);
+      if (hit) return hit;
+      const s = t
+        .replace(
+          /\b(malam|pagi)\b/gi,
+          (m) => m[0].toUpperCase() + m.slice(1).toLowerCase(),
+        )
+        .replace(/\b(kelas|kls|class)\b/gi, "kelas")
+        .replace(/\b(dan|atau)\b/gi, (m) => m.toLowerCase());
+      const L = "[A-D](?:\\s*(?:,|dan|&|/|atau|-)\\s*[A-D])*",
+        E = "(?![A-Za-z0-9])",
+        B = "(?:^|[^A-Za-z0-9])";
+      const hur = [],
+        shf = [],
+        kel = [];
+      const tambah = (arr, v) => {
+        if (arr.indexOf(v) < 0) arr.push(v);
+      };
+      const huruf = (txt) =>
+        (txt.match(/[A-D]/g) || []).forEach((h) => tambah(hur, h));
+      let m;
+      const p1 = new RegExp(
+        B + "(" + L + ")" + E + "\\s*\\)?\\s*(?:Malam|Pagi)\\b",
+        "g",
+      ); // "(B dan C Malam)"
+      while ((m = p1.exec(s))) huruf(m[1]);
+      const p2 = new RegExp(
+        "\\b(?:Malam|Pagi)\\s*[\\(\\-:]?\\s*(" + L + ")" + E,
+        "g",
+      ); // "Malam B", "Malam (A, B, C)"
+      while ((m = p2.exec(s))) huruf(m[1]);
+      const p3 = new RegExp("\\bkelas\\s*\\(?\\s*(" + L + ")" + E, "g"); // "kelas C", "kelas A, B, C"
+      while ((m = p3.exec(s))) huruf(m[1]);
+      const p4 = new RegExp(B + "([1-4])([A-Da-d])" + E, "g"); // "1A", "TRPL 1A"
+      while ((m = p4.exec(s))) {
+        const k = m[1] + m[2].toUpperCase();
+        if (KELAS_LIST.indexOf(k) >= 0) tambah(kel, k);
+      }
+      const p5 = /\b(Malam|Pagi)\b/g;
+      while ((m = p5.exec(s))) {
+        const v = SHIFT_LIST.find(
+          (x) => x.toLowerCase() === m[1].toLowerCase(),
+        );
+        if (v) tambah(shf, v);
+      }
+      const lain = PRODI_LAIN.some((p) =>
+        new RegExp(
+          "(?:^|[^A-Za-z0-9])" +
+            p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") +
+            "(?![A-Za-z0-9])",
+          "i",
+        ).test(t),
+      );
+      const r = {
+        kel,
+        hur,
+        shf,
+        lain,
+      };
+      if (memoKelas.size > 3000) memoKelas.clear();
+      memoKelas.set(t, r);
+      return r;
+    }
+
+    function cocokInfo(i) {
+      const kel = selK.value.toUpperCase(),
+        huruf = kel.slice(-1);
+      if (i.lain) return false;
+      if (i.kel.length && i.kel.indexOf(kel) < 0) return false;
+      if (i.hur.length && i.hur.indexOf(huruf) < 0) return false;
+      if (i.shf.length && i.shf.indexOf(selS.value) < 0) return false;
+      return true;
+    }
+    const cocokTeks = (t) => all.checked || cocokInfo(infoKelas(t));
+    const milikku = (d) => cocokTeks(d.teks);
+    const isDone = (d) => !!(done[d.id] || d.selesai || kirim[d.id]);
+    const lolos = (d) => {
+      if (!milikku(d)) return false;
+      const q = inQ.value.trim().toLowerCase();
+      return (
+        !q ||
+        (d.nama + " " + d.course + " " + d.desc).toLowerCase().indexOf(q) >= 0
+      );
+    };
+
+    // ===== DATA TIMELINE MOODLE =====
+    const BULAN = {
+      jan: 0,
+      feb: 1,
+      mar: 2,
+      apr: 3,
+      may: 4,
+      mei: 4,
+      jun: 5,
+      jul: 6,
+      aug: 7,
+      agu: 7,
+      sep: 8,
+      oct: 9,
+      okt: 9,
+      nov: 10,
+      dec: 11,
+      des: 11,
+    };
+    const blokNative = () =>
+      document.querySelector('[data-block="timeline"]') ||
+      document.querySelector(".block_timeline");
+    const aturNative = () => {
+      const b = blokNative();
+      if (b) b.style.display = "none";
+    };
+
+    function cariTanggal(t) {
+      const m = t.match(/(\d{1,2})\s+([A-Za-z]{3,})\s+(\d{4})/);
+      const b = m && BULAN[m[2].slice(0, 3).toLowerCase()];
+      return b === undefined || !m
+        ? null
+        : {
+            y: +m[3],
+            m: b,
+            d: +m[1],
+          };
+    }
+
+    function tanggalHeading(el) {
+      for (let n = el; n && n !== document.body; n = n.parentElement)
+        for (
+          let p = n.previousElementSibling;
+          p;
+          p = p.previousElementSibling
+        ) {
+          const t = bersih(p.textContent);
+          const d = t.length < 60 && cariTanggal(t);
+          if (d) return d;
+        }
+      return null;
+    }
+
+    function bacaData() {
+      const b = blokNative();
+      const items = b
+        ? b.querySelectorAll('[data-region="event-list-item"]')
+        : [];
+      return Array.prototype.map.call(items, (it) => {
+        const teks = bersih(it.textContent);
+        let nama = "",
+          url = "#";
+        Array.prototype.some.call(it.querySelectorAll("a[href]"), (a) => {
+          const tx = bersih(a.textContent);
+          if (/\bbtn\b/.test(a.className) || !tx) return false;
+          nama = tx;
+          url = a.href;
+          return true;
+        });
+        const btn = it.querySelector(".btn[href]");
+        const aksi = btn
+          ? {
+              name: bersih(btn.textContent),
+              url: btn.href,
+            }
+          : null;
+        const wadah = it.closest('[data-region="course-events-container"]');
+        const hc = wadah && wadah.querySelector("h3,h4,h5,h6");
+        const course = hc ? bersih(hc.textContent) : "";
+        const wj = teks.match(/(\d{1,2}):(\d{2})/),
+          tg = tanggalHeading(it);
+        const ts = tg
+          ? new Date(
+              tg.y,
+              tg.m,
+              tg.d,
+              wj ? +wj[1] : 23,
+              wj ? +wj[2] : 59,
+              0,
+            ).getTime()
+          : null;
+        let desc = teks;
+        [wj && wj[0], nama, aksi && aksi.name].forEach((x) => {
+          if (x) desc = desc.replace(x, "");
+        });
+        desc = bersih(desc.replace(/Overdue/i, ""));
+        return {
+          id: idStabil(url, nama || teks),
+          ts,
+          nama: nama || teks,
+          url,
+          course,
+          desc,
+          aksi,
+          teks: teks + " " + course,
+        };
+      });
+    }
+
+    // ===== LABEL SISA WAKTU =====
+    const TONE = {
+      red: ["#fee4e2", "#b42318", "#f04438"],
+      orange: ["#ffead5", "#b54708", "#f79009"],
+      yellow: ["#fef0c7", "#93370d", "#fdb022"],
+      blue: ["#dbe8ff", "#1849a9", "#2f6fed"],
+      green: ["#d3f8df", "#067647", "#12b76a"],
+      grey: ["#eef0f3", "#475467", "#adb5bd"],
+    };
+    const mk = (t, c, i) => ({
+      t,
+      bg: TONE[c][0],
+      fg: TONE[c][1],
+      bar: TONE[c][2],
+      ic: i,
+    });
+
+    function label(ts) {
+      if (ts === null) return mk("Belum ada tanggal", "grey", "calendar-x");
+      const diff = ts - Date.now();
+      if (diff < 0) {
+        const hl = Math.floor(-diff / 864e5),
+          jl = Math.floor(-diff / 36e5);
+        return mk(
+          hl >= 1
+            ? `Terlewat ${hl} hari lalu`
+            : jl >= 1
+              ? `Terlewat ${jl} jam lalu`
+              : "Baru saja terlewat",
+          "red",
+          "exclamation-triangle-fill",
+        );
+      }
+      const hk = hariKalender(ts),
+        jam = Math.floor(diff / 36e5);
+      if (hk === 0)
+        return mk(
+          diff < 36e5
+            ? "Kurang dari 1 jam lagi"
+            : new Date(ts).getHours() >= 18
+              ? `Nanti malam (${jam} jam lagi)`
+              : `Hari ini (${jam} jam lagi)`,
+          "red",
+          "hourglass-split",
+        );
+      if (hk === 1) return mk("Besok", "orange", "sunrise");
+      return mk(
+        hk + " hari lagi",
+        hk <= 3 ? "yellow" : hk <= 7 ? "blue" : "green",
+        hk <= 3
+          ? "calendar-event"
+          : hk <= 7
+            ? "calendar-week"
+            : "calendar-check",
+      );
+    }
+
+    // ===== JADWAL KULIAH & DOSEN =====
+    const HARI = [
+      "minggu",
+      "senin",
+      "selasa",
+      "rabu",
+      "kamis",
+      "jumat",
+      "sabtu",
+    ];
+    const HARI_PENDEK = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
+    const HARI_TAMPIL = [
+      "Minggu",
+      "Senin",
+      "Selasa",
+      "Rabu",
+      "Kamis",
+      "Jum'at",
+      "Sabtu",
+    ];
+
+    const dosenMap = {};
+    DOSEN_DATA.forEach((l) => {
+      const p = l.split("|");
+      dosenMap[p[1].toLowerCase()] = {
+        nik: bersih(p[0]),
+        nama: bersih(p[2]),
+        hp: p[3] || "",
+      };
+    });
+
+    function waUrl(hp) {
+      let d = String(hp || "").replace(/\D/g, "");
+      if (!d) return "";
+      d =
+        d[0] === "0" ? "62" + d.slice(1) : d.indexOf("62") === 0 ? d : "62" + d;
+      return WA + d;
+    }
+    // Cari tautan course: dari halaman, lalu dari daftar course tersimpan, terakhir pencarian course
+    const linkKode = (kode, nama) => {
+      const a = Array.prototype.find.call(
+        document.querySelectorAll('a[href*="/course/view.php?id="]'),
+        (x) =>
+          !panel.contains(x) &&
+          x.textContent.toUpperCase().indexOf(kode.toUpperCase()) >= 0,
+      );
+      if (a) return a.href;
+      let lst = [];
+      try {
+        const o = JSON.parse(store.get("fk_courses", "null"));
+        if (o && o.a) lst = o.a;
+      } catch (e) {}
+      const cocok = lst.filter((c) => cocokMatkul(c.nama, kode + " " + nama));
+      const pil = cocok.find((c) => cocokTeks(c.nama)) || cocok[0];
+      return pil
+        ? basis() + "/course/view.php?id=" + pil.id
+        : basis() + "/course/search.php?search=" + encodeURIComponent(kode);
+    };
+    let jadwalCache = null,
+      linkTs = 0;
+
+    function bacaJadwal() {
+      if (!jadwalCache) {
+        jadwalCache = {};
+        Object.keys(JADWAL).forEach((h) => {
+          jadwalCache[h] = JADWAL[h]
+            .map((r) => {
+              const online = /^online$/i.test(r[5]),
+                ds = String(r[4])
+                  .split("/")
+                  .map(
+                    (x) =>
+                      dosenMap[x.trim().toLowerCase()] || {
+                        nama: x.trim(),
+                        nik: "",
+                        hp: "",
+                      },
+                  );
+              return {
+                s: menit(r[0]),
+                e: menit(r[1]),
+                kode: r[2],
+                nama: r[3],
+                dosen: ds.map((d) => d.nama).join(" / "),
+                nik: ds
+                  .map((d) => d.nik)
+                  .filter(Boolean)
+                  .join(", "),
+                wa: ds
+                  .map((d) => ({
+                    nama: d.nama,
+                    url: waUrl(d.hp),
+                  }))
+                  .filter((w) => w.url),
+                ruang: online ? "" : r[5],
+                tipe: r[6] ? "Praktikum" : online ? "Online" : "Tatap muka",
+                link: "",
+              };
+            })
+            .sort((x, y) => x.s - y.s);
+        });
+      }
+      if (Date.now() - linkTs > 5000) {
+        linkTs = Date.now();
+        Object.keys(jadwalCache).forEach((h) =>
+          jadwalCache[h].forEach((k) => {
+            if (!k.link || /course\/search\.php/.test(k.link))
+              k.link = linkKode(k.kode, k.nama);
+          }),
+        );
+      }
+      return jadwalCache;
+    }
+    const durasi = (m) =>
+      m >= 60
+        ? Math.floor(m / 60) +
+          " jam" +
+          (m % 60 ? " " + (m % 60) + " menit" : "")
+        : m + " menit";
+
+    // Satu baris kuliah, dipakai di tab Jadwal. now = menit sekarang jika hari ini, selain itu null.
+    function barisKuliah(k, ix, now, full) {
+      const jalan = now !== null && now >= k.s && now < k.e,
+        lewat = now !== null && now >= k.e;
+      const cls =
+        k.tipe === "Praktikum" ? "pr" : k.tipe === "Tatap muka" ? "tm" : "";
+      const meta = [
+        k.kode,
+        k.tipe,
+        k.ruang && "Ruang " + k.ruang,
+        k.dosen && "Dosen " + k.dosen,
+        full && k.nik && "NIDN/NIK " + k.nik,
+        full && durasi(k.e - k.s),
+      ]
+        .filter(Boolean)
+        .join(" · ");
+      const nm = k.link
+        ? `<a class="fk-name" href="${esc(k.link)}">${esc(k.nama)}</a>`
+        : esc(k.nama);
+      const aksi =
+        (jalan
+          ? '<span class="fk-tag fk-live" style="background:#d3f8df;color:#067647">Sedang berlangsung</span>'
+          : "") +
+        (full
+          ? k.wa
+              .map(
+                (w) =>
+                  `<a class="fk-btn wa" href="${esc(w.url)}" target="_blank" rel="noopener noreferrer">${ic("whatsapp")} WA ${k.wa.length > 1 ? esc(w.nama.split(/[ ,]/)[0]) : "dosen"}</a>`,
+              )
+              .join("")
+          : "");
+      return (
+        `<div class="fk-ag${lewat ? " past" : ""}" style="--i:${Math.min(ix, 10)}"><div class="t">${hhmm(k.s)}<small>${hhmm(k.e)}</small></div>` +
+        `<div class="c ${cls}"${k.link ? ` data-href="${esc(k.link)}" style="cursor:pointer" title="Buka course"` : ""}><div class="nm">${nm}</div><div class="fk-sub">${esc(meta)}</div>${aksi ? `<div class="fk-row">${aksi}</div>` : ""}</div></div>`
+      );
+    }
+
+    function renderJadwal() {
+      const jd = bacaJadwal(),
+        now = new Date(),
+        mnt = now.getHours() * 60 + now.getMinutes(),
+        hariIni = HARI[now.getDay()];
+      if (jdOpen === null) jdOpen = jd[hariIni] ? hariIni : "senin";
+      const html = [
+        "senin",
+        "selasa",
+        "rabu",
+        "kamis",
+        "jumat",
+        "sabtu",
+        "minggu",
+      ]
+        .filter((h) => jd[h] && jd[h].length)
+        .map((h) => {
+          const ini = h === hariIni,
+            buka = jdOpen === h;
+          return (
+            `<div class="fk-jday${ini ? " now" : ""}"><button type="button" class="fk-jsum" data-day="${h}" aria-expanded="${buka}">` +
+            `<span><strong>${HARI_TAMPIL[HARI.indexOf(h)]}</strong> <span class="fk-sub">${jd[h].length} sesi</span>` +
+            `${ini ? ' <span class="fk-tag" style="background:#e8f0ff;color:#1f55c4">Hari ini</span>' : ""}</span>${ic("chevron-down", "chev")}</button>` +
+            (buka
+              ? `<div class="fk-jbody">${jd[h].map((k, i) => barisKuliah(k, i, ini ? mnt : null, true)).join("")}</div>`
+              : "") +
+            "</div>"
+          );
+        })
+        .join("");
+      $("fk-jadwal").innerHTML =
+        html ||
+        `<div class="fk-empty">${ic("info-circle")}Belum ada jadwal kuliah.</div>`;
+    }
+
+    // ===== TUGAS =====
+    const skel = (n) =>
+      '<div class="fk-skel"><i style="width:55%"></i><i style="width:90%"></i><i style="width:35%"></i></div>'.repeat(
+        n,
+      );
+    // Warna tetap per matkul, diturunkan dari kode matkul
+    function warnaMatkul(course) {
+      const k = (String(course).match(/[A-Za-z]{2,}\d{2,}/) || [
+        bersih(String(course).split("/")[0]),
+      ])[0];
+      let h = 0;
+      for (let i = 0; i < k.length; i++) h = (h * 31 + k.charCodeAt(i)) % 12;
+      h *= 30;
+      return {
+        bar: `hsl(${h},65%,48%)`,
+        bg: `hsl(${h},85%,93%)`,
+        fg: `hsl(${h},60%,28%)`,
+      };
+    }
+
+    function pesanError() {
+      const m = sesiHabis
+        ? "Sesi login Moodle berakhir. Muat ulang halaman lalu login lagi. Data lama tetap ditampilkan."
+        : timelineGagal
+          ? "Data tugas Moodle tidak bisa dimuat di halaman ini."
+          : extraGagal
+            ? `Gagal memuat ${extraGagal} course dari server.`
+            : "";
+      return m
+        ? `<div class="fk-errbox">${ic("wifi-off")}<span>${m}</span><button type="button" class="fk-btn" data-retry>${ic("arrow-clockwise")} Coba lagi</button></div>`
+        : "";
+    }
+
+    function kartu(d, i) {
+      const cek = d.jenis === "cek",
+        tt = d.ts !== null ? d.ts : cek ? d.tsAsli : null,
+        L = cek ? mk("Perlu dicek", "grey", "question-circle") : label(d.ts),
+        sd = isDone(d),
+        pr = !sd && !!proses[d.id],
+        w = warnaMatkul(d.course || d.nama);
+      const tombol =
+        d.aksi && d.aksi.name
+          ? `<a class="fk-btn" href="${esc(d.aksi.url)}">${ic("box-arrow-up-right")} ${esc(d.aksi.name)}</a>`
+          : "";
+      const mulai = sd
+        ? ""
+        : `<button type="button" class="fk-btn${pr ? " go" : ""}" data-start="${esc(d.id)}">${ic(pr ? "hourglass-split" : "play-circle")} ${pr ? "Dikerjakan" : "Mulai"}</button>`;
+      const tgl =
+        tt === null || hariKalender(tt) === 0
+          ? ""
+          : new Date(tt).toLocaleDateString("id-ID", {
+              weekday: "short",
+              day: "numeric",
+              month: "short",
+            }) + " · ";
+      return (
+        `<div class="fk-card${sd ? " done" : ""}" style="border-left-color:${w.bar};--i:${Math.min(i || 0, 10)}">` +
+        `<input type="checkbox" class="fk-chk" data-id="${esc(d.id)}"${sd ? " checked" : ""}${d.selesai || kirim[d.id] ? ' disabled title="Selesai di Moodle"' : ' title="Tandai selesai"'}>` +
+        (tt === null
+          ? ""
+          : `<div class="fk-time">${ic("clock")} ${tgl}${fmtJam(tt)}</div>`) +
+        `<div class="fk-main"><a class="fk-name" href="${esc(d.url)}">${esc(d.nama)}</a>` +
+        (d.jenis === "perkiraan"
+          ? ` <span class="fk-tag" style="background:#eef0f3;color:#475467">${ic("hourglass-split")} perkiraan</span>`
+          : "") +
+        `<div class="fk-meta fk-sub">${d.course ? `<span class="fk-crs" style="background:${w.bg};color:${w.fg}">${esc(d.course)}</span>` : ""}${d.desc ? " · " + esc(d.desc) : ""}</div></div>` +
+        `<div class="fk-extra"><span class="fk-badge" style="background:${L.bg};color:${L.fg}">${ic(L.ic)} ${esc(L.t)}</span>${mulai}${tombol}</div></div>`
+      );
+    }
+    const daftar = (arr) => arr.map((d, i) => kartu(d, i)).join("");
+    const GRUP = [
+      ["ter", "Terlewat", "exclamation-triangle-fill", "red"],
+      ["hari", "Hari ini", "hourglass-split", "orange"],
+      ["besok", "Besok", "sunrise", "yellow"],
+      ["minggu", "Minggu ini", "calendar-week", "blue"],
+      ["lain", "Selanjutnya", "calendar-check", "green"],
+      ["tbd", "Tanggal tidak diketahui", "calendar-x", "grey"],
+    ];
+
+    function kunciGrup(ts) {
+      if (ts === null) return "tbd";
+      if (ts < Date.now()) return "ter";
+      const hk = hariKalender(ts);
+      return hk === 0
+        ? "hari"
+        : hk === 1
+          ? "besok"
+          : hk <= 7
+            ? "minggu"
+            : "lain";
+    }
+    // Kartu dikelompokkan per waktu; tiap grup bisa dilipat
+    function kelompok(arr) {
+      return GRUP.map((g) => {
+        const it = arr.filter((d) => kunciGrup(d.ts) === g[0]);
+        if (!it.length) return "";
+        const buka = !tutup[g[0]],
+          T = TONE[g[3]];
+        return (
+          `<div class="fk-group"><button type="button" class="fk-btn" data-grup="${g[0]}" aria-expanded="${buka}"><span style="color:${T[1]};display:inline-flex">${ic(g[2])}</span> ${g[1]} ${ic(buka ? "chevron-up" : "chevron-down")}</button></div>` +
+          (buka ? daftar(it) : "")
+        );
+      }).join("");
+    }
+    const tombolLipat = (id, icon, teks, n, buka) =>
+      `<div style="margin-top:12px"><button type="button" class="fk-btn" id="${id}">${ic(icon)} ${teks} <span class="fk-cnt">(${n})</span> ${ic(buka ? "chevron-up" : "chevron-down")}</button></div>`;
+
+    function renderChips(mine) {
+      const now = Date.now(),
+        c = {
+          ter: 0,
+          hari: 0,
+          besok: 0,
+          lain: 0,
+        };
+      const aktif = mine.filter((d) => !isDone(d) && d.ts !== null);
+      aktif.forEach((d) => {
+        const hk = hariKalender(d.ts);
+        if (d.ts < now) c.ter++;
+        else if (hk === 0) c.hari++;
+        else if (hk === 1) c.besok++;
+        else c.lain++;
+      });
+      const chip = (i, t, n, tone) =>
+        n
+          ? `<span class="fk-chip" style="background:${TONE[tone][0]};color:${TONE[tone][1]}">${ic(i)} ${t} ${n}</span>`
+          : "";
+      const nd = mine.filter((d) => !isDone(d) && d.jenis === "nodate").length,
+        nc = mine.filter((d) => !isDone(d) && d.jenis === "cek").length;
+      $("fk-chips").innerHTML =
+        !aktif.length && !nd && !nc && lastSemua.length
+          ? chip("check-circle-fill", "Semua beres", " ", "green")
+          : chip("exclamation-triangle-fill", "Terlewat", c.ter, "red") +
+            chip("hourglass-split", "Hari ini", c.hari, "orange") +
+            chip("sunrise", "Besok", c.besok, "yellow") +
+            chip("calendar-x", "Tanpa tanggal", nd, "grey") +
+            chip("question-circle", "Perlu dicek", nc, "grey");
+
+      const urg = aktif
+        .filter((d) => d.ts > now && d.ts - now < AMBANG_NOTIF_JAM * 36e5)
+        .sort(urut);
+      $("fk-urgent").innerHTML = urg.length
+        ? `<div class="fk-urgent" data-goto="tugas">${ic("alarm-fill")}<div><b>Deadline segera:</b> ${urg
+            .slice(0, 3)
+            .map((d) => esc(d.nama) + " (" + esc(label(d.ts).t) + ")")
+            .join(
+              " · ",
+            )}${urg.length > 3 ? " · +" + (urg.length - 3) + " lagi" : ""}</div></div>`
+        : c.ter
+          ? `<div class="fk-urgent" data-goto="tugas">${ic("exclamation-triangle-fill")}<div><b>${c.ter} tugas terlewat.</b> Ketuk untuk melihat.</div></div>`
+          : "";
+      const nJudul = c.ter + c.hari;
+      document.title =
+        nJudul > 0 ? `(${nJudul}) Tugas hari ini | ${judulAsli}` : judulAsli;
+    }
+
+    function renderTugas(semua) {
+      const f = semua.filter(lolos).sort(urut);
+      const aL = f.filter(
+          (d) => !isDone(d) && d.jenis !== "nodate" && d.jenis !== "cek",
+        ),
+        nL = f.filter((d) => !isDone(d) && d.jenis === "nodate"),
+        cL = f
+          .filter((d) => !isDone(d) && d.jenis === "cek")
+          .sort((a, b) => (b.tsAsli || 0) - (a.tsAsli || 0)),
+        dL = f.filter(isDone);
+      const memuat =
+        !semua.length &&
+        !timelineGagal &&
+        (extraStatus === "idle" || extraStatus === "loading");
+      $("fk-err").innerHTML = pesanError();
+      $("fk-list").innerHTML = memuat
+        ? skel(3)
+        : aL.length
+          ? kelompok(aL)
+          : `<div class="fk-empty">${ic("emoji-smile")}${cache.length ? "Tidak ada tugas yang cocok." : "Belum ada tugas di Timeline."}</div>`;
+      $("fk-cekwrap").innerHTML = cL.length
+        ? tombolLipat(
+            "fk-togglecek",
+            "question-circle",
+            "Perlu dicek",
+            cL.length,
+            showCek,
+          ) +
+          (showCek
+            ? '<div class="fk-sub" style="margin:6px 0">Tenggatnya sudah lewat, tetapi status pengirimannya belum bisa dipastikan. Centang kalau sudah kamu kerjakan.</div>' +
+              daftar(cL)
+            : "")
+        : "";
+      $("fk-donewrap").innerHTML = dL.length
+        ? tombolLipat(
+            "fk-toggledone",
+            "check2-circle",
+            "Selesai",
+            dL.length,
+            showDone,
+          ) + (showDone ? daftar(dL) : "")
+        : "";
+      $("fk-nodatewrap").innerHTML =
+        nL.length || extraStatus === "loading"
+          ? tombolLipat(
+              "fk-togglenodate",
+              "calendar-x",
+              "Belum ada tanggal",
+              nL.length,
+              showNodate,
+            ) +
+            (extraStatus === "loading"
+              ? ' <span class="fk-sub">memeriksa...</span>'
+              : "") +
+            (showNodate && nL.length
+              ? `<div style="margin-top:8px">${nL.map((d) => kartu(d)).join("")}</div>`
+              : "")
+          : "";
+      if (animNext.tugas) {
+        efekMasuk($("fk-list"));
+        animNext.tugas = false;
+      }
+    }
+
+    // ===== MATERI MINGGU INI =====
+    function renderMateri() {
+      const memuat =
+        !daftarMateri.length &&
+        (extraStatus === "idle" || extraStatus === "loading");
+      materiEl.innerHTML = daftarMateri.length
+        ? daftarMateri
+            .map((m, i) => {
+              const w = warnaMatkul(m.course);
+              return (
+                `<div class="fk-jday" style="--i:${Math.min(i, 10)};border-left:3px solid ${w.bar}"><div class="fk-mh"><strong style="color:${w.fg}">${esc(m.course.split("/")[0].trim())}</strong><br>` +
+                `<span class="fk-sub">${ic("bookmark")} ${esc(m.judul || "Minggu ini")}</span></div><div class="fk-jbody">` +
+                m.items
+                  .map(
+                    (it) =>
+                      `<div class="fk-mi">${ic(it.ic)}<a href="${esc(it.url)}">${esc(it.nama)}</a></div>`,
+                  )
+                  .join("") +
+                "</div></div>"
+              );
+            })
+            .join("")
+        : memuat
+          ? skel(2)
+          : pesanError() +
+            `<div class="fk-empty">${ic("journal-bookmark")}Belum ada materi di minggu ini.</div>`;
+      if (animNext.materi) {
+        efekMasuk(materiEl);
+        animNext.materi = false;
+      }
+    }
+
+    // ===== GRAFIK =====
+    function statTugas() {
+      const mine = lastSemua.filter(milikku),
+        now = Date.now(),
+        sel = mine.filter(isDone).length,
+        pro = mine.filter((d) => !isDone(d) && proses[d.id]).length;
+      return {
+        mine,
+        sel,
+        pro,
+        tot: mine.length,
+        bel: mine.length - sel - pro,
+        pct: mine.length ? Math.round((sel / mine.length) * 100) : 0,
+        ter: mine.filter((d) => !isDone(d) && d.ts !== null && d.ts < now)
+          .length,
+      };
+    }
+    // Streak = tugas selesai berturut-turut sebelum tenggat; target = jumlah selesai sejak Senin
+    function statStreak() {
+      const r = Object.keys(rek)
+        .map((k) => rek[k])
+        .sort((a, b) => a[0] - b[0]);
+      let run = 0,
+        best = 0;
+      r.forEach((x) => {
+        run = x[1] ? run + 1 : 0;
+        best = Math.max(best, run);
+      });
+      const n = new Date(),
+        sen = new Date(
+          n.getFullYear(),
+          n.getMonth(),
+          n.getDate() - ((n.getDay() + 6) % 7),
+        ).getTime();
+      return {
+        streak: run,
+        best,
+        minggu: r.filter((x) => x[0] >= sen).length,
+      };
+    }
+
+    function htmlStreak() {
+      const st = statStreak(),
+        pm = Math.min(100, (st.minggu / TARGET_MINGGUAN) * 100);
+      return (
+        `<div class="fk-streak"><div class="fk-sr"><span>${ic("fire")} Streak tepat waktu</span><b>${st.streak}</b></div>` +
+        `<div class="fk-sr"><span>${ic("trophy")} Terbaik</span><b>${st.best}</b></div>` +
+        `<div class="fk-sr"><span>${ic("bullseye")} Target minggu ini</span><b>${st.minggu}/${TARGET_MINGGUAN}</b></div>` +
+        `<div class="fk-bar"><i style="width:${pm}%;background:var(--pro)"></i></div></div>`
+      );
+    }
+
+    function renderGrafik() {
+      const s = statTugas(),
+        C = 2 * Math.PI * 44;
+      const seg = [
+        ["donut", "pie-chart", "Lingkar"],
+        ["bar", "bar-chart-line", "Batang"],
+      ]
+        .map(
+          (m) =>
+            `<button type="button" class="fk-btn${m[0] === chartMode ? " go" : ""}" data-mode="${m[0]}">${ic(m[1])} ${m[2]}</button>`,
+        )
+        .join("");
+      const bar = (n, mx, warna) =>
+        `<div class="fk-bl2"><div class="fk-bar"><i style="width:${(n / mx) * 100}%;background:${warna}"></i></div><b>${n}</b></div>`;
+      let body;
+      if (!s.tot)
+        body = `<div class="fk-empty">${ic("bar-chart")}Belum ada tugas untuk ditampilkan.</div>`;
+      else if (chartMode === "donut") {
+        const arc = (n, warna) =>
+          `<circle class="fk-arc" cx="60" cy="60" r="44" stroke="${warna}" style="--c:${C};stroke-dasharray:${(C * n) / s.tot} ${C}"/>`;
+        body =
+          `<div class="fk-donut"><svg viewBox="0 0 120 120" role="img" aria-label="${s.sel} dari ${s.tot} tugas selesai">` +
+          `<circle cx="60" cy="60" r="44" stroke="#2f6fed"/>${s.pro ? arc(s.sel + s.pro, "#f79009") : ""}${arc(s.sel, "#12b76a")}</svg>` +
+          `<div class="mid"><b>${s.pct}%</b><span>selesai</span></div></div>`;
+      } else {
+        const g = {};
+        s.mine.forEach((d) => {
+          const k = bersih(d.course.split("/")[0]) || "Lainnya";
+          (g[k] = g[k] || {
+            s: 0,
+            p: 0,
+            b: 0,
+          })[isDone(d) ? "s" : proses[d.id] ? "p" : "b"]++;
+        });
+        const mx = Math.max.apply(
+          null,
+          Object.keys(g).map((k) => Math.max(g[k].s, g[k].p, g[k].b, 1)),
+        );
+        body = Object.keys(g)
+          .map(
+            (k, i) =>
+              `<div class="fk-brow" style="--i:${Math.min(i, 10)}"><div class="fk-bl">${esc(k)}</div>${bar(g[k].s, mx, "var(--ok)")}${s.pro ? bar(g[k].p, mx, "var(--pro)") : ""}${bar(g[k].b, mx, "var(--bel)")}</div>`,
+          )
+          .join("");
+      }
+      grafikEl.innerHTML =
+        `<div class="fk-seg">${seg}</div>${body}` +
+        `<div class="fk-lg"><span><i class="sq" style="background:var(--ok)"></i>Selesai ${s.sel}</span>${s.pro ? `<span><i class="sq" style="background:var(--pro)"></i>Dikerjakan ${s.pro}</span>` : ""}<span><i class="sq" style="background:var(--bel)"></i>Belum ${s.bel}</span>` +
+        (s.ter
+          ? `<span class="fk-tag" style="background:${TONE.red[0]};color:${TONE.red[1]}">${ic("exclamation-triangle-fill")} ${s.ter} terlewat</span>`
+          : "") +
+        "</div>" +
+        htmlStreak();
+      if (animNext.grafik) {
+        efekMasuk(grafikEl);
+        animNext.grafik = false;
+      }
+    }
+
+    function pesanGrafik() {
+      const s = statTugas();
+      if (!s.tot)
+        return {
+          msg: "Belum ada tugas untuk dihitung.",
+          mood: "neutral",
+        };
+      if (s.pct === 100)
+        return {
+          msg: "Semua tugas selesai, 100%! Kamu luar biasa.",
+          mood: "cheer",
+        };
+      return {
+        msg: `${s.sel} dari ${s.tot} tugas selesai (${s.pct}%).${s.pro ? ` ${s.pro} sedang dikerjakan.` : ""}${s.ter ? ` Ada ${s.ter} yang terlewat, ayo kejar.` : " Terus semangat!"}`,
+        mood: s.ter ? "worry" : s.pct >= 50 ? "happy" : "neutral",
+      };
+    }
+
+    // ===== PEMANDU (HOOT) =====
+    const PESAN_TAB = {
+      tugas:
+        "Semua tugasmu ada di sini. Kotak kecil di pojok tab ini untuk menampilkan semua kelas.",
+      materi:
+        "Ini materi minggu ini dari tiap course. Ketuk judulnya untuk membuka.",
+      jadwal:
+        "Jadwal kuliah lengkap ada di sini, plus tombol WA dosen. Ketuk nama hari untuk membuka.",
+    };
+
+    function setMood(m) {
+      if (gTidur) m = "sleep";
+      gMood = m;
+      gSvg.setAttribute("class", "fk-mascot m-" + m);
+      guide.className =
+        "fk-guide" +
+        (gMin ? " min" : "") +
+        (m === "worry" || m === "panic"
+          ? " g-worry"
+          : m === "happy" || m === "cheer" || m === "elus" || m === "siap"
+            ? " g-happy"
+            : "");
+    }
+
+    function katakan(msg, mood) {
+      setMood(mood);
+      if (msg === gMsg) return;
+      gMsg = msg;
+      clearInterval(gTyp);
+      anim(gBubble, "fk-pop", 300);
+      if (REDUCE) {
+        gText.textContent = msg;
+        return;
+      }
+      let i = 0;
+      gText.textContent = "";
+      gTyp = setInterval(() => {
+        i += 2;
+        gText.textContent = msg.slice(0, i);
+        if (i >= msg.length) clearInterval(gTyp);
+      }, 22);
+    }
+
+    function sementara(msg, mood, ms) {
+      gTemp = Date.now() + ms;
+      katakan(msg, mood);
+      clearTimeout(gTimer);
+      gTimer = setTimeout(() => {
+        gTemp = 0;
+        renderGuide();
+      }, ms);
+    }
+
+    function renderGuide() {
+      if (gTidur || menguap || Date.now() < gTemp) return;
+      const p = pesanIdle();
+      katakan(p.msg, p.mood);
+    }
+
+    function pesanIdle() {
+      const now = Date.now(),
+        h = new Date().getHours();
+      if (fokusAktif())
+        return fokus.fase === "fokus"
+          ? {
+              msg: "Fokus dulu ya. Aku jagain kamu di sini.",
+              mood: "fokus",
+            }
+          : {
+              msg: "Waktunya istirahat. Minum dulu, regangkan badan.",
+              mood: "happy",
+            };
+      const kn = kuliahNext(),
+        mntNow = new Date().getHours() * 60 + new Date().getMinutes();
+      if (kn && kn.i === 0 && kn.jalan)
+        return kn.k.tipe === "Praktikum"
+          ? {
+              msg: `Praktikum ${kn.k.nama} lagi jalan. Aku ikut ngetik, semangat!`,
+              mood: "ngetik",
+            }
+          : {
+              msg: `${kn.k.nama} sedang berlangsung. Aku diam dulu ya, supaya kamu fokus.`,
+              mood: "tenang",
+            };
+      if (kn && kn.i === 0 && !kn.jalan && kn.k.s - mntNow <= 10)
+        return {
+          msg: `${kn.k.nama} mulai ${Math.max(1, kn.k.s - mntNow)} menit lagi! Tasku sudah siap, ayo berangkat.`,
+          mood: "siap",
+        };
+      if (
+        !lastSemua.length &&
+        (extraStatus === "idle" || extraStatus === "loading")
+      )
+        return {
+          msg: "Sebentar, aku lagi memeriksa tugasmu...",
+          mood: "neutral",
+        };
+      const aktif = lastSemua
+        .filter(milikku)
+        .filter((d) => !isDone(d) && d.ts !== null)
+        .sort(urut);
+      const ter = aktif.filter((d) => d.ts < now),
+        urg = aktif.filter(
+          (d) => d.ts > now && d.ts - now < AMBANG_NOTIF_JAM * 36e5,
+        );
+      if (urg.length)
+        return {
+          msg: `Awas, "${urg[0].nama}" ${label(urg[0].ts).t.toLowerCase()}. Kerjakan yang ini dulu ya.`,
+          mood: urg[0].ts - now < 36e5 ? "panic" : "worry",
+        };
+      if (ter.length)
+        return {
+          msg: `${ter.length} tugas sudah terlewat. Mulai dari "${ter[ter.length - 1].nama}", yang paling baru.`,
+          mood: "worry",
+        };
+      if (extraGagal || timelineGagal)
+        return {
+          msg: "Aku gagal memuat sebagian data. Ketuk Coba lagi ya.",
+          mood: "worry",
+        };
+      if (h >= 23 || h < 5)
+        return {
+          msg: "Sudah larut. Simpan tenaga, besok dilanjut lagi ya.",
+          mood: "sleep",
+        };
+      const nd = lastSemua
+        .filter(milikku)
+        .filter(
+          (d) => !isDone(d) && (d.jenis === "nodate" || d.jenis === "cek"),
+        ).length;
+      if (!aktif.length)
+        return nd
+          ? {
+              msg: `Ada ${nd} tugas tanpa tanggal atau perlu dicek. Lihat dulu supaya tidak ada yang tertinggal.`,
+              mood: "worry",
+            }
+          : {
+              msg: "Semua tugas beres! Waktunya istirahat.",
+              mood: "happy",
+            };
+      const hk = aktif.find((d) => d.ts > now) || aktif[0];
+      return {
+        msg: `Tugas terdekat: "${hk.nama}", ${label(hk.ts).t.toLowerCase()}.`,
+        mood: "neutral",
+      };
+    }
+
+    function kuliahNext() {
+      const jd = bacaJadwal(),
+        now = new Date(),
+        mnt = now.getHours() * 60 + now.getMinutes();
+      for (let i = 0; i < 8; i++) {
+        const idx = (now.getDay() + i) % 7;
+        for (const k of jd[HARI[idx]] || []) {
+          if (i === 0 && mnt >= k.e) continue;
+          return {
+            k,
+            i,
+            idx,
+            jalan: i === 0 && mnt >= k.s,
+          };
+        }
+      }
+      return null;
+    }
+
+    function kuliahBerikut() {
+      const n = kuliahNext();
+      if (!n) return "";
+      return n.jalan
+        ? `Sedang berlangsung: ${n.k.nama} sampai ${hhmm(n.k.e)}.`
+        : `Kuliah berikutnya: ${n.k.nama}, ${n.i === 0 ? "hari ini" : n.i === 1 ? "besok" : HARI_TAMPIL[n.idx]} pukul ${hhmm(n.k.s)}.`;
+    }
+
+    function tips() {
+      const a = [pesanIdle(), pesanGrafik()],
+        kb = kuliahBerikut();
+      if (kb)
+        a.push({
+          msg: kb,
+          mood: "neutral",
+        });
+      pesanOutfit().forEach((m) =>
+        a.push({
+          msg: m,
+          mood: "happy",
+        }),
+      );
+      a.push(
+        {
+          msg: "Tahan aku beberapa detik, aku suka dielus. Ketuk dua kali, aku salto!",
+          mood: "happy",
+        },
+        {
+          msg: "Seret aku ke kartu tugas, nanti kutandai Dikerjakan dan kutemani.",
+          mood: "happy",
+        },
+        {
+          msg: "Mau fokus? Ketuk tombol Temani aku fokus, aku jagain 25 menit.",
+          mood: "fokus",
+        },
+      );
+      if (perchId)
+        a.push({
+          msg: "Aku kecil yang bertengger di kartu itu menandai tugas dengan tenggat paling dekat. Kerjakan yang itu dulu, ya!",
+          mood: "neutral",
+        });
+      a.push(
+        {
+          msg: "Tab Materi menampilkan bahan kuliah minggu ini.",
+          mood: "happy",
+        },
+        {
+          msg: "Centang tugas kalau sudah selesai, aku ikut senang!",
+          mood: "happy",
+        },
+        {
+          msg: "Coba tab Grafik untuk melihat progres tugasmu.",
+          mood: "happy",
+        },
+        {
+          msg: "Ada tugas yang tidak muncul? Centang kotak kecil di pojok tab Tugas untuk melihat semua kelas.",
+          mood: "neutral",
+        },
+        {
+          msg: "Tab Jadwal punya tombol WA untuk menghubungi dosen.",
+          mood: "neutral",
+        },
+        {
+          msg: "Ketuk gerigi di kanan atas untuk ganti warna tema dan aksesori-ku.",
+          mood: "happy",
+        },
+      );
+      return a;
+    }
+    // Ketuk Hoot: ganti saran. Ketuk cepat 5x = Hoot pusing.
+    function ketukMaskot() {
+      if (gMin) {
+        gMin = false;
+        store.set("fk_gmin", "0");
+        setMood(gMood);
+      } else {
+        const n = Date.now();
+        taps = taps.filter((t) => n - t < 2000);
+        taps.push(n);
+        if (taps.length >= 5) {
+          taps = [];
+          anim(mBtn, "fk-spin", 800);
+          sementara("Aduh, pusing! Pelan-pelan dong...", "dizzy", 4000);
+          return;
+        }
+        if (taps.length >= 2 && n - taps[taps.length - 2] < 350) {
+          sementara(pilih(["Hup! Salto!", "Ta-da! Lihat aku!"]), "happy", 3500);
+          anim(gSvg, "fk-flip", 800);
+          return;
+        }
+        const t = tips();
+        tipIdx = (tipIdx + 1) % t.length;
+        sementara(t[tipIdx].msg, t[tipIdx].mood, 9000);
+      }
+      anim(mBtn, "fk-wig", 500);
+      anim(gSvg, "fk-flap", 1300);
+    }
+    // Mata Hoot mengikuti kursor / jari
+    let raf = 0;
+    document.addEventListener(
+      "pointermove",
+      (e) => {
+        if (raf || REDUCE) return;
+        raf = requestAnimationFrame(() => {
+          raf = 0;
+          const r = gSvg.getBoundingClientRect(),
+            dx = e.clientX - (r.left + r.width / 2),
+            dy = e.clientY - (r.top + r.height / 2);
+          const d = Math.hypot(dx, dy) || 1,
+            k = (Math.min(d, 120) / 120) * 2.2;
+          gSvg.style.setProperty("--px", (dx / d) * k + "px");
+          gSvg.style.setProperty("--py", (dy / d) * k + "px");
+          if (perchSvg) {
+            perchSvg.style.setProperty("--px", (dx / d) * k + "px");
+            perchSvg.style.setProperty("--py", (dy / d) * k + "px");
+          }
+        });
+      },
+      {
+        passive: true,
+      },
+    );
+    // ===== INTERAKSI & ANIMASI HOOT =====
+    const fokusAktif = () => !!fokus.fase && fokus.akhir > Date.now();
+
+    // --- Tidur saat lama tidak disentuh ---
+    function aktif() {
+      lastAct = Date.now();
+      if (gTidur) bangun();
+      else if (menguap) {
+        menguap = false;
+        gTemp = 0;
+        renderGuide();
+      }
+    }
+
+    function bangun() {
+      gTidur = false;
+      gTemp = 0;
+      clearTimeout(gTimer);
+      sementara(
+        pilih(["Eh! Aku ketiduran ya?", "Hah?! Aku nggak tidur kok."]),
+        "neutral",
+        3500,
+      );
+      anim(gSvg, "fk-startle", 800);
+    }
+
+    function cekIdle() {
+      if (
+        document.hidden ||
+        !isengOn ||
+        gTidur ||
+        menguap ||
+        fokusAktif() ||
+        drag ||
+        elusT
+      )
+        return;
+      if (Date.now() - lastAct < IDLE_TIDUR_DETIK * 1000) return;
+      menguap = true;
+      gTemp = 0;
+      clearTimeout(gTimer);
+      katakan("Hoaaam... ngantuk juga ya.", "yawn");
+      setTimeout(() => {
+        if (!menguap) return;
+        menguap = false;
+        if (Date.now() - lastAct < IDLE_TIDUR_DETIK * 1000) return;
+        gTidur = true;
+        katakan("Zzz...", "sleep");
+      }, 2400);
+    }
+    setInterval(cekIdle, 5000);
+    [
+      "pointerdown",
+      "pointermove",
+      "keydown",
+      "touchstart",
+      "wheel",
+      "scroll",
+    ].forEach((ev) =>
+      document.addEventListener(ev, aktif, {
+        passive: true,
+        capture: true,
+      }),
+    );
+
+    // --- Gerakan iseng acak ---
+    function iseng() {
+      if (
+        !isengOn ||
+        REDUCE ||
+        gTidur ||
+        menguap ||
+        drag ||
+        elusT ||
+        fokusAktif()
+      )
+        return;
+      if (gMood !== "neutral" || Date.now() < gTemp || Math.random() < 0.4)
+        return;
+      const pool = ["tilt", "flap", "sneeze", "look", "preen", "peek"];
+      if (outfit.f.indexOf("party") >= 0) pool.push("dance", "dance");
+      const j = pilih(pool);
+      if (j === "tilt") anim(gSvg, "fk-tilt", 1300);
+      else if (j === "flap") anim(gSvg, "fk-flap", 1300);
+      else if (j === "sneeze") {
+        sementara("Hacii! ...maaf ya.", "neutral", 2500);
+        anim(gSvg, "fk-sneeze", 900);
+      } else if (j === "look") {
+        gSvg.style.setProperty("--py", "0px");
+        gSvg.style.setProperty("--px", "-2.2px");
+        setTimeout(() => gSvg.style.setProperty("--px", "2.2px"), 650);
+        setTimeout(() => gSvg.style.setProperty("--px", "0px"), 1300);
+      } else if (j === "preen") anim(gSvg, "fk-preen", 1400);
+      else if (j === "peek") anim(mBtn, "fk-peek", 2400);
+      else if (j === "dance") {
+        sementara("Kuliah beres, waktunya joget!", "happy", 3000);
+        anim(gSvg, "fk-dance", 1800);
+      }
+    }
+    setInterval(iseng, 8000);
+
+    // --- Dielus (tahan Hoot), diseret ke kartu tugas ---
+    function hati() {
+      const pr = panel.getBoundingClientRect(),
+        r = gSvg.getBoundingClientRect(),
+        s = document.createElement("span");
+      s.className = "fk-heart";
+      s.innerHTML = ic("heart-fill");
+      s.style.cssText = `left:${r.left - pr.left + r.width / 2 + (Math.random() * 30 - 15)}px;top:${r.top - pr.top}px;--dx:${Math.random() * 24 - 12}px`;
+      panel.appendChild(s);
+      setTimeout(() => s.remove(), 1400);
+    }
+
+    function mulaiElus() {
+      tahan = true;
+      sementara("Hehe... geli, tapi enak.", "elus", 60000);
+      hati();
+      elusT = setInterval(hati, 450);
+    }
+
+    function akhiriElus() {
+      clearInterval(elusT);
+      elusT = null;
+      tahan = false;
+      sementara(
+        pilih([
+          "Terima kasih ya! Aku jadi semangat.",
+          "Hehe, lagi dong... nanti.",
+        ]),
+        "happy",
+        3500,
+      );
+    }
+
+    function gerakSeret(e) {
+      seret.box.style.transform = `translate(${e.clientX - 23}px,${e.clientY - 30}px)`;
+      const el = document.elementFromPoint(e.clientX, e.clientY),
+        c = el && el.closest ? el.closest(".fk-card") : null;
+      const ok =
+        !!c &&
+        panel.contains(c) &&
+        !c.classList.contains("done") &&
+        !!c.querySelector(".fk-chk");
+      if (seret.target && seret.target !== c)
+        seret.target.classList.remove("fk-target");
+      seret.target = ok ? c : null;
+      if (ok) c.classList.add("fk-target");
+    }
+
+    function mulaiSeret(e) {
+      drag.mulai = true;
+      const h = buatHoot("m-happy fk-flap");
+      h.box.className = "fk-fly";
+      salinTampilan(h.svg);
+      panel.appendChild(h.box);
+      mBtn.style.visibility = "hidden";
+      seret = {
+        box: h.box,
+        target: null,
+      };
+      sementara("Wiii! Mau ke tugas yang mana?", "happy", 20000);
+      gerakSeret(e);
+    }
+
+    function akhiriSeret() {
+      const s = seret;
+      seret = null;
+      if (!s) return;
+      if (s.target) s.target.classList.remove("fk-target");
+      mBtn.style.visibility = "";
+      s.box.remove();
+      const tg = s.target;
+      if (!tg) {
+        sementara("Hmm, jatuhkan aku di kartu tugas ya.", "neutral", 4000);
+        anim(mBtn, "fk-wig", 500);
+        return;
+      }
+      const id = tg.querySelector(".fk-chk").dataset.id,
+        item = lastSemua.find((x) => x.id === id);
+      if (proses[id])
+        return sementara(
+          "Yang itu sudah kamu kerjakan. Semangat!",
+          "happy",
+          4000,
+        );
+      proses[id] = Date.now();
+      store.set("fk_proses", JSON.stringify(proses));
+      animNext.grafik = true;
+      perchPaksa = id;
+      clearTimeout(perchPaksaT);
+      perchPaksaT = setTimeout(() => {
+        perchPaksa = null;
+        posisiPerch();
+      }, 12000);
+      render();
+      sementara(
+        `Oke, aku temani kamu mengerjakan "${item ? item.nama : "tugas itu"}"!`,
+        "happy",
+        5000,
+      );
+    }
+    mBtn.addEventListener("contextmenu", (e) => e.preventDefault());
+    mBtn.addEventListener("pointerdown", (e) => {
+      if (e.button) return;
+      drag = {
+        x: e.clientX,
+        y: e.clientY,
+        mulai: false,
+      };
+      tahan = false;
+      clearTimeout(holdT);
+      if (!gMin)
+        holdT = setTimeout(() => {
+          if (drag && !drag.mulai) mulaiElus();
+        }, 800);
+    });
+    document.addEventListener(
+      "pointermove",
+      (e) => {
+        if (!drag) return;
+        if (drag.mulai) return gerakSeret(e);
+        if (tahan) return;
+        if (Math.hypot(e.clientX - drag.x, e.clientY - drag.y) > 10) {
+          clearTimeout(holdT);
+          mulaiSeret(e);
+        }
+      },
+      {
+        passive: true,
+      },
+    );
+    const lepas = () => {
+      if (!drag) return;
+      clearTimeout(holdT);
+      const d = drag;
+      drag = null;
+      if (d.mulai) akhiriSeret();
+      else if (tahan) akhiriElus();
+      else return;
+      skipClick = true;
+      setTimeout(() => {
+        skipClick = false;
+      }, 80);
+    };
+    document.addEventListener("pointerup", lepas);
+    document.addEventListener("pointercancel", lepas);
+
+    // --- Hoot mengintip kartu dan kolom cari ---
+    let kartuIntip = null,
+      intipTs = 0,
+      cariTs = 0;
+
+    function lirikKe(el) {
+      const r = gSvg.getBoundingClientRect(),
+        q = el.getBoundingClientRect(),
+        dx = q.left + q.width / 2 - (r.left + r.width / 2),
+        dy = q.top + q.height / 2 - (r.top + r.height / 2),
+        d = Math.hypot(dx, dy) || 1;
+      gSvg.style.setProperty("--px", (dx / d) * 2.2 + "px");
+      gSvg.style.setProperty("--py", (dy / d) * 2.2 + "px");
+    }
+
+    function intipCari() {
+      lirikKe(inQ);
+      const n = Date.now();
+      if (n - cariTs < 1500 || gTidur || gMood !== "neutral") return;
+      cariTs = n;
+      anim(gSvg, "fk-tilt", 1000);
+    }
+    panel.addEventListener("pointerover", (e) => {
+      if (seret) return;
+      const c = e.target.closest ? e.target.closest(".fk-card") : null;
+      if (!c || c === kartuIntip) return;
+      kartuIntip = c;
+      const n = Date.now();
+      if (n - intipTs < 3000 || gTidur || gMood !== "neutral") return;
+      intipTs = n;
+      anim(gSvg, "fk-tilt", 1000);
+    });
+
+    // --- Mode fokus (Pomodoro) ---
+    const simpanFokus = () => store.set("fk_focus", JSON.stringify(fokus));
+    const fmtMS = (ms) => {
+      const s = Math.max(0, Math.ceil(ms / 1000));
+      return pad(Math.floor(s / 60)) + ":" + pad(s % 60);
+    };
+
+    function kabari(j, b) {
+      try {
+        if ("Notification" in window && Notification.permission === "granted")
+          new Notification(j, {
+            body: b,
+          });
+      } catch (e) {}
+    }
+
+    function renderFokus() {
+      const w = $("fk-focuswrap");
+      if (!w) return;
+      if (!fokusAktif()) {
+        w.innerHTML = `<div style="margin:0 0 8px"><button type="button" class="fk-btn go" data-fokus="mulai">${ic("stopwatch")} Temani aku fokus (${FOKUS_MENIT} menit)</button>${fokus.sesi ? ` <span class="fk-sub">${fokus.sesi} sesi selesai hari ini</span>` : ""}</div>`;
+        return;
+      }
+      const f = fokus.fase === "fokus",
+        sisa = fokus.akhir - Date.now();
+      w.innerHTML =
+        `<div class="fk-focus"><div class="fk-sr"><span>${ic(f ? "bullseye" : "cup-hot")} ${f ? "Fokus" : "Istirahat"}</span><b id="fk-ftime">${fmtMS(sisa)}</b></div>` +
+        `<div class="fk-bar"><i id="fk-fbar" style="width:${100 - (sisa / fokus.total) * 100}%;background:${f ? "var(--brand)" : "var(--ok)"}"></i></div>` +
+        `<div class="fk-btns"><button type="button" class="fk-btn" data-fokus="lewati">${ic("skip-forward")} Lewati</button><button type="button" class="fk-btn" data-fokus="stop">${ic("x-circle")} Berhenti</button></div></div>`;
+    }
+
+    function selesaiFase(alami) {
+      if (fokus.fase === "fokus") {
+        if (alami) fokus.sesi++;
+        const mnt =
+          alami && fokus.sesi % SESI_PANJANG === 0
+            ? ISTIRAHAT_PANJANG
+            : ISTIRAHAT_MENIT;
+        fokus.fase = "istirahat";
+        fokus.total = mnt * 6e4;
+        fokus.akhir = Date.now() + fokus.total;
+        kabari("Sesi fokus selesai", `Istirahat ${mnt} menit dulu.`);
+        const r = gSvg.getBoundingClientRect();
+        konfeti(r.left + r.width / 2, r.top + r.height / 2, 24);
+        sementara(
+          `Sesi fokus selesai! Istirahat ${mnt} menit, ini kopimu.`,
+          "cheer",
+          6000,
+        );
+      } else {
+        fokus.fase = "";
+        fokus.akhir = 0;
+        kabari("Istirahat selesai", "Siap lanjut sesi berikutnya?");
+        sementara(
+          "Istirahat selesai. Mau lanjut sesi berikutnya?",
+          "happy",
+          6000,
+        );
+      }
+      simpanFokus();
+      renderFokus();
+      terapkanOutfit();
+    }
+
+    function aksiFokus(a) {
+      if (fokus.hari !== new Date().toDateString()) {
+        fokus.sesi = 0;
+        fokus.hari = new Date().toDateString();
+      }
+      if (a === "mulai") {
+        fokus.fase = "fokus";
+        fokus.total = FOKUS_MENIT * 6e4;
+        fokus.akhir = Date.now() + fokus.total;
+        simpanFokus();
+        renderFokus();
+        terapkanOutfit();
+        sementara(
+          `Oke, aku temani. Fokus ${FOKUS_MENIT} menit ya!`,
+          "fokus",
+          5000,
+        );
+      } else if (a === "stop") {
+        fokus.fase = "";
+        fokus.akhir = 0;
+        simpanFokus();
+        renderFokus();
+        terapkanOutfit();
+        sementara(
+          "Fokusnya dihentikan. Tidak apa-apa, nanti coba lagi.",
+          "neutral",
+          4000,
+        );
+      } else if (a === "lewati") selesaiFase(false);
+    }
+
+    function tickFokus() {
+      if (!fokus.fase) return;
+      const sisa = fokus.akhir - Date.now();
+      if (sisa <= 0) return selesaiFase(true);
+      const t = $("fk-ftime"),
+        b = $("fk-fbar");
+      if (t) t.textContent = fmtMS(sisa);
+      if (b) b.style.width = 100 - (sisa / fokus.total) * 100 + "%";
+    }
+    setInterval(tickFokus, 1000);
+    renderFokus();
+
+    function konfeti(x, y, n) {
+      if (REDUCE) return;
+      const pr = panel.getBoundingClientRect(),
+        cols = [
+          "#2f6fed",
+          "#12b76a",
+          "#f79009",
+          "#f04438",
+          "#7a5af8",
+          "#fdb022",
+        ];
+      for (let i = 0; i < n; i++) {
+        const s = document.createElement("span"),
+          a = Math.random() * Math.PI * 2,
+          dist = 40 + Math.random() * 60;
+        s.className = "fk-cf";
+        s.style.cssText = `left:${x - pr.left}px;top:${y - pr.top}px;background:${cols[i % cols.length]};--dx:${Math.cos(a) * dist}px;--dy:${Math.sin(a) * dist - 20}px;--r:${Math.random() * 540 - 270}deg`;
+        panel.appendChild(s);
+        setTimeout(() => s.remove(), 1000);
+      }
+    }
+
+    function reaksiSelesai(item, rc) {
+      konfeti(rc.left + rc.width / 2, rc.top + rc.height / 2, 16);
+      const sisa = lastSemua
+          .filter(milikku)
+          .filter((d) => !isDone(d) && d.ts !== null).length,
+        st = statStreak();
+      const besar = () => {
+        const r = gSvg.getBoundingClientRect();
+        konfeti(r.left + r.width / 2, r.top + r.height / 2, 36);
+      };
+      if (!sisa) {
+        besar();
+        sementara(
+          "Semua tugas selesai! Hebat, kamu boleh istirahat sekarang.",
+          "cheer",
+          8000,
+        );
+      } else if (st.minggu === TARGET_MINGGUAN) {
+        besar();
+        sementara(
+          `Target mingguan tercapai: ${st.minggu} tugas! Aku bangga padamu.`,
+          "cheer",
+          8000,
+        );
+      } else if (st.streak >= 3)
+        sementara(
+          `Streak ${st.streak} tugas tepat waktu berturut-turut! Pertahankan.`,
+          "cheer",
+          6000,
+        );
+      else
+        sementara(
+          `${pilih(["Mantap! ", "Keren! ", "Satu beres! "])}${item ? `"${item.nama}"` : "Tugas itu"} selesai. Sisa ${sisa} tugas.`,
+          "cheer",
+          5000,
+        );
+    }
+
+    function terapkanTema() {
+      const t = TEMA[tema] || TEMA.biru;
+      [
+        "--brand",
+        "--brand-soft",
+        "--brand-line",
+        "--brand-ink",
+        "--mc1",
+        "--mc2",
+      ].forEach((v, i) => panel.style.setProperty(v, t[i]));
+      gSvg.dataset.ac = aks;
+      Array.prototype.forEach.call(panel.querySelectorAll("[data-tema]"), (b) =>
+        b.classList.toggle("on", b.dataset.tema === tema),
+      );
+      Array.prototype.forEach.call(panel.querySelectorAll("[data-aks]"), (b) =>
+        b.classList.toggle("go", b.dataset.aks === aks),
+      );
+      const bi = $("fk-iseng");
+      if (bi) {
+        bi.textContent = isengOn ? "Hidup" : "Mati";
+        bi.classList.toggle("go", isengOn);
+      }
+    }
+
+    // ===== PAKAIAN HARIAN, HOOT BERTENGGER, HOOT TERBANG =====
+    let outfit = {
+        f: [],
+        nx: null,
+      },
+      perchEl = null,
+      perchSvg = null,
+      perchId = null,
+      perchPos = null,
+      terbang = false;
+
+    function buatHoot(cls) {
+      const d = document.createElement("div");
+      d.innerHTML = SVG_MASKOT.replace(' id="fk-mascot"', "");
+      const s = d.firstElementChild;
+      s.setAttribute("class", "fk-mascot " + cls);
+      return {
+        box: d,
+        svg: s,
+      };
+    }
+    // Salinan Hoot memakai aksesori dan syal yang sama dengan Hoot utama
+    function salinTampilan(s) {
+      s.dataset.ac = gSvg.dataset.ac || "polos";
+      s.dataset.fit = gSvg.dataset.fit || "";
+      s.style.setProperty(
+        "--scarf",
+        gSvg.style.getPropertyValue("--scarf") || "#f79009",
+      );
+    }
+
+    function terapkanOutfit() {
+      const now = new Date(),
+        mnt = now.getHours() * 60 + now.getMinutes(),
+        hr = now.getDay();
+      const sesi = bacaJadwal()[HARI[hr]] || [];
+      let ot = OUTFIT_HARI[hr];
+      if (!ot && mnt < 300 && OUTFIT_HARI[(hr + 6) % 7] === "party")
+        ot = "party";
+      else if (
+        ot === "party" &&
+        !(sesi.length && mnt >= sesi[sesi.length - 1].e)
+      )
+        ot = null;
+      const f = [],
+        nx = kuliahNext();
+      if (ot === "coffee") f.push("coffee");
+      if (ot === "glasses" && aks !== "glasses") f.push("glasses");
+      if (ot === "party" && aks !== "cap") f.push("party");
+      if (nx && aks !== "bow") {
+        f.push("scarf");
+        gSvg.style.setProperty("--scarf", warnaMatkul(nx.k.kode).bar);
+      }
+      if (nx && nx.i === 0 && !nx.jalan && nx.k.s - mnt <= 10) f.push("bag");
+      if (nx && nx.i === 0 && nx.jalan && nx.k.tipe === "Praktikum")
+        f.push("laptop");
+      if (fokusAktif()) {
+        if (
+          fokus.fase === "fokus" &&
+          f.indexOf("glasses") < 0 &&
+          aks !== "glasses"
+        )
+          f.push("glasses");
+        if (fokus.fase === "istirahat" && f.indexOf("coffee") < 0)
+          f.push("coffee");
+      }
+      gSvg.dataset.flag = statStreak().minggu >= TARGET_MINGGUAN ? "1" : "0";
+      outfit = {
+        f,
+        nx,
+      };
+      gSvg.dataset.fit = f.join(" ");
+      if (perchSvg) salinTampilan(perchSvg);
+    }
+
+    function pesanOutfit() {
+      const a = [],
+        f = outfit.f;
+      if (f.indexOf("coffee") >= 0)
+        a.push("Aku bawa kopi hari ini, biar kita sama-sama melek.");
+      if (f.indexOf("glasses") >= 0)
+        a.push("Hari praktikum! Kacamataku sudah terpasang.");
+      if (f.indexOf("party") >= 0)
+        a.push("Kuliah hari ini sudah beres. Saatnya pakai topi pesta!");
+      if (outfit.nx && f.indexOf("scarf") >= 0)
+        a.push(
+          `Warna syalku sama dengan kuliah berikutnya: ${outfit.nx.k.nama}.`,
+        );
+      return a;
+    }
+
+    // Hoot kecil bertengger di kartu dengan tenggat terdekat, melompat kalau urutan berubah
+    function posisiPerch() {
+      if (!perchEl) {
+        const h = buatHoot("m-neutral");
+        perchEl = h.box;
+        perchSvg = h.svg;
+        perchEl.className = "fk-perch";
+        perchEl.hidden = true;
+        panel.appendChild(perchEl);
+      }
+      const sembunyi = () => {
+        perchEl.hidden = true;
+        perchId = null;
+        perchPos = null;
+      };
+      if (!HOOT_BERTENGGER || tab !== "tugas") return sembunyi();
+      const now = Date.now();
+      let t = lastSemua
+        .filter(lolos)
+        .filter((d) => !isDone(d) && d.ts !== null && d.ts > now)
+        .sort(urut)[0];
+      if (perchPaksa) {
+        const pk = lastSemua.find((d) => d.id === perchPaksa && !isDone(d));
+        if (pk) t = pk;
+      }
+      if (!t) return sembunyi();
+      const kartu = Array.prototype.find.call(
+        panel.querySelectorAll("#fk-list .fk-card"),
+        (c) => {
+          const k = c.querySelector(".fk-chk");
+          return k && k.dataset.id === t.id;
+        },
+      );
+      const gr = kartu && kartu.previousElementSibling;
+      if (!kartu || !gr || !gr.classList.contains("fk-group"))
+        return sembunyi();
+      const sisaP = t.ts === null ? Infinity : t.ts - now;
+      perchSvg.classList.remove("m-worry", "m-neutral", "m-panic");
+      perchSvg.classList.add(
+        sisaP < 36e5
+          ? "m-panic"
+          : sisaP < AMBANG_NOTIF_JAM * 36e5
+            ? "m-worry"
+            : "m-neutral",
+      );
+      salinTampilan(perchSvg);
+      const x = kartu.offsetLeft + kartu.offsetWidth - 44,
+        y = kartu.offsetTop - 28;
+      const lama = perchPos,
+        pindah = !!lama && perchId !== null && perchId !== t.id,
+        baru = perchId === null;
+      perchEl.hidden = false;
+      perchEl.style.left = x + "px";
+      perchEl.style.top = y + "px";
+      if (!REDUCE && perchEl.animate) {
+        if (pindah) {
+          const dx = lama.x - x,
+            dy = lama.y - y;
+          perchEl.animate(
+            [
+              {
+                transform: `translate(${dx}px,${dy}px)`,
+              },
+              {
+                transform: `translate(${dx / 2}px,${dy / 2 - 26}px)`,
+                offset: 0.5,
+              },
+              {
+                transform: "translate(0,0)",
+              },
+            ],
+            {
+              duration: 520,
+              easing: "ease-in-out",
+            },
+          );
+          anim(perchSvg, "fk-flap", 700);
+        } else if (baru) {
+          perchEl.animate(
+            [
+              {
+                opacity: 0,
+                transform: "translateY(-10px)",
+              },
+              {
+                opacity: 1,
+                transform: "none",
+              },
+            ],
+            {
+              duration: 350,
+              easing: "ease-out",
+            },
+          );
+        }
+      }
+      perchId = t.id;
+      perchPos = {
+        x,
+        y,
+      };
+    }
+
+    // Hoot terbang: ambil kartu yang baru dicentang, bawa ke tombol Selesai, lalu pulang
+    function siapTerbang(chk) {
+      if (!HOOT_TERBANG || REDUCE || terbang || !panel.animate) return null;
+      const kartu = chk.closest(".fk-card");
+      if (!kartu) return null;
+      const rc = kartu.getBoundingClientRect();
+      if (rc.bottom < 0 || rc.top > window.innerHeight) return null;
+      const ghost = kartu.cloneNode(true);
+      ghost.classList.remove("done", "fk-popdone");
+      ghost.classList.add("fk-ghost");
+      Object.assign(ghost.style, {
+        width: rc.width + "px",
+        height: rc.height + "px",
+        transform: `translate(${rc.left}px,${rc.top}px)`,
+      });
+      const c = ghost.querySelector(".fk-chk");
+      if (c) c.checked = true;
+      return {
+        ghost,
+        rc,
+      };
+    }
+
+    function mulaiTerbang(info) {
+      terbang = true;
+      const g = info.ghost,
+        rc = info.rc,
+        W = 46,
+        H = 46;
+      const hoot = buatHoot("m-happy fk-flap");
+      hoot.box.className = "fk-fly";
+      salinTampilan(hoot.svg);
+      panel.appendChild(g);
+      panel.appendChild(hoot.box);
+      const r0 = gSvg.getBoundingClientRect(),
+        sel = $("fk-toggledone"),
+        cnt = sel && sel.querySelector(".fk-cnt"),
+        tr = sel && sel.getBoundingClientRect();
+      const T =
+        tr && tr.bottom > 0 && tr.top < window.innerHeight
+          ? [tr.left + tr.width / 2, tr.top + tr.height / 2]
+          : null;
+      // Angka Selesai baru naik saat kartu dijatuhkan
+      if (cnt && T)
+        cnt.textContent =
+          "(" +
+          Math.max(
+            0,
+            (parseInt(cnt.textContent.replace(/\D/g, ""), 10) || 1) - 1,
+          ) +
+          ")";
+      mBtn.style.visibility = "hidden";
+      let beres = false;
+      const akhir = () => {
+        if (beres) return;
+        beres = true;
+        terbang = false;
+        g.remove();
+        hoot.box.remove();
+        mBtn.style.visibility = "";
+        const b = $("fk-toggledone"),
+          c = b && b.querySelector(".fk-cnt");
+        if (c)
+          c.textContent =
+            "(" + lastSemua.filter(lolos).filter(isDone).length + ")";
+      };
+      const jalan = (el, kf, ms) =>
+        new Promise((res) => {
+          const a = el.animate(kf, {
+            duration: ms,
+            easing: "ease-in-out",
+            fill: "forwards",
+          });
+          a.onfinish = res;
+          a.oncancel = res;
+        });
+      const tl = (p, s, o) => {
+        const f = {
+          transform:
+            `translate(${p[0]}px,${p[1]}px)` + (s ? ` scale(${s})` : ""),
+        };
+        if (o !== undefined) f.offset = o;
+        return f;
+      };
+      const arc = (a, b, up) => [(a[0] + b[0]) / 2, Math.min(a[1], b[1]) - up];
+      const pm = [
+        r0.left + r0.width / 2 - W / 2,
+        r0.top + r0.height / 2 - H / 2,
+      ];
+      const pk = [rc.left + rc.width / 2 - W / 2, rc.top - H + 12];
+      hoot.box.style.transform = `translate(${pm[0]}px,${pm[1]}px)`;
+      jalan(hoot.box, [tl(pm), tl(arc(pm, pk, 24), 0, 0.5), tl(pk)], 480)
+        .then(() => {
+          if (!T)
+            return jalan(
+              g,
+              [
+                {
+                  opacity: 1,
+                },
+                {
+                  opacity: 0,
+                },
+              ],
+              260,
+            );
+          const g0 = [rc.left, rc.top],
+            g1 = [T[0] - rc.width / 2, T[1] - rc.height / 2],
+            h1 = [T[0] - W / 2, T[1] - H - 12];
+          jalan(
+            g,
+            [tl(g0, 1), tl(arc(g0, g1, 60), 0.55, 0.5), tl(g1, 0.08)],
+            760,
+          );
+          return jalan(
+            hoot.box,
+            [tl(pk), tl(arc(pk, h1, 60), 0, 0.5), tl(h1)],
+            760,
+          );
+        })
+        .then(() => {
+          g.remove();
+          const b = $("fk-toggledone"),
+            c = b && b.querySelector(".fk-cnt");
+          if (c)
+            c.textContent =
+              "(" + lastSemua.filter(lolos).filter(isDone).length + ")";
+          if (b && T) anim(b, "fk-pop", 300);
+          const r1 = gSvg.getBoundingClientRect(),
+            pe = [
+              r1.left + r1.width / 2 - W / 2,
+              r1.top + r1.height / 2 - H / 2,
+            ];
+          const ps = T ? [T[0] - W / 2, T[1] - H - 12] : pk;
+          return jalan(
+            hoot.box,
+            [tl(ps), tl(arc(ps, pe, 30), 0, 0.5), tl(pe)],
+            520,
+          );
+        })
+        .then(akhir, akhir);
+      setTimeout(akhir, 4500);
+    }
+
+    // ===== EFEK =====
+    function efekMasuk(el) {
+      if (REDUCE) return;
+      el.classList.add("fk-in");
+      clearTimeout(el._tm);
+      el._tm = setTimeout(() => el.classList.remove("fk-in"), 900);
+    }
+
+    function swapAnim() {
+      ["fk-v-tugas", "fk-v-materi", "fk-v-jadwal", "fk-v-grafik"].forEach(
+        (id) => {
+          if (!$(id).hidden) anim($(id), "fk-swap", 300);
+        },
+      );
+    }
+
+    // ===== TAB & RESPONSIF =====
+    function applyTab() {
+      TABS.forEach((t) => {
+        $("fk-v-" + t[0]).hidden = t[0] !== tab;
+      });
+      Array.prototype.forEach.call(panel.querySelectorAll(".fk-tab"), (b) =>
+        b.classList.toggle("on", b.dataset.tab === tab),
+      );
+    }
+
+    function cekLebar() {
+      const s = panel.clientWidth < LEBAR_SEMPIT ? "s" : "m";
+      if (panel.dataset.w === s) {
+        posisiPerch();
+        return;
+      }
+      panel.dataset.w = s;
+      applyTab();
+      render();
+    }
+
+    function gantiTab(t) {
+      if (t === tab) return;
+      tab = t;
+      store.set("fk_tab", t);
+      animNext.tugas = animNext.materi = animNext.grafik = true;
+      applyTab();
+      render();
+      swapAnim();
+      const p =
+        t === "grafik"
+          ? pesanGrafik()
+          : {
+              msg: PESAN_TAB[t],
+              mood: "neutral",
+            };
+      sementara(p.msg, p.mood, 6500);
+    }
+
+    // ===== RENDER UTAMA =====
+    function render() {
+      lastSemua = semuaData();
+      const mine = lastSemua.filter(milikku);
+      renderChips(mine);
+      renderTugas(lastSemua);
+      if (!$("fk-v-materi").hidden) renderMateri();
+      if (!$("fk-v-jadwal").hidden) renderJadwal();
+      if (!$("fk-v-grafik").hidden) renderGrafik();
+      if (justDone) {
+        Array.prototype.forEach.call(panel.querySelectorAll(".fk-chk"), (c) => {
+          const w = c.dataset.id === justDone && c.closest(".fk-card, .dl");
+          if (w) anim(w, "fk-popdone", 600);
+        });
+        justDone = null;
+      }
+      terapkanOutfit();
+      posisiPerch();
+      renderGuide();
+    }
+
+    // ===== PENGINGAT =====
+    function updateNotifBtn() {
+      if (!("Notification" in window)) {
+        btnN.hidden = true;
+        return;
+      }
+      const p = Notification.permission;
+      btnN.innerHTML =
+        p === "granted"
+          ? ic("bell-fill") + " Pengingat aktif"
+          : p === "denied"
+            ? ic("bell-slash") + " Diblokir"
+            : ic("bell") + " Pengingat";
+      btnN.disabled = p !== "default";
+    }
+
+    function cekNotif() {
+      if (!("Notification" in window) || Notification.permission !== "granted")
+        return;
+      const now = Date.now();
+      let ubah = false;
+      lastSemua.forEach((d) => {
+        if (d.ts === null || isDone(d) || !milikku(d) || notified[d.id]) return;
+        const df = d.ts - now;
+        if (df > 0 && df < AMBANG_NOTIF_JAM * 36e5) {
+          notified[d.id] = now;
+          ubah = true;
+          try {
+            const n = new Notification("⏰ Deadline segera", {
+              body:
+                d.nama +
+                " - " +
+                label(d.ts).t +
+                (d.course ? "\n" + d.course : ""),
+              tag: d.id,
+            });
+            n.onclick = () => {
+              try {
+                window.focus();
+                n.close();
+              } catch (e) {}
+            };
+          } catch (e) {}
+        }
+      });
+      if (ubah) store.set("fk_notif", JSON.stringify(notified));
+    }
+
+    // ===== SALIN / WHATSAPP =====
+    function bangunTeks() {
+      const now = Date.now();
+      const f = lastSemua
+        .filter(lolos)
+        .filter((d) => !isDone(d) && d.ts !== null)
+        .sort(urut);
+      const nd = lastSemua
+          .filter(lolos)
+          .filter((d) => !isDone(d) && d.ts === null && d.jenis !== "cek"),
+        ck = lastSemua
+          .filter(lolos)
+          .filter((d) => !isDone(d) && d.jenis === "cek");
+      if (!f.length && !nd.length && !ck.length) return null;
+      const G = [
+        ["Terlewat", []],
+        ["Hari ini", []],
+        ["Besok", []],
+        ["Minggu ini", []],
+        ["Selanjutnya", []],
+      ];
+      f.forEach((d) => {
+        const hk = hariKalender(d.ts);
+        G[
+          d.ts < now ? 0 : hk === 0 ? 1 : hk === 1 ? 2 : hk <= 7 ? 3 : 4
+        ][1].push(d);
+      });
+      let t = `*Tugas${all.checked ? "" : " Kelas " + selK.value + " " + selS.value}* (${new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })})\n`;
+      G.filter((g) => g[1].length).forEach((g) => {
+        t += `\n*${g[0]}*\n`;
+        g[1].forEach((d) => {
+          const tgl =
+            g[0] === "Hari ini"
+              ? ""
+              : new Date(d.ts).toLocaleDateString("id-ID", {
+                  weekday: "short",
+                  day: "numeric",
+                  month: "short",
+                }) + " ";
+          t += `• ${d.nama}${d.course ? " (" + d.course.split("/")[0].trim() + ")" : ""} - ${tgl}${fmtJam(d.ts)}\n`;
+        });
+      });
+      if (nd.length) {
+        t += `\n*Belum ada tanggal*\n`;
+        nd.forEach((d) => {
+          t += `• ${d.nama}${d.course ? " (" + d.course.split("/")[0].trim() + ")" : ""}\n`;
+        });
+      }
+      if (ck.length) {
+        t += `\n*Perlu dicek (tenggat lewat, status belum pasti)*\n`;
+        ck.forEach((d) => {
+          t += `• ${d.nama}${d.course ? " (" + d.course.split("/")[0].trim() + ")" : ""}\n`;
+        });
+      }
+      return t;
+    }
+
+    function salin(txt, cb) {
+      const fb = () => {
+        try {
+          const ta = document.createElement("textarea");
+          ta.value = txt;
+          ta.style.cssText = "position:fixed;opacity:0";
+          document.body.appendChild(ta);
+          ta.select();
+          const ok = document.execCommand("copy");
+          ta.remove();
+          cb(ok);
+        } catch (e) {
+          cb(false);
+        }
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText)
+        navigator.clipboard.writeText(txt).then(() => cb(true), fb);
+      else fb();
+    }
+
+    function kedip(btn, html) {
+      const asli = btn.innerHTML;
+      btn.innerHTML = html;
+      setTimeout(() => {
+        btn.innerHTML = asli;
+      }, 1800);
+    }
+
+    // ===== DETEKSI KELAS OTOMATIS =====
+    const ajaxMoodle = (calls) =>
+      fetch(
+        M.cfg.wwwroot +
+          "/lib/ajax/service.php?sesskey=" +
+          encodeURIComponent(M.cfg.sesskey),
+        {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(calls),
+        },
+      ).then((r) => {
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+      });
+
+    function idCourse() {
+      const ids = [];
+      Array.prototype.forEach.call(
+        document.querySelectorAll('a[href*="/course/view.php?id="]'),
+        (a) => {
+          const m = a.href.match(/course\/view\.php\?id=(\d+)/);
+          if (m && ids.indexOf(+m[1]) < 0) ids.push(+m[1]);
+        },
+      );
+      return ids.slice(0, 30);
+    }
+
+    function deteksi() {
+      if (!hasM()) return Promise.reject("M.cfg tidak tersedia");
+      let uid = M.cfg.userId;
+      if (!uid) {
+        const a = document.querySelector('a[href*="/user/profile.php?id="]'),
+          m = a && a.href.match(/id=(\d+)/);
+        uid = m && +m[1];
+      }
+      if (!uid) return Promise.reject("ID pengguna tidak ditemukan");
+      const ids = idCourse();
+      if (!ids.length)
+        return Promise.reject("daftar course tidak ditemukan di halaman");
+      return ajaxMoodle(
+        ids.map((id, i) => ({
+          index: i,
+          methodname: "core_group_get_course_user_groups",
+          args: {
+            courseid: id,
+            userid: uid,
+          },
+        })),
+      ).then((j) => {
+        const cK = {},
+          cS = {},
+          nama = [];
+        j.forEach((x) => {
+          if (!x || x.error || !x.data || !x.data.groups) return;
+          x.data.groups.forEach((g) => {
+            nama.push(g.name);
+            KELAS_LIST.forEach((k) => {
+              if (menyebut(g.name, k)) cK[k] = (cK[k] || 0) + 1;
+            });
+            SHIFT_LIST.forEach((s) => {
+              if (menyebut(g.name, s)) cS[s] = (cS[s] || 0) + 1;
+            });
+          });
+        });
+        const top = (o) => Object.keys(o).sort((a, b) => o[b] - o[a])[0];
+        const k = top(cK),
+          s = top(cS);
+        if (!k && !s)
+          throw nama.length
+            ? `nama grup (${nama.slice(0, 3).join(", ")}) tidak cocok dengan daftar kelas/shift`
+            : "kamu tidak terdaftar di grup mana pun";
+        return {
+          k,
+          s,
+          nama,
+        };
+      });
+    }
+
+    function jalankanDeteksi() {
+      return deteksi()
+        .then((r) => {
+          if (r.k) {
+            selK.value = r.k;
+            store.set("fk_kelas", r.k);
+          }
+          if (r.s) {
+            selS.value = r.s;
+            store.set("fk_shift", r.s);
+          }
+          render();
+        })
+        .catch(() =>
+          stat(`Kelas tidak terdeteksi, memakai ${selK.value} ${selS.value}.`),
+        );
+    }
+    const stat = (t) => {
+      statEl.textContent = t || "";
+    };
+
+    // ===== TUGAS TANPA TANGGAL & TENGGAT DARI HALAMAN COURSE =====
+    // TIPE_PASTI selalu dianggap tugas. Jenis lain yang punya tenggat juga dianggap tugas.
+    // TIPE_STATIS adalah materi biasa. Jika ada jenis aktivitas yang tidak muncul, tambahkan ke TIPE_PASTI.
+    const TIPE_PASTI = [
+      "assign",
+      "quiz",
+      "workshop",
+      "turnitintooltwo",
+      "questionnaire",
+    ];
+    const TIPE_STATIS = [
+      "resource",
+      "page",
+      "url",
+      "folder",
+      "label",
+      "book",
+      "imscp",
+      "subsection",
+      "qbank",
+    ];
+    const basis = () =>
+      hasM() && M.cfg.wwwroot ? M.cfg.wwwroot : location.origin;
+    const sebelum = (t) => /\b(before|until|sebelum|hingga)\b/i.test(t);
+    const adaGrup = (t) => /belong to|tergabung|termasuk/i.test(t);
+
+    function tglDari(t) {
+      const m = t.match(
+        /(\d{1,2})\s+([A-Za-z]{3,})\s+(\d{4}),?\s+(\d{1,2})[:.](\d{2})\s*([AaPp][Mm])?/,
+      );
+      const bln = m && BULAN[m[2].slice(0, 3).toLowerCase()];
+      if (!m || bln === undefined) return null;
+      let h = +m[4];
+      if (m[6]) {
+        const pm = /p/i.test(m[6]);
+        if (pm && h < 12) h += 12;
+        if (!pm && h === 12) h = 0;
+      }
+      return new Date(+m[3], bln, +m[1], h, +m[5], 0).getTime();
+    }
+
+    function grupCocok(t) {
+      const i = infoKelas(t);
+      return !!(i.kel.length || i.hur.length || i.shf.length) && cocokInfo(i);
+    }
+
+    function bacaAkses(av) {
+      if (!av) return null;
+      const out = {
+          umum: [],
+          blok: [],
+        },
+        ul = av.querySelector("ul");
+      const tgl = (t) => (sebelum(t) ? tglDari(t) : null);
+      if (!ul) {
+        const d = tgl(bersih(av.textContent));
+        if (d) out.umum.push(d);
+        return out;
+      }
+      Array.prototype.forEach.call(ul.children, (li) => {
+        const sub = li.querySelector("ul");
+        if (!sub) {
+          const d = tgl(bersih(li.textContent));
+          if (d) out.umum.push(d);
+          return;
+        }
+        const g = [],
+          tg = [];
+        Array.prototype.forEach.call(sub.children, (x) => {
+          const tx = bersih(x.textContent),
+            d = adaGrup(tx) ? null : tgl(tx);
+          if (adaGrup(tx)) g.push(tx);
+          else if (d) tg.push(d);
+        });
+        const maks = tg.length ? Math.max.apply(null, tg) : 0;
+        if (g.length)
+          out.blok.push({
+            g,
+            t: maks,
+          });
+        else if (maks) out.umum.push(maks);
+      });
+      return out;
+    }
+
+    function estimasiAkses(x) {
+      const av = x.av;
+      if (!av)
+        return {
+          ok: true,
+          ts: null,
+        };
+      const milik = av.blok.filter((b) => b.g.some(grupCocok)).map((b) => b.t);
+      if (milik.length)
+        return {
+          ok: true,
+          ts: Math.max.apply(null, milik) || null,
+        };
+      // Dibuang hanya jika SEMUA grup pembatasnya jelas milik kelas/shift lain
+      const kenal =
+        av.blok.length &&
+        av.blok.every((b) =>
+          b.g.every((g) => {
+            const i = infoKelas(g);
+            return i.kel.length || i.hur.length || i.shf.length;
+          }),
+        );
+      if (kenal)
+        return {
+          ok: false,
+          ts: null,
+        };
+      if (av.umum.length)
+        return {
+          ok: true,
+          ts: Math.max.apply(null, av.umum),
+        };
+      return {
+        ok: true,
+        ts: null,
+      };
+    }
+
+    function cocokMatkul(course, namaJadwal) {
+      const kode = (String(course).match(/[A-Za-z]{2,}\d{2,}/) || [])[0];
+      if (
+        kode &&
+        String(namaJadwal).toUpperCase().indexOf(kode.toUpperCase()) >= 0
+      )
+        return true;
+      const depan = norm(String(course).split("/")[0]),
+        j = norm(String(namaJadwal));
+      return !!depan && !!j && (j.indexOf(depan) >= 0 || depan.indexOf(j) >= 0);
+    }
+
+    function pilihJadwal(x) {
+      const jd = bacaJadwal(),
+        prak = /praktikum/i.test(x.nama);
+      let c = [];
+      HARI.forEach((h, idx) =>
+        (jd[h] || []).forEach((r) => {
+          if (cocokMatkul(x.course, r.kode + " " + r.nama))
+            c.push({
+              d: idx,
+              r,
+            });
+        }),
+      );
+      if (!c.length) return null;
+      const pref = c.filter((z) => (z.r.tipe === "Praktikum") === prak);
+      c = pref.length ? pref : c;
+      return c.sort(
+        (a, b) => ((a.d + 6) % 7) - ((b.d + 6) % 7) || a.r.s - b.r.s,
+      )[0];
+    }
+
+    function mingguTs(x) {
+      if (x.minggu === null || x.minggu === undefined) return null;
+      const p = pilihJadwal(x);
+      if (!p) return null;
+      const n = new Date(),
+        sen = new Date(n.getFullYear(), n.getMonth(), n.getDate());
+      sen.setDate(sen.getDate() - ((sen.getDay() + 6) % 7));
+      const buka = new Date(
+        sen.getFullYear(),
+        sen.getMonth(),
+        sen.getDate() + x.minggu * 7 + ((p.d + 6) % 7),
+      );
+      return new Date(
+        buka.getFullYear(),
+        buka.getMonth(),
+        buka.getDate() + 7,
+        Math.floor(p.r.e / 60),
+        p.r.e % 60,
+        0,
+      ).getTime();
+    }
+
+    function estimasi(x) {
+      const e = estimasiAkses(x);
+      if (!e.ok) return e;
+      if (x.tsC)
+        return {
+          ok: true,
+          ts: x.tsC,
+          src: "course",
+        }; // tenggat asli dari halaman course
+      if (e.ts !== null) return e;
+      const t = mingguTs(x);
+      return t !== null
+        ? {
+            ok: true,
+            ts: t,
+            src: "minggu",
+          }
+        : e;
+    }
+
+    function semuaData() {
+      const ids = {};
+      cache.forEach((d) => {
+        const m = String(d.url).match(/\/mod\/[^?#]*\?(?:[^#]*&)?id=(\d+)/);
+        if (m) ids[m[1]] = 1;
+      });
+      const out = cache.slice(),
+        skrg = Date.now();
+      extra.forEach((x) => {
+        if (x.cmid && ids[x.cmid]) return;
+        if (kirim[x.id]) x.selesai = true; // terbukti sudah dikirim di Moodle
+        const e = estimasi(x);
+        if (!e.ok) return;
+        let ts = e.ts,
+          jenis =
+            ts === null
+              ? "nodate"
+              : e.src === "course"
+                ? "course"
+                : "perkiraan";
+        if (ts !== null && ts < skrg - (e.src === "course" ? 90 : 56) * 864e5)
+          return;
+        // Perkiraan yang sudah lewat dan tidak bisa dipastikan: jangan dicap "terlewat"
+        if (jenis === "perkiraan" && ts < skrg && !x.adaC) {
+          ts = null;
+          jenis = "nodate";
+        }
+        x.tsAsli = ts;
+        // Lewat tenggat tetapi belum terbukti belum dikerjakan: masuk "Perlu dicek", bukan "Terlewat"
+        if (
+          ts !== null &&
+          ts < skrg &&
+          !x.selesai &&
+          !done[x.id] &&
+          !belum[x.id] &&
+          !x.adaC
+        ) {
+          ts = null;
+          jenis = "cek";
+        }
+        x.ts = ts;
+        x.jenis = jenis;
+        out.push(x);
+      });
+      return out;
+    }
+
+    // ----- Jaringan: sesi login, antrean paralel terbatas -----
+    const ambilHtml = (u) =>
+      fetch(u, {
+        credentials: "same-origin",
+      }).then((r) => {
+        const login = () => {
+          sesiHabis = true;
+          throw new Error("LOGIN");
+        };
+        if (r.redirected && /\/login\//.test(r.url)) login();
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.text().then((h) => {
+          if (/id="page-login-index"|name="logintoken"/.test(h)) login();
+          return h;
+        });
+      });
+
+    function pool(arr, n, fn) {
+      let i = 0;
+      const worker = () =>
+        i >= arr.length
+          ? Promise.resolve()
+          : new Promise((res) => res(fn(arr[i++])))
+              .catch(() => {})
+              .then(worker);
+      return Promise.all(
+        Array.from(
+          {
+            length: Math.min(n, arr.length),
+          },
+          worker,
+        ),
+      );
+    }
+    let rt = 0;
+
+    function renderTunda() {
+      if (rt) return;
+      rt = setTimeout(() => {
+        rt = 0;
+        render();
+      }, 120);
+    }
+
+    function daftarCourse() {
+      const dariHalaman = () =>
+        idCourse().map((id) => ({
+          id,
+          nama: "",
+        }));
+      const gabung = (arr) => {
+        const seen = {},
+          out = [];
+        arr.concat(dariHalaman()).forEach((c) => {
+          if (c && !seen[c.id]) {
+            seen[c.id] = 1;
+            out.push(c);
+          }
+        });
+        return out.slice(0, 40);
+      };
+      let lama = [];
+      try {
+        const o = JSON.parse(store.get("fk_courses", "null"));
+        if (o && o.a) lama = o.a;
+      } catch (e) {}
+      if (!hasM()) return Promise.resolve(gabung(lama));
+      return ajaxMoodle(
+        ["inprogress", "future", "past", "hidden"].map((k, i) => ({
+          index: i,
+          methodname:
+            "core_course_get_enrolled_courses_by_timeline_classification",
+          args: {
+            offset: 0,
+            limit: 0,
+            classification: k,
+            sort: "fullname",
+            customfieldname: "",
+            customfieldvalue: "",
+          },
+        })),
+      )
+        .then((j) => {
+          let a = [];
+          (j || []).forEach((r) => {
+            if (
+              r &&
+              r.error &&
+              /requireslogin|sesskey|login/i.test(
+                JSON.stringify(r.exception || r.error),
+              )
+            )
+              sesiHabis = true;
+            const c = r && r.data && r.data.courses;
+            if (c)
+              a = a.concat(
+                c
+                  .filter(
+                    (x) =>
+                      !x.enddate || x.enddate * 1000 > Date.now() - 120 * 864e5,
+                  )
+                  .map((x) => ({
+                    id: x.id,
+                    nama: x.fullname || "",
+                  })),
+              );
+          });
+          if (!a.length) return gabung(lama); // gagal/kosong: pakai daftar yang tersimpan
+          store.set(
+            "fk_courses",
+            JSON.stringify({
+              t: Date.now(),
+              a,
+            }),
+          );
+          return gabung(a);
+        })
+        .catch(() => gabung(lama));
+    }
+    const IKON_MATERI = {
+      resource: "file-earmark-text",
+      page: "file-text",
+      url: "link-45deg",
+      folder: "folder",
+      forum: "chat-dots",
+      zoom: "camera-video",
+      bigbluebuttonbn: "camera-video",
+      h5pactivity: "puzzle",
+      book: "book",
+    };
+
+    function namaLink(ln) {
+      const cl = ln.cloneNode(true);
+      Array.prototype.forEach.call(
+        cl.querySelectorAll(".accesshide, .badge, .sr-only, .visually-hidden"),
+        (x) => x.remove(),
+      );
+      return bersih(cl.textContent);
+    }
+    const bagianNo = (sec) => {
+      if (!sec) return null;
+      let n = sec.getAttribute("data-number");
+      if (n === null || n === "") {
+        const m = (sec.id || "").match(/^section-(\d+)$/);
+        n = m ? m[1] : null;
+      }
+      return n === null ? null : +n;
+    };
+
+    // Cari bagian "minggu ini" bila course tidak menandai li.section.current
+    function bagianMingguIni(doc) {
+      const secs = Array.prototype.slice.call(
+        doc.querySelectorAll("li.section"),
+      );
+      const now = new Date();
+      now.setHours(12, 0, 0, 0);
+      // 1) judul berisi rentang tanggal, misalnya "10 November - 16 November"
+      for (const s of secs) {
+        const hd = s.querySelector(
+          ".sectionname, [data-for='section_title'], h3",
+        );
+        const m = bersih(hd ? hd.textContent : "").match(
+          /(\d{1,2})\s+([A-Za-z]{3,})\s*[-–]\s*(\d{1,2})\s+([A-Za-z]{3,})/,
+        );
+        const b1 = m && BULAN[m[2].slice(0, 3).toLowerCase()],
+          b2 = m && BULAN[m[4].slice(0, 3).toLowerCase()];
+        if (!m || b1 === undefined || b2 === undefined) continue;
+        const y = now.getFullYear();
+        let a = new Date(y, b1, +m[1]),
+          z = new Date(y, b2, +m[3], 23, 59);
+        if (z < a) {
+          if (now.getMonth() < 6) a = new Date(y - 1, b1, +m[1]);
+          else z = new Date(y + 1, b2, +m[3], 23, 59);
+        }
+        if (now >= a && now <= z) return s;
+      }
+      // 2) hitung dari tanggal mulai semester (isi SEMESTER_MULAI di pengaturan)
+      if (SEMESTER_MULAI) {
+        const p = SEMESTER_MULAI.split("-"),
+          st = new Date(+p[0], +p[1] - 1, +p[2]);
+        const mg = Math.floor((now - st) / (7 * 864e5)) + 1;
+        if (mg >= 1) return secs.find((s) => bagianNo(s) === mg) || null;
+      }
+      return null;
+    }
+
+    // Baca "Due/Batas waktu" yang tampil di halaman course
+    function bacaTanggalAktivitas(a) {
+      const el = a.querySelector(
+        '[data-region="activity-dates"], .activity-dates',
+      );
+      const teks = bersih((el || a).textContent);
+      const bagian = teks.split(
+        /(?=\b(?:Opened|Opens|Due|Closes|Closed|Dibuka|Membuka|Ditutup|Menutup|Batas waktu|Batas pengumpulan|Batas akhir|Tenggat|Jatuh tempo|Berakhir)\s*:)/i,
+      );
+      let tutupTs = null;
+      bagian.forEach((p) => {
+        if (
+          !/^\s*(due|closes?|closed|ditutup|menutup|batas waktu|batas pengumpulan|batas akhir|tenggat|jatuh tempo|berakhir)\s*:/i.test(
+            p,
+          )
+        )
+          return;
+        const d = tglDari(p);
+        if (d !== null) tutupTs = tutupTs === null ? d : Math.max(tutupTs, d);
+      });
+      return {
+        tutup: tutupTs,
+      };
+    }
+
+    function infoAktivitas(a) {
+      const cls = " " + (a.className || "") + " ";
+      const tipe =
+        (/modtype_(\w+)/.exec(cls) ||
+          /\s(assign|quiz|workshop|forum|lesson|scorm|h5pactivity|feedback|choice|survey|data|glossary|turnitintooltwo|questionnaire|resource|page|url|folder|book|label)\s/.exec(
+            cls,
+          ) ||
+          [])[1] || "";
+      const ln =
+        a.querySelector("a.aalink[href]") ||
+        a.querySelector(".activityname a[href]") ||
+        a.querySelector('a[href*="/mod/"]');
+      const tg = bacaTanggalAktivitas(a);
+      const tugas =
+        TIPE_PASTI.indexOf(tipe) >= 0 ||
+        (TIPE_STATIS.indexOf(tipe) < 0 && tg.tutup !== null);
+      return {
+        tipe,
+        ln,
+        tg,
+        tugas,
+      };
+    }
+
+    function parseTugas(doc, nmC, curNo) {
+      const out = [];
+      Array.prototype.forEach.call(
+        doc.querySelectorAll("li.activity, [data-for='cmitem']"),
+        (a) => {
+          const inf = infoAktivitas(a);
+          if (!inf.tugas || !inf.ln) return;
+          const nama = namaLink(inf.ln);
+          if (!nama) return;
+          const url = new URL(
+              inf.ln.getAttribute("href"),
+              basis() + "/course/view.php",
+            ).href,
+            m = url.match(/id=(\d+)/);
+          const comp = a.querySelector('[data-region="completion-info"]'),
+            b = comp && comp.querySelector("button, .btn");
+          const selesai =
+            !!comp &&
+            (/^(done|selesai|completed)/i.test(
+              bersih((b || comp).textContent),
+            ) ||
+              !!(b && /btn-success/.test(b.className)));
+          const noS = bagianNo(a.closest("li.section"));
+          out.push({
+            id: idStabil(url, nama),
+            ts: null,
+            nama,
+            url,
+            course: nmC,
+            desc: "",
+            aksi: null,
+            teks: nama + " " + nmC,
+            cmid: m ? m[1] : "",
+            selesai,
+            adaC: !!comp,
+            tsC: inf.tg.tutup,
+            av: bacaAkses(
+              a.querySelector(
+                ".availabilityinfo, [data-region='availabilityinfo']",
+              ),
+            ),
+            minggu:
+              curNo !== null && noS !== null && noS > 0 ? noS - curNo : null,
+            jenis: "nodate",
+          });
+        },
+      );
+      return out;
+    }
+
+    function bacaCourse(c) {
+      const urai = (h) => new DOMParser().parseFromString(h, "text/html");
+      return ambilHtml(basis() + "/course/view.php?id=" + c.id).then((html) => {
+        const doc = urai(html),
+          h1 = doc.querySelector("h1"),
+          nmC = c.nama || (h1 ? bersih(h1.textContent) : "");
+        let cur = doc.querySelector("li.section.current");
+        if (!cur)
+          cur = Array.prototype.find.call(
+            doc.querySelectorAll("li.section"),
+            (sc) => {
+              const hd = sc.querySelector(
+                ".course-section-header, .section-header, .sectionhead, h3",
+              );
+              return (
+                hd &&
+                /current (week|topic)|minggu ini|pekan ini/i.test(
+                  hd.textContent,
+                )
+              );
+            },
+          );
+        if (!cur) cur = bagianMingguIni(doc);
+        const curNo = bagianNo(cur),
+          materi = {
+            course: nmC,
+            judul: "",
+            items: [],
+          };
+        if (cur) {
+          const hd = cur.querySelector(
+            ".sectionname, [data-for='section_title'], h3",
+          );
+          materi.judul = hd ? bersih(hd.textContent) : "";
+          Array.prototype.forEach.call(
+            cur.querySelectorAll("li.activity"),
+            (a) => {
+              const inf = infoAktivitas(a);
+              if (!inf.ln || !inf.tipe || inf.tugas) return;
+              const nama = namaLink(inf.ln);
+              if (nama)
+                materi.items.push({
+                  nama,
+                  url: inf.ln.href,
+                  ic: IKON_MATERI[inf.tipe] || "journal-text",
+                });
+            },
+          );
+        }
+        const tugas = parseTugas(doc, nmC, curNo);
+
+        // Course "satu bagian per halaman": baca bagian lain yang tidak ada di halaman utama (3 sekaligus)
+        const ada = {},
+          links = {};
+        Array.prototype.forEach.call(
+          doc.querySelectorAll("li.section"),
+          (s) => {
+            const n = bagianNo(s);
+            if (n !== null) ada[n] = 1;
+          },
+        );
+        Array.prototype.forEach.call(
+          doc.querySelectorAll('a[href*="section"]'),
+          (a) => {
+            try {
+              const u = new URL(
+                  a.getAttribute("href"),
+                  basis() + "/course/view.php",
+                ),
+                s = u.searchParams.get("section");
+              if (
+                !/\/course\/view\.php$/.test(u.pathname) ||
+                u.searchParams.get("id") !== String(c.id)
+              )
+                return;
+              if (!s || !/^\d+$/.test(s) || ada[+s]) return;
+              links[s] = u.href;
+            } catch (e) {}
+          },
+        );
+        const hasil = [];
+        return pool(Object.keys(links).slice(0, 25), 3, (k) =>
+          sesiHabis
+            ? null
+            : ambilHtml(links[k]).then((h) => {
+                hasil.push(h);
+              }),
+        ).then(() => {
+          const seen = {};
+          tugas.forEach((t) => {
+            seen[t.id] = 1;
+          });
+          hasil.forEach((h) =>
+            parseTugas(urai(h), nmC, curNo).forEach((t) => {
+              if (!seen[t.id]) {
+                seen[t.id] = 1;
+                tugas.push(t);
+              }
+            }),
+          );
+          return {
+            tugas,
+            materi,
+          };
+        });
+      });
+    }
+
+    // ----- Cache per course: ringkas, tidak pernah dihapus saat gagal baca / sesi habis -----
+    const KC = "fk_cc4_";
+    const ringkasTugas = (t) => ({
+      id: t.id,
+      nama: t.nama,
+      url: t.url,
+      course: t.course,
+      cmid: t.cmid,
+      selesai: t.selesai,
+      adaC: t.adaC,
+      tsC: t.tsC,
+      av: t.av,
+      minggu: t.minggu,
+    });
+    const pulihTugas = (t) =>
+      Object.assign(
+        {
+          ts: null,
+          desc: "",
+          aksi: null,
+          jenis: "nodate",
+          teks: t.nama + " " + t.course,
+        },
+        t,
+      );
+
+    function bacaCacheCourse(c) {
+      try {
+        const o = JSON.parse(store.get(KC + c.id, "null"));
+        if (o && o.d)
+          return {
+            t: o.t,
+            d: {
+              tugas: (o.d.tugas || []).map(pulihTugas),
+              materi: o.d.materi,
+            },
+          };
+      } catch (e) {}
+      return null;
+    }
+
+    function simpanCacheCourse(c, d) {
+      store.set(
+        KC + c.id,
+        JSON.stringify({
+          t: Date.now(),
+          d: {
+            tugas: d.tugas.map(ringkasTugas),
+            materi: d.materi,
+          },
+        }),
+      );
+    }
+
+    function bersihkanCache() {
+      try {
+        const del = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (/^fk_cc_|^fk_cc2_|^fk_cc3_/.test(k)) del.push(k);
+        }
+        del.forEach((k) => localStorage.removeItem(k));
+      } catch (e) {}
+    }
+
+    // ----- Status pengiriman: tugas/kuis yang sudah dikerjakan tidak dihitung terlewat -----
+    let sedangCek = false;
+    const simpanStatus = () => {
+      store.set("fk_kirim", JSON.stringify(kirim));
+      store.set("fk_belum", JSON.stringify(belum));
+      store.set("fk_tdk", JSON.stringify(tdk));
+    };
+
+    // true = sudah dikirim/selesai, false = pasti belum, null = tidak bisa dipastikan
+    function statusKirim(html) {
+      const doc = new DOMParser().parseFromString(html, "text/html");
+      const comp = doc.querySelector('[data-region="completion-info"]'),
+        cb = comp && comp.querySelector("button, .btn");
+      if (
+        comp &&
+        /^(done|selesai|completed)/i.test(bersih((cb || comp).textContent))
+      )
+        return true;
+      // Tugas (assign): kelas CSS Moodle tidak bergantung bahasa
+      if (doc.querySelector(".submissionstatussubmitted, .submissiongraded"))
+        return true;
+      const tbl = doc.querySelector(
+        ".submissionstatustable, .submissionsummarytable",
+      );
+      if (tbl) {
+        const POS =
+            /submitted|dikirim|terkirim|diserahkan|dikumpul|graded|dinilai/i,
+          NEG = /not submitted|no submission|no attempt|draft|belum|tidak ada/i;
+        let st = "",
+          gr = "";
+        Array.prototype.forEach.call(tbl.querySelectorAll("tr"), (tr) => {
+          const th = tr.querySelector("th"),
+            td = tr.querySelector("td");
+          if (!th || !td) return;
+          const h = th.textContent;
+          if (
+            /submission status|status (pengiriman|penyerahan|pengumpulan|pengerjaan)/i.test(
+              h,
+            )
+          )
+            st = bersih(td.textContent);
+          else if (/grading status|status penilaian/i.test(h))
+            gr = bersih(td.textContent);
+        });
+        if (st && POS.test(st) && !NEG.test(st)) return true;
+        if (/^(graded|dinilai)$/i.test(gr)) return true;
+        return false;
+      }
+      // Kuis
+      const qa = doc.querySelector("table.quizattemptsummary");
+      if (qa)
+        return (
+          /\b(finished|selesai)\b/i.test(qa.textContent) ||
+          !!qa.querySelector('a[href*="review.php"]')
+        );
+      if (doc.querySelector('a[href*="review.php?attempt"]')) return true;
+      if (
+        doc.querySelector(
+          '.quizstartbuttondiv, form[action*="startattempt.php"], form[action*="attempt.php"]',
+        )
+      )
+        return false;
+      return null;
+    }
+
+    // Memeriksa tugas dari Timeline/kalender DAN dari halaman course (kuis selesai ikut terbaca)
+    function periksaKirim() {
+      if (sedangCek || sesiHabis) return;
+      const skrg = Date.now(),
+        segar = (x) => {
+          const t = belum[x.id] || tdk[x.id];
+          return !!t && skrg - t < 120 * 6e4;
+        };
+      const q = lastSemua.filter(
+        (x) =>
+          !x.selesai &&
+          !kirim[x.id] &&
+          !done[x.id] &&
+          /\/mod\/(assign|quiz)\//.test(x.url) &&
+          milikku(x) &&
+          !segar(x),
+      );
+      if (!q.length) return;
+      // Yang sudah lewat tenggat diperiksa lebih dulu
+      const tgt = (x) => x.tsC || x.ts || 0;
+      const lewat = (x) => (tgt(x) && tgt(x) < skrg ? 0 : 1);
+      q.sort((a, b) => lewat(a) - lewat(b) || tgt(b) - tgt(a));
+      sedangCek = true;
+      pool(q, 3, (x) =>
+        sesiHabis
+          ? null
+          : ambilHtml(x.url).then((h) => {
+              const s = statusKirim(h),
+                n = Date.now();
+              delete belum[x.id];
+              delete tdk[x.id];
+              if (s === true) kirim[x.id] = n;
+              else if (s === false) belum[x.id] = n;
+              else tdk[x.id] = n;
+              simpanStatus();
+              renderTunda();
+            }),
+      ).then(() => {
+        sedangCek = false;
+        render();
+      });
+    }
+
+    // ----- Muat data course: tampilkan data tersimpan dulu, perbarui di latar belakang -----
+    let extraBy = {},
+      urutC = [],
+      segarId = 0;
+    const PESAN_SEGAR = "Memperbarui data di latar belakang...";
+
+    function susunExtra() {
+      extra = [];
+      daftarMateri = [];
+      Object.keys(extraBy)
+        .sort((a, b) => urutC.indexOf(a) - urutC.indexOf(b))
+        .forEach((k) => {
+          const d = extraBy[k];
+          extra = extra.concat(d.tugas);
+          if (d.materi && d.materi.items && d.materi.items.length)
+            daftarMateri.push(d.materi);
+        });
+    }
+
+    function muatExtra(paksa) {
+      const id = ++segarId;
+      extraGagal = 0;
+      sesiHabis = false;
+      if (!extra.length) {
+        extraStatus = "loading";
+        render();
+      }
+      daftarCourse()
+        .then((cs) => {
+          if (id !== segarId) return;
+          urutC = cs.map((c) => String(c.id));
+          const urus = [],
+            skrg = Date.now();
+          cs.forEach((c) => {
+            const o = bacaCacheCourse(c);
+            if (o) extraBy[c.id] = o.d;
+            if (!o || paksa || skrg - o.t > CACHE_MENIT * 6e4) urus.push(c);
+          });
+          Object.keys(extraBy).forEach((k) => {
+            if (urutC.indexOf(k) < 0) delete extraBy[k];
+          });
+          susunExtra();
+          extraStatus = urus.length
+            ? extra.length
+              ? "refresh"
+              : "loading"
+            : "done";
+          render();
+          if (!urus.length) {
+            periksaKirim();
+            return;
+          }
+          stat(PESAN_SEGAR);
+          return pool(urus, 3, (c) =>
+            sesiHabis || id !== segarId
+              ? null
+              : bacaCourse(c).then(
+                  (d) => {
+                    simpanCacheCourse(c, d);
+                    extraBy[c.id] = d;
+                    susunExtra();
+                    renderTunda();
+                  },
+                  () => {
+                    if (!extraBy[c.id]) extraGagal++;
+                  },
+                ),
+          ).then(() => {
+            if (id !== segarId) return;
+            extraStatus = extraGagal || sesiHabis ? "error" : "done";
+            if (statEl.textContent === PESAN_SEGAR) stat("");
+            susunExtra();
+            render();
+            periksaKirim();
+          });
+        })
+        .catch(() => {
+          extraStatus = "error";
+          extraGagal = extra.length ? 0 : 1;
+          if (statEl.textContent === PESAN_SEGAR) stat("");
+          render();
+        });
+    }
+
+    // ===== MUAT DATA TIMELINE =====
+    let tmr,
+      pantau = null,
+      coba = 0,
+      kalenderOk = false;
+
+    // Timeline Moodle memuat sedikit event dulu; tekan "Show more" otomatis sampai habis
+    // (hanya dipakai sebagai cadangan jika API kalender gagal)
+    let moreKlik = 0;
+
+    function mintaLagi() {
+      const b = blokNative(),
+        btn = b && b.querySelector('[data-action="more-events"]');
+      if (!btn || btn.disabled || moreKlik >= 40) return;
+      const w = btn.closest('[data-region="more-events-button-container"]');
+      if (
+        (w && /\b(hidden|d-none)\b/.test(w.className)) ||
+        /\b(hidden|d-none)\b/.test(btn.className)
+      )
+        return;
+      moreKlik++;
+      btn.click();
+    }
+
+    function muatUlang() {
+      if (kalenderOk) return; // sumber utama sudah API kalender
+      const d = unikId(bacaData());
+      if (d.length && !cache.length)
+        animNext.tugas = animNext.materi = animNext.grafik = true;
+      if (d.length || !cache.length) cache = d;
+      render();
+      cekNotif();
+      setTimeout(periksaKirim, 800);
+      mintaLagi();
+    }
+
+    function tunggu() {
+      const b = blokNative();
+      if (b && b.querySelector('[data-region="event-list-item"]')) {
+        muatUlang();
+        if (!pantau) {
+          pantau = new MutationObserver(() => {
+            clearTimeout(tmr);
+            tmr = setTimeout(muatUlang, 400);
+          });
+          pantau.observe(b, {
+            childList: true,
+            subtree: true,
+          });
+        }
+        return;
+      }
+      if (++coba < 30) setTimeout(tunggu, 500);
+      else {
+        cache = [];
+        timelineGagal = !blokNative();
+        render();
+      }
+    }
+
+    // ----- Sumber utama: API kalender Moodle (semua tugas dalam 1-2 permintaan, bukan scraping) -----
+    function ambilKalender() {
+      if (!hasM()) return Promise.reject("no M");
+      const skrg = Math.floor(Date.now() / 1000),
+        hasil = [];
+      const halaman = (after) =>
+        ajaxMoodle([
+          {
+            index: 0,
+            methodname: "core_calendar_get_action_events_by_timesort",
+            args: Object.assign(
+              {
+                timesortfrom: skrg - 120 * 86400,
+                timesortto: skrg + 365 * 86400,
+                limitnum: 50,
+                limittononsuspendedevents: true,
+              },
+              after
+                ? {
+                    aftereventid: after,
+                  }
+                : {},
+            ),
+          },
+        ]).then((j) => {
+          const r = j && j[0];
+          if (!r || r.error) throw new Error("kalender");
+          const ev = (r.data && r.data.events) || [];
+          ev.forEach((e) => hasil.push(e));
+          return ev.length >= 50 && hasil.length < 600
+            ? halaman(r.data.lastid || ev[ev.length - 1].id)
+            : hasil;
+        });
+      return halaman(0);
+    }
+
+    function jadiTugas(e) {
+      const url = e.url || e.viewurl || "#",
+        nama = bersih(e.activityname || e.name),
+        course = e.course ? bersih(e.course.fullname) : "";
+      return {
+        id: idStabil(url, nama),
+        ts: (e.timesort || e.timestart) * 1000,
+        nama,
+        url,
+        course,
+        desc: e.activitystr || "",
+        aksi:
+          e.action && e.action.actionable
+            ? {
+                name: e.action.name,
+                url: e.action.url,
+              }
+            : null,
+        teks: nama + " " + course,
+      };
+    }
+
+    function muatKalender() {
+      ambilKalender()
+        .then((ev) => {
+          const d = unikId(ev.map(jadiTugas).filter((x) => x.nama));
+          if (d.length && !cache.length)
+            animNext.tugas = animNext.materi = animNext.grafik = true;
+          cache = d;
+          kalenderOk = true;
+          timelineGagal = false;
+          render();
+          cekNotif();
+          setTimeout(periksaKirim, 800);
+        })
+        .catch(() => {
+          if (!kalenderOk) {
+            // cadangan: baca blok Timeline di halaman seperti sebelumnya
+            coba = 0;
+            tunggu();
+          }
+        });
+    }
+    setInterval(() => {
+      if (!document.hidden) muatKalender();
+    }, 5 * 60000);
+
+    function ulangi() {
+      coba = 0;
+      moreKlik = 0;
+      timelineGagal = false;
+      Object.keys(belum).forEach((k) => delete belum[k]);
+      Object.keys(tdk).forEach((k) => delete tdk[k]);
+      simpanStatus();
+      muatKalender();
+      muatExtra(true);
+    }
+
+    // ===== EVENT =====
+    let tq;
+    inQ.addEventListener("input", () => {
+      intipCari();
+      clearTimeout(tq);
+      tq = setTimeout(render, 200);
+    });
+    [
+      [selK, "fk_kelas"],
+      [selS, "fk_shift"],
+    ].forEach((p) =>
+      p[0].addEventListener("change", () => {
+        store.set(p[1], p[0].value);
+        render();
+      }),
+    );
+    all.addEventListener("change", () => {
+      store.set("fk_all", all.checked ? "1" : "0");
+      render();
+    });
+    btnN.addEventListener("click", () => {
+      try {
+        const sel = () => {
+            updateNotifBtn();
+            cekNotif();
+          },
+          r = Notification.requestPermission(sel);
+        if (r && r.then) r.then(sel);
+      } catch (e) {}
+    });
+    $("fk-copy").addEventListener("click", function () {
+      const t = bangunTeks();
+      if (!t) return kedip(this, ic("info-circle") + " Tidak ada tugas");
+      salin(t, (ok) =>
+        kedip(
+          this,
+          ok ? ic("check2") + " Tersalin" : ic("x-circle") + " Gagal",
+        ),
+      );
+    });
+    $("fk-wa").addEventListener("click", function () {
+      const t = bangunTeks();
+      if (!t) return kedip(this, ic("info-circle") + " Tidak ada tugas");
+      window.open(WA + "?text=" + encodeURIComponent(t), "_blank", "noopener");
+    });
+
+    panel.addEventListener("change", (e) => {
+      const t = e.target;
+      if (!t.classList || !t.classList.contains("fk-chk") || t.disabled) return;
+      const id = t.dataset.id,
+        rc = t.getBoundingClientRect(),
+        item = lastSemua.find((x) => x.id === id);
+      const info = t.checked ? siapTerbang(t) : null;
+      if (t.checked) {
+        const n = Date.now();
+        done[id] = n;
+        delete proses[id];
+        justDone = id;
+        rek[id] = [n, !item || item.ts === null || n <= item.ts ? 1 : 0];
+      } else {
+        delete done[id];
+        delete rek[id];
+        justDone = null;
+      }
+      store.set("fk_done", JSON.stringify(done));
+      store.set("fk_proses", JSON.stringify(proses));
+      store.set("fk_rek", JSON.stringify(rek));
+      animNext.grafik = true;
+      render();
+      if (info) mulaiTerbang(info);
+      if (t.checked) reaksiSelesai(item, rc);
+      else
+        sementara(
+          "Dibuka lagi ya? Tidak apa-apa, pelan-pelan saja.",
+          "neutral",
+          5000,
+        );
+    });
+
+    panel.addEventListener("click", (e) => {
+      const tg = e.target;
+      if (!tg.closest) return;
+      const at = (sel) => tg.closest(sel);
+      let el;
+      // Klik kartu jadwal = buka course (kecuali yang diklik tautan/tombol di dalamnya)
+      if ((el = at("[data-href]")) && !at("a, button, input")) {
+        location.href = el.dataset.href;
+        return;
+      }
+      if (at("#fk-mascot-btn")) {
+        if (skipClick) return;
+        return ketukMaskot();
+      }
+      if (at("#fk-gmin")) {
+        gMin = true;
+        store.set("fk_gmin", "1");
+        return setMood(gMood);
+      }
+      if ((el = at(".fk-jsum"))) {
+        jdOpen = jdOpen === el.dataset.day ? "" : el.dataset.day;
+        renderJadwal();
+        if (jdOpen) efekMasuk($("fk-jadwal"));
+        return;
+      }
+      if ((el = at(".fk-tab"))) return gantiTab(el.dataset.tab);
+      if ((el = at("[data-goto]"))) return gantiTab(el.dataset.goto);
+      if ((el = at("[data-start]"))) {
+        const id = el.dataset.start,
+          item = lastSemua.find((x) => x.id === id);
+        if (proses[id]) delete proses[id];
+        else proses[id] = Date.now();
+        store.set("fk_proses", JSON.stringify(proses));
+        animNext.grafik = true;
+        render();
+        return sementara(
+          proses[id]
+            ? `Semangat mengerjakan "${item ? item.nama : "tugas itu"}"!`
+            : "Oke, dikembalikan ke belum dikerjakan.",
+          proses[id] ? "happy" : "neutral",
+          5000,
+        );
+      }
+      if ((el = at("[data-grup]"))) {
+        tutup[el.dataset.grup] = tutup[el.dataset.grup] ? 0 : 1;
+        store.set("fk_tutup", JSON.stringify(tutup));
+        return render();
+      }
+      if (at("[data-retry]")) return ulangi();
+      if ((el = at("[data-fokus]"))) return aksiFokus(el.dataset.fokus);
+      if (at("[data-iseng]")) {
+        isengOn = !isengOn;
+        store.set("fk_iseng", isengOn ? "1" : "0");
+        terapkanTema();
+        return sementara(
+          isengOn ? "Aku boleh iseng lagi? Asyik!" : "Oke, aku diam saja.",
+          isengOn ? "happy" : "neutral",
+          3500,
+        );
+      }
+      if (at("#fk-set")) {
+        $("fk-settings").hidden = !$("fk-settings").hidden;
+        return;
+      }
+      if (at("#fk-top"))
+        return panel.scrollIntoView({
+          behavior: REDUCE ? "auto" : "smooth",
+          block: "start",
+        });
+      if ((el = at("[data-tema]"))) {
+        tema = el.dataset.tema;
+        store.set("fk_tema", tema);
+        terapkanTema();
+        return sementara("Warna tema diganti. Cantik!", "happy", 4000);
+      }
+      if ((el = at("[data-aks]"))) {
+        aks = el.dataset.aks;
+        store.set("fk_ac", aks);
+        terapkanTema();
+        terapkanOutfit();
+        posisiPerch();
+        anim(mBtn, "fk-wig", 500);
+        return sementara(
+          aks === "polos" ? "Kembali polos, deh." : "Aksesori baru, aku suka!",
+          "happy",
+          4000,
+        );
+      }
+      if ((el = at("[data-mode]"))) {
+        if (el.dataset.mode === chartMode) return;
+        chartMode = el.dataset.mode;
+        store.set("fk_chart", chartMode);
+        animNext.grafik = true;
+        render();
+        return sementara(
+          chartMode === "donut"
+            ? "Grafik lingkar: lihat porsi tugas selesai."
+            : "Grafik batang: bandingkan progres tiap matkul.",
+          "happy",
+          5000,
+        );
+      }
+      if (at("#fk-toggledone")) {
+        showDone = !showDone;
+        store.set("fk_showdone", showDone ? "1" : "0");
+        render();
+      }
+      if (at("#fk-togglenodate")) {
+        showNodate = !showNodate;
+        store.set("fk_shownodate2", showNodate ? "1" : "0");
+        render();
+      }
+      if (at("#fk-togglecek")) {
+        showCek = !showCek;
+        store.set("fk_showcek", showCek ? "1" : "0");
+        render();
+      }
+    });
+
+    // ===== MULAI =====
+    if (
+      store.get("fk_kelas", null) === null &&
+      store.get("fk_autotry", "0") !== "1"
+    ) {
+      store.set("fk_autotry", "1");
+      setTimeout(jalankanDeteksi, 1200);
+    }
+    bersihkanCache();
+    updateNotifBtn();
+    setMood("neutral");
+    terapkanTema();
+    let scT = 0;
+    document.addEventListener(
+      "scroll",
+      () => {
+        if (scT) return;
+        scT = requestAnimationFrame(() => {
+          scT = 0;
+          const r = panel.getBoundingClientRect();
+          $("fk-top").hidden = !(r.top < -200 && r.bottom > 120);
+        });
+      },
+      {
+        capture: true,
+        passive: true,
+      },
+    );
+    if (window.ResizeObserver) new ResizeObserver(cekLebar).observe(panel);
+    window.addEventListener("resize", cekLebar);
+    panel.dataset.w = panel.clientWidth < LEBAR_SEMPIT ? "s" : "m";
+    applyTab();
+    muatKalender();
+    render();
+    sementara(
+      `Halo! Aku ${NAMA_MASKOT}, pemandu tugasmu. Ketuk aku kalau butuh saran.`,
+      "happy",
+      5000,
+    );
+    setTimeout(muatExtra, 1500);
+    setInterval(() => {
+      if (document.hidden) return;
+      render();
+      cekNotif();
+    }, 60000);
+    [0, 800, 2000, 4000].forEach((ms) => setTimeout(aturNative, ms));
+  })();
+</script>

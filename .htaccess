@@ -1,0 +1,38 @@
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Cegah akses langsung ke folder internal
+    RewriteRule ^config/ - [F,L]
+    RewriteRule ^models/ - [F,L]
+    RewriteRule ^views/ - [F,L]
+
+    # Jika request ke file/folder yang nyata, biarkan lewat
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # ===== URL BERSIH =====
+    # Auth
+    RewriteRule ^login$                controllers/auth/login.php [L]
+    RewriteRule ^logout$               controllers/auth/logout.php [L]
+    RewriteRule ^register$             controllers/auth/register.php [L]
+
+    # Owner
+    RewriteRule ^owner/dashboard$      controllers/owner/dashboard.php [L]
+    RewriteRule ^owner/akun-kasir$     controllers/owner/akun-kasir.php [L]
+    RewriteRule ^owner/produk$         controllers/owner/daftar-produk.php [L]
+    RewriteRule ^owner/kategori$       controllers/owner/kategori.php [L]
+    RewriteRule ^owner/restock$        controllers/owner/restock-barang.php [L]
+    RewriteRule ^owner/store$          controllers/owner/toko.php [L]
+    RewriteRule ^owner/kasir$          controllers/owner/kasir.php [L]
+    RewriteRule ^owner/transaksi$      controllers/owner/transaksi.php [L]
+    RewriteRule ^owner/laporan/laba-rugi$   controllers/owner/laporan_laba_rugi.php [L]
+    RewriteRule ^owner/laporan/stok$        controllers/owner/laporan_stok.php [L]
+    RewriteRule ^owner/laporan/terlaris$    controllers/owner/laporan_terlaris.php [L]
+    RewriteRule ^owner/change-password$     controllers/owner/change_password.php [L]
+
+    # Cashier
+    RewriteRule ^cashier/dashboard$    controllers/cashier/dashboard.php [L]
+</IfModule>
