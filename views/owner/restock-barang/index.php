@@ -45,7 +45,6 @@
             </div>
             <div class="d-flex align-items-center justify-content-between gap-2">
                 <span class="metric-value text-success" id="stat-unit-masuk">25 Unit</span>
-                <span class="badge-status success"><i data-lucide="arrow-up" class="icon-xs"></i> Masuk</span>
             </div>
             <small class="text-muted mt-2 d-block" style="font-size: 0.725rem;">Stok langsung diperbarui</small>
         </div>
@@ -61,7 +60,6 @@
             </div>
             <div class="d-flex align-items-center justify-content-between gap-2">
                 <span class="metric-value text-danger">1 Item</span>
-                <span class="badge-status danger">Segera Restock</span>
             </div>
             <small class="text-muted mt-2 d-block" style="font-size: 0.725rem;">Beras Ramos Setra (sisa 8)</small>
         </div>
