@@ -18,7 +18,7 @@
 <div class="row g-3 mb-4">
 
     <!-- Kartu 1: Total Pengguna -->
-    <div class="col-12 col-sm-6 col-xl-3">
+    <div class="col-12 col-sm-6 col-xl-4">
         <div class="card-modern p-3 h-100 metric-card">
             <div class="d-flex align-items-center justify-content-between mb-2">
                 <span class="text-muted small fw-medium">Total Pengguna</span>
@@ -34,7 +34,7 @@
     </div>
 
     <!-- Kartu 2: Kasir Aktif -->
-    <div class="col-12 col-sm-6 col-xl-3">
+    <div class="col-12 col-sm-6 col-xl-4">
         <div class="card-modern p-3 h-100 metric-card">
             <div class="d-flex align-items-center justify-content-between mb-2">
                 <span class="text-muted small fw-medium">Kasir Aktif</span>
@@ -48,7 +48,7 @@
     </div>
 
     <!-- Kartu 3: Total Transaksi Staf -->
-    <div class="col-12 col-sm-6 col-xl-3">
+    <div class="col-12 col-sm-6 col-xl-4">
         <div class="card-modern p-3 h-100 metric-card">
             <div class="d-flex align-items-center justify-content-between mb-2">
                 <span class="text-muted small fw-medium">Total Transaksi Staf</span>
@@ -58,20 +58,6 @@
             </div>
             <span class="metric-value text-dark">0 Trx</span>
             <small class="text-muted mt-2 d-block" style="font-size: 0.725rem;">Bulan ini</small>
-        </div>
-    </div>
-
-    <!-- Kartu 4: Staf Terproduktif -->
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card-modern p-3 h-100 metric-card">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="text-muted small fw-medium">Staf Terproduktif</span>
-                <div class="metric-icon-box metric-icon-orange">
-                    <i data-lucide="award" class="icon-sm"></i>
-                </div>
-            </div>
-            <span class="metric-value text-dark" style="font-size: 1.1rem;">-</span>
-            <small class="text-muted mt-2 d-block" style="font-size: 0.725rem;">0 Transaksi</small>
         </div>
     </div>
 

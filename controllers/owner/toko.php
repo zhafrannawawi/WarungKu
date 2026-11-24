@@ -16,6 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         store_update($koneksi, $store_id, $store_name, $address);
+
         $_SESSION['store_name'] = $store_name;
         set_alert('success', 'Profil toko berhasil diperbarui!');
     } catch (Exception $e) {

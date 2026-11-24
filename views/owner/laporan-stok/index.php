@@ -1,221 +1,161 @@
 <?php include __DIR__ . '/../../partials/header.php'; ?>
-<?php
-$ringkasan    = $ringkasan    ?? [];
-$produk       = $produk       ?? [];
-$kategoriList = $kategoriList ?? [];
-$q            = $q            ?? '';
-$categoryId   = (int)($categoryId ?? 0);
-$exportUrl    = $exportUrl    ?? '#';
 
-$totalNilai  = $ringkasan['total_nilai']  ?? 0;
-$jumlahSku   = $ringkasan['jumlah_sku']   ?? 0;
-$totalFisik  = $ringkasan['total_fisik']  ?? 0;
-$totalKritis = $ringkasan['total_kritis'] ?? 0;
-$totalKeluar = $ringkasan['total_keluar'] ?? 0;
-$periodeHari = $ringkasan['periode_hari'] ?? 30;
-
-$totalValuasiFilter = array_sum(array_column($produk, 'valuasi'));
-
-// ---------- Helper tampilan ----------
-if (!function_exists('e')) {
-    function e($v) { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
-}
-if (!function_exists('rupiah')) {
-    function rupiah($n) { return 'Rp ' . number_format((float)$n, 0, ',', '.'); }
-}
-if (!function_exists('angka')) {
-    function angka($n) { return number_format((float)$n, 0, ',', '.'); }
-}
-?>
-
-
-<div class="container-xl py-4">
-
-    <!-- Header -->
-    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
-        <div>
-            <h1 class="h3 fw-bold mb-1">Laporan Stok &amp; Inventaris</h1>
-            <p class="text-secondary mb-0">Audit perputaran persediaan barang, stok masuk/keluar, dan estimasi valuasi aset.</p>
-        </div>
-        <a href="<?= e($exportUrl) ?>" class="btn bg-white border shadow-sm d-inline-flex align-items-center gap-2">
-            <i data-lucide="download" width="16" height="16"></i> Export Laporan
-        </a>
+<!-- Page Header -->
+<div class="d-flex flex-column flex-xl-row align-items-xl-center justify-content-between mb-4 gap-3">
+    <div>
+        <h4 class="fw-bold text-dark mb-1">Laporan Stok & Inventaris</h4>
+        <p class="text-muted mb-0 small">Audit perputaran persediaan barang, stok masuk/keluar, dan estimasi valuasi aset.</p>
     </div>
+
+    <form method="GET" class="d-flex flex-wrap align-items-center gap-2">
+        <div class="d-flex align-items-center gap-1">
+            <input type="date" name="from" value="<?= htmlspecialchars($from_date) ?>" class="form-control form-control-sm border rounded-btn-sm bg-white" style="width: auto;">
+            <span class="text-muted small">s/d</span>
+            <input type="date" name="to" value="<?= htmlspecialchars($to_date) ?>" class="form-control form-control-sm border rounded-btn-sm bg-white" style="width: auto;">
+        </div>
+        <button type="submit" class="btn btn-sm btn-primary rounded-btn-sm d-flex align-items-center gap-1 fw-semibold">
+            <i data-lucide="filter" class="icon-xs"></i> Filter
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-secondary rounded-btn-sm d-flex align-items-center gap-1 bg-white" onclick="exportDataProduk()">
+            <i data-lucide="download" class="icon-xs"></i> Export
+        </button>
+    </form>
+</div>
+
 <?php include __DIR__ . '/../../partials/alert.php'; ?>
 
-    <!-- Kartu ringkasan -->
-    <div class="row g-3 mb-4">
-        <div class="col-12 col-md-6 col-xl-3">
-            <div class="card border-0 shadow-sm rounded-4 h-100">
-                <div class="card-body p-4">
-                    <div class="d-inline-flex bg-light text-secondary rounded-3 p-2 mb-3">
-                        <i data-lucide="wallet" width="20" height="20"></i>
-                    </div>
-                    <div class="small text-secondary">Total Nilai Persediaan</div>
-                    <div class="h3 fw-bold my-1"><?= rupiah($totalNilai) ?></div>
-                    <div class="small text-secondary"><?= angka($jumlahSku) ?> SKU produk aktif</div>
-                </div>
+<!-- Summary Metric Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card-modern p-3 h-100 metric-card">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="text-muted small fw-medium">Total Nilai Persediaan</span>
+                <div class="metric-icon-box metric-icon-green"><i data-lucide="wallet" class="icon-sm"></i></div>
             </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-xl-3">
-            <div class="card border-0 shadow-sm rounded-4 h-100">
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="d-inline-flex bg-light text-secondary rounded-3 p-2">
-                            <i data-lucide="package" width="20" height="20"></i>
-                        </div>
-                        <?php if ($totalKritis === 0): ?>
-                            <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle d-inline-flex align-items-center gap-1">
-                                <i data-lucide="check" width="12" height="12"></i> Aman
-                            </span>
-                        <?php endif; ?>
-                    </div>
-                    <div class="small text-secondary">Total Kuantitas Fisik</div>
-                    <div class="h3 fw-bold my-1"><?= angka($totalFisik) ?> Unit</div>
-                    <div class="small text-secondary">Semua gudang/etalase</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-xl-3">
-            <div class="card border-0 shadow-sm rounded-4 h-100">
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="d-inline-flex bg-danger-subtle text-danger rounded-3 p-2">
-                            <i data-lucide="triangle-alert" width="20" height="20"></i>
-                        </div>
-                        <?php if ($totalKritis > 0): ?>
-                            <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle">Perlu Restock</span>
-                        <?php endif; ?>
-                    </div>
-                    <div class="small text-secondary">Stok Menipis / Kritis</div>
-                    <div class="h3 fw-bold my-1 <?= $totalKritis > 0 ? 'text-danger' : '' ?>"><?= angka($totalKritis) ?> SKU</div>
-                    <div class="small text-secondary">Di bawah batas minimum</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-xl-3">
-            <div class="card border-0 shadow-sm rounded-4 h-100">
-                <div class="card-body p-4">
-                    <div class="d-inline-flex bg-light text-secondary rounded-3 p-2 mb-3">
-                        <i data-lucide="shopping-bag" width="20" height="20"></i>
-                    </div>
-                    <div class="small text-secondary">Barang Keluar (<?= (int)$periodeHari ?> Hari)</div>
-                    <div class="h3 fw-bold my-1"><?= angka($totalKeluar) ?> Pcs</div>
-                    <div class="small text-secondary">Terjual ke konsumen</div>
-                </div>
-            </div>
+            <span class="metric-value text-dark">Rp <?= number_format($total_nilai, 0, ',', '.') ?></span>
+            <small class="text-muted mt-2 d-block" style="font-size: 0.725rem;"><?= count($product_list) ?> SKU produk aktif</small>
         </div>
     </div>
 
-    <!-- Tabel -->
-    <div class="card border-0 shadow-sm rounded-4">
-        <div class="card-body p-4">
-
-            <!-- Filter (method GET, backend membaca ?q= dan ?category=) -->
-            <form method="get" class="row g-2 justify-content-between mb-4">
-                <div class="col-12 col-md-5 col-lg-4">
-                    <div class="input-group">
-                        <span class="input-group-text bg-white text-secondary">
-                            <i data-lucide="search" width="16" height="16"></i>
-                        </span>
-                        <input type="search" name="q" value="<?= e($q) ?>" class="form-control border-start-0"
-                               placeholder="Cari nama produk, kategori...">
-                    </div>
-                </div>
-                <div class="col-12 col-md-4 col-lg-3">
-                    <select name="category" class="form-select" onchange="this.form.submit()">
-                        <option value="0">Semua Kategori</option>
-                        <?php foreach ($kategoriList as $k): ?>
-                            <option value="<?= (int)$k['id'] ?>" <?= $categoryId === (int)$k['id'] ? 'selected' : '' ?>>
-                                <?= e($k['nama']) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-            </form>
-
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead>
-                        <tr class="small text-secondary">
-                            <th class="fw-medium">Nama Barang</th>
-                            <th class="fw-medium">Kategori</th>
-                            <th class="fw-medium text-end">Stok Awal</th>
-                            <th class="fw-medium">Masuk</th>
-                            <th class="fw-medium">Keluar (Terjual)</th>
-                            <th class="fw-medium" style="min-width:140px">Sisa Stok</th>
-                            <th class="fw-medium text-end">Harga Beli (HPP)</th>
-                            <th class="fw-medium text-end">Total Valuasi Aset</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <?php if (empty($produk)): ?>
-                        <tr>
-                            <td colspan="8" class="text-center text-secondary py-5">
-                                <i data-lucide="package-open" width="32" height="32" class="mb-2"></i>
-                                <div class="fw-medium">Belum ada data produk</div>
-                                <div class="small">Tambahkan produk dan lakukan restock agar laporan stok muncul di sini.</div>
-                            </td>
-                        </tr>
-                    <?php else: foreach ($produk as $p):
-                        $kritis = (int)$p['sisa_stok'] <= (int)$p['stok_minimum'];
-                        $total  = max((int)$p['stok_awal'] + (int)$p['masuk'], (int)$p['sisa_stok'], 1);
-                        $persen = min(100, round(((int)$p['sisa_stok'] / $total) * 100));
-                    ?>
-                        <tr>
-                            <td>
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="rounded-3 d-inline-flex align-items-center justify-content-center fw-semibold small
-                                                <?= $kritis ? 'bg-danger-subtle text-danger' : 'bg-secondary-subtle text-secondary' ?>"
-                                         style="width:36px;height:36px">
-                                        <?= e(mb_strtoupper(mb_substr($p['nama'], 0, 1))) ?>
-                                    </div>
-                                    <span class="fw-semibold"><?= e($p['nama']) ?></span>
-                                </div>
-                            </td>
-                            <td>
-                                <span class="badge rounded-pill bg-light text-secondary border fw-normal"><?= e($p['kategori']) ?></span>
-                            </td>
-                            <td class="text-end text-secondary"><?= angka($p['stok_awal']) ?></td>
-                            <td>
-                                <span class="d-inline-flex align-items-center gap-1 <?= $p['masuk'] > 0 ? 'text-success' : 'text-secondary' ?>">
-                                    <i data-lucide="arrow-down-left" width="14" height="14"></i> +<?= angka($p['masuk']) ?>
-                                </span>
-                            </td>
-                            <td>
-                                <span class="d-inline-flex align-items-center gap-1 <?= $p['keluar'] > 0 ? 'text-danger' : 'text-secondary' ?>">
-                                    <i data-lucide="arrow-up-right" width="14" height="14"></i> -<?= angka($p['keluar']) ?>
-                                </span>
-                            </td>
-                            <td>
-                                <span class="badge rounded-pill <?= $kritis
-                                    ? 'bg-danger-subtle text-danger border border-danger-subtle'
-                                    : 'bg-success-subtle text-success border border-success-subtle' ?>">
-                                    <?= angka($p['sisa_stok']) ?> <?= e($p['satuan']) ?>
-                                </span>
-                                <div class="progress mt-1" style="height:5px;width:135px" role="progressbar"
-                                     aria-valuenow="<?= (int)$persen ?>" aria-valuemin="0" aria-valuemax="100">
-                                    <div class="progress-bar <?= $kritis ? 'bg-danger' : 'bg-success' ?>"
-                                         style="width: <?= (int)$persen ?>%"></div>
-                                </div>
-                            </td>
-                            <td class="text-end text-secondary"><?= rupiah($p['harga_beli']) ?></td>
-                            <td class="text-end fw-bold"><?= rupiah($p['valuasi']) ?></td>
-                        </tr>
-                    <?php endforeach; endif; ?>
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="7" class="fw-semibold">Total valuasi (sesuai filter)</td>
-                            <td class="text-end fw-bold"><?= rupiah($totalValuasiFilter) ?></td>
-                        </tr>
-                    </tfoot>
-                </table>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card-modern p-3 h-100 metric-card">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="text-muted small fw-medium">Total Kuantitas Fisik</span>
+                <div class="metric-icon-box metric-icon-blue"><i data-lucide="package" class="icon-sm"></i></div>
             </div>
+            <span class="metric-value text-dark"><?= number_format($total_fisik, 0, ',', '.') ?> Unit</span>
+            <small class="text-muted mt-2 d-block" style="font-size: 0.725rem;">Semua gudang/etalase</small>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card-modern p-3 h-100 metric-card">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="text-muted small fw-medium">Stok Menipis</span>
+                <div class="metric-icon-box metric-icon-orange"><i data-lucide="alert-triangle" class="icon-sm"></i></div>
+            </div>
+            <span class="metric-value <?= $stok_menipis > 0 ? 'text-danger' : 'text-dark' ?>"><?= $stok_menipis ?> SKU</span>
+            <small class="text-muted mt-2 d-block" style="font-size: 0.725rem;">Di bawah batas minimum</small>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card-modern p-3 h-100 metric-card">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="text-muted small fw-medium">Total Barang Keluar</span>
+                <div class="metric-icon-box metric-icon-purple"><i data-lucide="shopping-bag" class="icon-sm"></i></div>
+            </div>
+            <span class="metric-value text-dark"><?= number_format($total_keluar, 0, ',', '.') ?> Unit</span>
+            <small class="text-muted mt-2 d-block" style="font-size: 0.725rem;">Terjual ke konsumen</small>
         </div>
     </div>
 </div>
+
+<!-- Main Table Card -->
+<div class="card-modern">
+    <div class="p-3 border-bottom d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+        <div class="position-relative topbar-search-wrapper w-100-mobile">
+            <i data-lucide="search" class="search-icon-pos icon-sm"></i>
+            <input type="text" id="produk-table-search" class="search-input-box" placeholder="Cari nama produk, kode..." oninput="filterProdukTable()">
+        </div>
+
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <select id="produk-filter-category" class="form-select form-select-sm border filter-select" onchange="filterProdukTable()">
+                <option value="all">Semua Kategori</option>
+                <?php foreach ($category_list as $c): ?>
+                    <option value="<?= htmlspecialchars($c['CategoryName']) ?>"><?= htmlspecialchars($c['CategoryName']) ?></option>
+                <?php endforeach; ?>
+            </select>
+
+            <select id="produk-filter-stock" class="form-select form-select-sm border filter-select" onchange="filterProdukTable()">
+                <option value="all">Semua Status Stok</option>
+                <option value="in_stock">Stok Tersedia (>10)</option>
+                <option value="low_stock">Stok Menipis (≤10)</option>
+            </select>
+
+            <button class="btn btn-sm btn-outline-secondary rounded-btn-sm" title="Reset Filter" onclick="resetProdukFilter()">
+                <i data-lucide="rotate-ccw" class="icon-xs"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-modern align-middle mb-0">
+            <thead>
+                <tr>
+                    <th class="ps-4">Nama Barang</th>
+                    <th>Kategori</th>
+                    <th class="text-end">Stok Awal</th>
+                    <th class="text-end">Masuk</th>
+                    <th class="text-end">Keluar</th>
+                    <th class="text-center">Sisa Stok</th>
+                    <th class="text-end">Harga Modal</th>
+                    <th class="text-end pe-4">Valuasi Aset</th>
+                </tr>
+            </thead>
+            <tbody id="produk-table-body">
+                <?php if (empty($product_list)): ?>
+                    <tr>
+                        <td colspan="8" class="text-center py-4 text-muted">Belum ada data produk terdaftar.</td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($product_list as $p):
+                        $kode_produk = '#PRD-' . str_pad($p['ProductID'], 3, '0', STR_PAD_LEFT);
+                        $cat_name    = $p['CategoryName'] ?: 'Umum';
+                        $is_low      = (int)$p['Stock'] <= (int)$p['MinimumStock'];
+                    ?>
+                        <tr class="produk-row" data-category="<?= htmlspecialchars($cat_name) ?>" data-stock="<?= (int)$p['Stock'] ?>" data-name="<?= htmlspecialchars(strtolower($p['ProductName'] . ' ' . $kode_produk)) ?>">
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="trx-avatar"><?= strtoupper(substr($p['ProductName'], 0, 2)) ?></span>
+                                    <div>
+                                        <span class="fw-semibold text-dark d-block"><?= htmlspecialchars($p['ProductName']) ?></span>
+                                        <small class="text-muted"><?= $kode_produk ?></small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="badge bg-light text-dark border"><?= htmlspecialchars($cat_name) ?></span></td>
+                            <td class="text-end text-muted"><?= number_format($p['StokAwal'], 0, ',', '.') ?></td>
+                            <td class="text-end <?= $p['Masuk'] > 0 ? 'text-success fw-semibold' : 'text-muted' ?>">+<?= number_format($p['Masuk'], 0, ',', '.') ?></td>
+                            <td class="text-end <?= $p['Keluar'] > 0 ? 'text-danger fw-semibold' : 'text-muted' ?>">-<?= number_format($p['Keluar'], 0, ',', '.') ?></td>
+                            <td class="text-center">
+                                <span class="badge-status <?= $is_low ? 'danger' : 'success' ?> fw-semibold">
+                                    <?= (int)$p['Stock'] ?> <?= htmlspecialchars($p['Unit']) ?>
+                                </span>
+                            </td>
+                            <td class="text-end text-muted">Rp <?= number_format($p['PurchasePrice'], 0, ',', '.') ?></td>
+                            <td class="text-end fw-bold text-dark pe-4">Rp <?= number_format($p['Valuasi'], 0, ',', '.') ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="p-3 border-top d-flex align-items-center justify-content-between bg-white rounded-bottom">
+        <small class="text-muted">Menampilkan <strong><?= count($product_list) ?></strong> produk</small>
+        <small class="text-dark">Total Valuasi: <strong>Rp <?= number_format($total_nilai, 0, ',', '.') ?></strong></small>
+    </div>
+</div>
+
 <?php include __DIR__ . '/../../partials/footer.php'; ?>

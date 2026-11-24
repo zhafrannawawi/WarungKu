@@ -30,6 +30,8 @@ $is_report_active    = in_array($current_page, ['laporan-laba-rugi', 'laporan-st
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- CSS Utama -->
     <link rel="stylesheet" href="/assets/css/main.css">
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/assets/image/logo.png">
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>

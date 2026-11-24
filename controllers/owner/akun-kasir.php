@@ -1,7 +1,7 @@
 <?php
 // ============================================================
 // CONTROLLER: Manajemen Akun Kasir
-// Mengelola pendaftaran dan status akun kasir toko
+// Mengelola pendaftaran, pengeditan, dan penghapusan akun staf kasir
 // ============================================================
 
 // 1. KEAMANAN & SESI (Wajib Login sebagai Owner)
@@ -29,7 +29,7 @@ function get_cashier_input(): array
     return $data;
 }
 
-// 3. PROSES AKSI FORM (POST: Tambah, Edit)
+// 3. PROSES AKSI FORM (POST: Tambah, Edit, Hapus)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = trim($_POST['action'] ?? '');
 
@@ -51,6 +51,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $in = get_cashier_input();
             user_update_cashier($koneksi, $user_id, $store_id, $in['full_name'], $in['user_name'], $in['email'], $in['phone_number'], $is_active);
             set_alert('success', 'Data akun kasir berhasil diperbarui!');
+        }
+        // Aksi 3: Hapus Akun Kasir (Soft Delete)
+        elseif ($action === 'hapus') {
+            $user_id = (int)($_POST['user_id'] ?? 0);
+            if ($user_id <= 0) {
+                throw new Exception('ID kasir tidak valid.');
+            }
+            user_delete($koneksi, $user_id, $store_id);
+            set_alert('success', 'Akun kasir berhasil dihapus!');
         }
     } catch (Exception $e) {
         set_alert('danger', $e->getMessage());
