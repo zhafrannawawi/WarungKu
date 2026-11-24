@@ -11,7 +11,7 @@
             <i data-lucide="download" class="icon-xs"></i>
             <span>Export Excel</span>
         </button>
-        <button class="btn btn-sm btn-primary d-flex align-items-center gap-2 fw-semibold" onclick="openModalRestock()">
+        <button class="btn btn-sm btn-primary d-flex align-items-center gap-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#modalRestock">
             <i data-lucide="plus" class="icon-xs"></i>
             <span>Catat Restock Baru</span>
         </button>
@@ -206,3 +206,6 @@
         </table>
     </div>
 </div>
+
+<?php include __DIR__ . '/modal-restock.php'; ?>
+<?php include __DIR__ . '/../../partials/footer.php'; ?>

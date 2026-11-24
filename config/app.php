@@ -19,7 +19,7 @@ try {
     die("Koneksi Database Gagal: " . $e->getMessage());
 }
 
-// 3. Panggil File Model Satu per Satu secara Jelas (Tanpa Rumus/Looping!)
+// 3. Panggil File Model Satu per Satu secara Jelas
 require_once __DIR__ . '/../models/model_pengguna.php';
 require_once __DIR__ . '/../models/model_toko.php';
 require_once __DIR__ . '/../models/model_produk.php';

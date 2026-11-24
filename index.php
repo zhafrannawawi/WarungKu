@@ -23,7 +23,7 @@ $routes = [
     'owner/store'            => __DIR__ . '/controllers/owner/toko.php',
     'owner/kasir'            => __DIR__ . '/controllers/owner/kasir.php',
     'owner/transaksi'        => __DIR__ . '/controllers/owner/transaksi.php',
-    'owner/laporan/laba-rugi'=> __DIR__ . '/controllers/owner/laporan_laba_rugi.php',
+    'owner/laporan/laba-rugi' => __DIR__ . '/controllers/owner/laporan_laba_rugi.php',
     'owner/laporan/stok'     => __DIR__ . '/controllers/owner/laporan_stok.php',
     'owner/laporan/terlaris' => __DIR__ . '/controllers/owner/laporan_terlaris.php',
     'owner/change-password'  => __DIR__ . '/controllers/owner/change_password.php',
@@ -36,14 +36,14 @@ if (isset($routes[$path])) {
         exit;
     }
     http_response_code(404);
-    echo "<h1>404 - Halaman Belum Dibuat</h1><p>File controller belum tersedia.</p><a href='/'>Kembali ke Beranda</a>";
+    require __DIR__ . '/views/404.php';
     exit;
 }
 
 // Jika URL bukan root ('') dan tidak terdaftar di rute
 if ($path !== '') {
     http_response_code(404);
-    echo "<h1>404 - Halaman Tidak Ditemukan</h1><a href='/'>Kembali ke Beranda</a>";
+    require __DIR__ . '/views/404.php';
     exit;
 }
 

@@ -137,4 +137,5 @@ foreach ($product_list as $p) {
 $total_kategori = count($category_list);
 
 $page_title = 'Daftar Produk';
+$page_name  = 'product';
 include __DIR__ . '/../../views/owner/daftar-produk/index.php';

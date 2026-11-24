@@ -58,4 +58,5 @@ foreach ($category_list as $c) {
 }
 
 $page_title = 'Kategori Produk';
+$page_name  = 'kategori';
 include __DIR__ . '/../../views/owner/kategori/index.php';

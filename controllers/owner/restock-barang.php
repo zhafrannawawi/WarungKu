@@ -35,4 +35,5 @@ $restock_list = restock_get_all($koneksi, $store_id);
 $product_list = product_get_all($koneksi, $store_id);
 
 $page_title = 'Restock Barang';
+$page_name  = 'restock';
 include __DIR__ . '/../../views/owner/restock-barang/index.php';

@@ -384,45 +384,39 @@ body,
 }
 
 .metric-icon-box {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: var(--radius-md);
   background-color: var(--bg-subtle);
+  border: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: center;
+  color: var(--text-muted);
   flex-shrink: 0;
 }
 
 .metric-icon-blue {
   background-color: #eff6ff;
-  color: #2563eb;
-}
-.metric-icon-blue svg {
+  border-color: #bfdbfe;
   color: #2563eb;
 }
 
 .metric-icon-green {
   background-color: #f0fdf4;
-  color: #16a34a;
-}
-.metric-icon-green svg {
+  border-color: #bbf7d0;
   color: #16a34a;
 }
 
 .metric-icon-purple {
   background-color: #f5f3ff;
-  color: #7c3aed;
-}
-.metric-icon-purple svg {
+  border-color: #ddd6fe;
   color: #7c3aed;
 }
 
 .metric-icon-orange {
   background-color: #fff7ed;
-  color: #c2410c;
-}
-.metric-icon-orange svg {
+  border-color: #fed7aa;
   color: #c2410c;
 }
 
@@ -455,8 +449,7 @@ body,
 }
 
 /* --- Form Controls & Inputs --- */
-.form-control-standard,
-.form-select-standard {
+.form-control-standard {
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   padding: 0.45rem 0.75rem;
@@ -465,8 +458,7 @@ body,
   background-color: var(--bg-surface);
 }
 
-.form-control-standard:focus,
-.form-select-standard:focus {
+.form-control-standard:focus {
   border-color: var(--border-focus);
   outline: none;
   box-shadow:
@@ -519,27 +511,6 @@ body,
   transition:
     background-color 0.15s ease,
     border-color 0.15s ease;
-}
-
-.btn-standard-primary {
-  background-color: var(--primary-color);
-  color: #ffffff;
-}
-
-.btn-standard-primary:hover {
-  background-color: var(--primary-hover);
-  color: #ffffff;
-}
-
-.btn-standard-outline {
-  background-color: var(--bg-surface);
-  border-color: var(--border-color);
-  color: var(--text-main);
-}
-
-.btn-standard-outline:hover {
-  background-color: var(--bg-subtle);
-  color: var(--text-main);
 }
 
 .btn-circle {
@@ -690,9 +661,7 @@ body,
 /* ============================================================
  * MENU — AUTH (LOGIN & REGISTER)
  * ============================================================ */
-.auth-container,
-.auth-container-login,
-.auth-container-register {
+.auth-container {
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -701,9 +670,7 @@ body,
   background-color: var(--bg-app);
 }
 
-.auth-card,
-.auth-card-login,
-.auth-card-register {
+.auth-card {
   width: 100%;
   max-width: 920px;
   background: var(--bg-surface);
@@ -857,14 +824,7 @@ body,
 }
 
 /* ============================================================
- * MENU — OWNER: MANAJEMEN AKUN KASIR
- * ============================================================ */
-.akun-row:hover td {
-  background-color: var(--bg-subtle);
-}
-
-/* ============================================================
- * MENU — OWNER: DAFTAR PRODUK
+ * MENU — OWNER & TRANSAKSI
  * ============================================================ */
 .prod-table-thumb {
   width: 42px;
@@ -874,20 +834,6 @@ body,
   background-color: var(--bg-subtle);
 }
 
-.produk-row:hover td {
-  background-color: var(--bg-subtle);
-}
-
-/* ============================================================
- * MENU — OWNER: KATEGORI PRODUK
- * ============================================================ */
-.kategori-row:hover td {
-  background-color: var(--bg-subtle);
-}
-
-/* ============================================================
- * MENU — OWNER: RESTOCK PRODUK
- * ============================================================ */
 .trx-faktur {
   font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
   font-size: 0.775rem;
@@ -919,20 +865,6 @@ body,
   color: var(--text-subtle);
 }
 
-/* Metric icon box */
-.metric-icon-box {
-  width: 34px;
-  height: 34px;
-  border-radius: var(--radius-sm);
-  background-color: var(--bg-subtle);
-  border: 1px solid var(--border-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-muted);
-  flex-shrink: 0;
-}
-
 /* Table ps-4/pe-4 alignment */
 .table-modern th.ps-4,
 .table-modern td.ps-4 {
@@ -944,9 +876,6 @@ body,
   padding-right: 1.25rem;
 }
 
-/* ============================================================
- * MENU — TRANSAKSI & KASIR (POS)
- * ============================================================ */
 .trx-avatar {
   width: 34px;
   height: 34px;
@@ -960,14 +889,4 @@ body,
   justify-content: center;
   flex-shrink: 0;
   letter-spacing: 0.03em;
-}
-
-.trx-faktur {
-  font-size: 0.775rem;
-  font-weight: 600;
-  color: var(--primary-color);
-  font-family: ui-monospace, "Cascadia Code", monospace;
-  background-color: var(--primary-light);
-  border-radius: var(--radius-sm);
-  padding: 0.15rem 0.5rem;
 }

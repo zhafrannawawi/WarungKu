@@ -42,4 +42,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $page_title = 'Laporan Stok';
+$page_name  = 'laporan-stok';
 include __DIR__ . '/../../views/owner/laporan-stok/index.php';

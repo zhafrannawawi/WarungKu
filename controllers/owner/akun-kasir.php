@@ -64,4 +64,5 @@ $user_list  = user_get_by_store($koneksi, $store_id);
 $count_user = user_count_metrics($koneksi, $store_id);
 
 $page_title = 'Manajemen Akun Kasir';
+$page_name  = 'akun-kasir';
 include __DIR__ . '/../../views/owner/akun-kasir/index.php';
