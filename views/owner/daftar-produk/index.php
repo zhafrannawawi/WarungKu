@@ -23,7 +23,7 @@
 <div class="row g-3 mb-4">
     <!-- Total Produk -->
     <div class="col-12 col-sm-6 col-xl-4">
-        <div class="card-modern p-3 h-100 metric-card">
+        <div class="bg-white border-0 rounded-4 shadow-sm p-3 h-100 metric-card">
             <div class="d-flex align-items-center justify-content-between mb-2">
                 <span class="text-muted small fw-medium">Total Produk</span>
                 <div class="metric-icon-box metric-icon-blue">
@@ -39,7 +39,7 @@
 
     <!-- Total Nilai Stok -->
     <div class="col-12 col-sm-6 col-xl-4">
-        <div class="card-modern p-3 h-100 metric-card">
+            <div class="bg-white border-0 rounded-4 shadow-sm p-3 h-100 metric-card">
             <div class="d-flex align-items-center justify-content-between mb-2">
                 <span class="text-muted small fw-medium">Total Nilai Stok</span>
                 <div class="metric-icon-box metric-icon-green">
@@ -55,7 +55,7 @@
 
     <!-- Stok Menipis -->
     <div class="col-12 col-sm-6 col-xl-4">
-        <div class="card-modern p-3 h-100 metric-card">
+            <div class="bg-white border-0 rounded-4 shadow-sm p-3 h-100 metric-card">
             <div class="d-flex align-items-center justify-content-between mb-2">
                 <span class="text-muted small fw-medium">Stok Menipis</span>
                 <div class="metric-icon-box metric-icon-orange">

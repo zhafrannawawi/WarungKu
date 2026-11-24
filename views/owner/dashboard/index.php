@@ -21,7 +21,7 @@
 <!-- Baris 1: 4 Kartu Metrik Finansial & Kasir Harian -->
 <div class="row g-3 mb-4">
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card-modern p-3 h-100 metric-card">
+        <div class="bg-white border-0 rounded-4 shadow-sm p-4 h-100 metric-card">
             <div class="d-flex align-items-center justify-content-between mb-2">
                 <span class="text-muted small fw-medium">Omzet Hari Ini</span>
                 <div class="metric-icon-box metric-icon-blue"><i data-lucide="banknote" class="icon-sm"></i></div>
@@ -32,7 +32,7 @@
     </div>
 
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card-modern p-3 h-100 metric-card">
+        <div class="bg-white border-0 rounded-4 shadow-sm p-4 h-100 metric-card">
             <div class="d-flex align-items-center justify-content-between mb-2">
                 <span class="text-muted small fw-medium">Uang Tunai di Laci</span>
                 <div class="metric-icon-box metric-icon-green"><i data-lucide="wallet" class="icon-sm"></i></div>
@@ -43,7 +43,7 @@
     </div>
 
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card-modern p-3 h-100 metric-card">
+        <div class="bg-white border-0 rounded-4 shadow-sm p-4 h-100 metric-card">
             <div class="d-flex align-items-center justify-content-between mb-2">
                 <span class="text-muted small fw-medium">QRIS / Non-Tunai</span>
                 <div class="metric-icon-box metric-icon-purple"><i data-lucide="qr-code" class="icon-sm"></i></div>
@@ -54,7 +54,7 @@
     </div>
 
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card-modern p-3 h-100 metric-card">
+        <div class="bg-white border-0 rounded-4 shadow-sm p-4 h-100 metric-card">
             <div class="d-flex align-items-center justify-content-between mb-2">
                 <span class="text-muted small fw-medium">Estimasi Laba Bersih</span>
                 <div class="metric-icon-box metric-icon-green"><i data-lucide="trending-up" class="icon-sm"></i></div>
