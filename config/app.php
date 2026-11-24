@@ -25,6 +25,7 @@ require_once __DIR__ . '/../models/model_toko.php';
 require_once __DIR__ . '/../models/model_produk.php';
 require_once __DIR__ . '/../models/model_kategori.php';
 require_once __DIR__ . '/../models/model_restock.php';
+require_once __DIR__ . '/../models/model_transaksi.php';
 
 // 4. Fungsi Pembantu Sederhana
 function redirect(string $url): void {
@@ -46,4 +47,15 @@ function get_alert(): ?array {
         return $alert;
     }
     return null;
+}
+
+
+// Generator ID Berurutan Ber-prefix (misal: PRD-001, RCK-20261124-001)
+function generate_id(PDO $koneksi, string $table, string $column, string $prefix): string
+{
+    $len  = strlen($prefix);
+    $stmt = $koneksi->prepare("SELECT MAX(CAST(SUBSTRING($column, ? + 1) AS UNSIGNED)) FROM $table WHERE $column LIKE ?");
+    $stmt->execute([$len, $prefix . '%']);
+    $next = ((int)$stmt->fetchColumn()) + 1;
+    return $prefix . str_pad((string)$next, 3, '0', STR_PAD_LEFT);
 }

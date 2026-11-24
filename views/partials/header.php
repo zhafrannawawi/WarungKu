@@ -2,13 +2,20 @@
 $role = $_SESSION['role'] ?? 'owner';
 $username = $_SESSION['user_name'] ?? 'User';
 $store_name = $_SESSION['store_name'] ?? 'WarungKu';
-$store_id = $_SESSION['store_id'] ?? 0;
+$user_id = (string)($_SESSION['user_id'] ?? '');
+$store_id = (string)($_SESSION['store_id'] ?? '');
 $current_page = $page_name ?? '';
 
-// Ambil data toko untuk modal profil
+// Ambil data toko & akun untuk modal profil
 $store_info = [];
-if (!empty($koneksi) && $store_id > 0) {
-    $store_info = store_get($koneksi, $store_id);
+$user_info  = [];
+if (!empty($koneksi)) {
+    if ($store_id !== '') {
+        $store_info = store_get($koneksi, $store_id);
+    }
+    if ($user_id !== '') {
+        $user_info = user_find_by_id($koneksi, $user_id) ?: [];
+    }
 }
 
 $is_transaksi_active = in_array($current_page, ['kasir', 'transaksi'], true);
@@ -31,7 +38,7 @@ $is_report_active    = in_array($current_page, ['laporan-laba-rugi', 'laporan-st
     <!-- CSS Utama -->
     <link rel="stylesheet" href="/assets/css/main.css">
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="/assets/image/logo.png">
+    <link rel="icon" type="image/x-icon" href="/assets/image/logo.ico">
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
@@ -168,8 +175,7 @@ $is_report_active    = in_array($current_page, ['laporan-laba-rugi', 'laporan-st
                                     <div class="fw-semibold text-dark text-truncate" style="font-size: 0.8125rem; line-height: 1.25;">
                                         <?= htmlspecialchars($username) ?>
                                     </div>
-                                    <div class="d-flex align-items-center gap-1 mt-0.5">
-                                        <span class="badge bg-success-subtle text-success border border-success-subtle px-1 py-0" style="font-size: 0.625rem;">Buka</span>
+                                    <div class="d-flex align-items-center mt-0.5">
                                         <small class="text-muted text-truncate" style="font-size: 0.675rem;">
                                             <?= ucfirst(htmlspecialchars($role)) ?>
                                         </small>
@@ -181,15 +187,17 @@ $is_report_active    = in_array($current_page, ['laporan-laba-rugi', 'laporan-st
                             </button>
                         </div>
 
-                        <!-- Tombol Aksi: Profil & Ganti Password -->
+                        <!-- Tombol Aksi: Warung & Edit Akun -->
                         <div class="d-flex gap-1.5">
-                            <button type="button" class="btn-sidebar-action" data-bs-toggle="modal" data-bs-target="#modalProfilWarung">
-                                <i data-lucide="store"></i>
-                                <span>Profil</span>
-                            </button>
-                            <button type="button" class="btn-sidebar-action" data-bs-toggle="modal" data-bs-target="#modalGantiPassword">
-                                <i data-lucide="key"></i>
-                                <span>Password</span>
+                            <?php if ($role === 'owner'): ?>
+                                <button type="button" class="btn-sidebar-action" data-bs-toggle="modal" data-bs-target="#modalProfilWarung">
+                                    <i data-lucide="store"></i>
+                                    <span>Warung</span>
+                                </button>
+                            <?php endif; ?>
+                            <button type="button" class="btn-sidebar-action" data-bs-toggle="modal" data-bs-target="#modalProfilAkun">
+                                <i data-lucide="user-cog"></i>
+                                <span>Akun</span>
                             </button>
                         </div>
                     </div>

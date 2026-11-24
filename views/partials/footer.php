@@ -6,7 +6,7 @@
 <?php include __DIR__ . '/modals/modal-notifikasi.php'; ?>
 <?php include __DIR__ . '/modals/modal-logout.php'; ?>
 <?php include __DIR__ . '/modals/modal-profil-warung.php'; ?>
-<?php include __DIR__ . '/modals/modal-ganti-password.php'; ?>
+<?php include __DIR__ . '/modals/modal-profil-akun.php'; ?>
 
 <!-- Bootstrap 5 JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

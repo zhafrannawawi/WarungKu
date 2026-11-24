@@ -68,11 +68,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // 3. Aksi Simpan Password Baru
     elseif ($action === 'save_new_password') {
-        $user_id    = (int)($_POST['reset_user_id'] ?? 0);
+        $user_id    = trim($_POST['reset_user_id'] ?? '');
         $new_pass   = $_POST['new_password'] ?? '';
         $pass_again = $_POST['confirm_new_password'] ?? '';
 
-        if (strlen($new_pass) < 6) {
+        if ($user_id === '') {
+            $modal_error = 'Sesi reset tidak valid.';
+        } elseif (strlen($new_pass) < 6) {
             $modal_error = 'Password baru minimal 6 karakter.';
             $reset_user_id = $user_id;
         } elseif ($new_pass !== $pass_again) {

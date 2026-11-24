@@ -8,7 +8,7 @@ require_once __DIR__ . '/../../config/app.php';
 if (empty($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'owner') {
     redirect('/login');
 }
-$store_id = (int)($_SESSION['store_id'] ?? 0);
+$store_id = (string)($_SESSION['store_id'] ?? '');
 
 // Filter Periode Tanggal (Default: Awal Bulan Ini s/d Hari Ini)
 $from_date = $_GET['from'] ?? date('Y-m-01');

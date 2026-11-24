@@ -84,30 +84,34 @@ function bukaModalEdit(user) {
   document.getElementById("edit_phone").value = user.PhoneNumber || "";
   document.getElementById("edit_is_active").value = user.IsActive;
 
-  var statusGroup = document.getElementById("edit_status_group");
-  if (statusGroup) {
-    statusGroup.style.display = user.Role === "owner" ? "none" : "block";
-  }
-
   new bootstrap.Modal(document.getElementById("modalEditKasir")).show();
 }
 
+function deleteCashier(id, name) {
+  if (confirm(`Apakah Anda yakin ingin menghapus akun kasir "${name}"?`)) {
+    const deleteId = document.getElementById("delete-user-id");
+    const formDelete = document.getElementById("form-delete-kasir");
+    if (deleteId && formDelete) {
+      deleteId.value = id;
+      formDelete.submit();
+    }
+  }
+}
+
 function filterAkunTable() {
-  var input = document.getElementById("akun-table-search").value.toLowerCase();
-  var roleFilter = document.getElementById("akun-filter-role").value;
-  var statusFilter = document.getElementById("akun-filter-status").value;
-  var rows = document.querySelectorAll("#akun-table-body tr");
-  rows.forEach(function (row) {
-    var text = row.textContent.toLowerCase();
-    var matchText = text.indexOf(input) > -1;
-    var matchRole = roleFilter === "all" || text.indexOf(roleFilter) > -1;
-    var matchStatus =
-      statusFilter === "all" ||
-      (statusFilter === "active" &&
-        text.indexOf("aktif") > -1 &&
-        text.indexOf("non-aktif") === -1) ||
-      (statusFilter === "inactive" && text.indexOf("non-aktif") > -1);
-    row.style.display = matchText && matchRole && matchStatus ? "" : "none";
+  const query = (
+    document.getElementById("akun-table-search")?.value || ""
+  ).toLowerCase();
+  const statusFilter =
+    document.getElementById("akun-filter-status")?.value || "all";
+
+  document.querySelectorAll(".akun-row").forEach(function (row) {
+    const name = (row.getAttribute("data-name") || "").toLowerCase();
+    const status = row.getAttribute("data-status") || "";
+
+    const matchName = name.includes(query);
+    const matchStatus = statusFilter === "all" || status === statusFilter;
+    row.style.display = matchName && matchStatus ? "" : "none";
   });
 }
 
@@ -262,4 +266,26 @@ function filterKategoriTable() {
     const name = (row.getAttribute("data-name") || "").toLowerCase();
     row.style.display = name.includes(query) ? "" : "none";
   });
+}
+
+
+/* ============================================================
+ * MENU — OWNER: RESTOCK BARANG
+ * ============================================================ */
+function filterRestockTable() {
+  const query = (
+    document.getElementById("restock-table-search")?.value || ""
+  ).toLowerCase();
+  document.querySelectorAll(".restock-row").forEach(function (row) {
+    const produk = (row.getAttribute("data-produk") || "").toLowerCase();
+    row.style.display = produk.includes(query) ? "" : "none";
+  });
+}
+
+function resetRestockFilter() {
+  const search = document.getElementById("restock-table-search");
+  const periode = document.getElementById("restock-filter-periode");
+  if (search) search.value = "";
+  if (periode) periode.value = "all";
+  filterRestockTable();
 }

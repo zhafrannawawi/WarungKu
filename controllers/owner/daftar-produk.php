@@ -10,13 +10,13 @@ require_once __DIR__ . '/../../config/app.php';
 if (empty($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'owner') {
     redirect('/login');
 }
-$store_id = (int)($_SESSION['store_id'] ?? 0);
+$store_id = (string)($_SESSION['store_id'] ?? '');
 
 // 2. HELPER VALIDASI INPUT FORM
 function get_product_input(): array
 {
     $data = [
-        'category_id'    => (int)($_POST['category_id'] ?? 0),
+        'category_id'    => trim($_POST['category_id'] ?? ''),
         'name'           => trim($_POST['name'] ?? ''),
         'unit'           => trim($_POST['unit'] ?? ''),
         'purchase_price' => (float)($_POST['purchase_price'] ?? 0),
@@ -38,7 +38,7 @@ function get_product_input(): array
     if ($data['stock'] < 0 || $data['min_stock'] < 0) {
         throw new Exception('Stok tidak boleh bernilai negatif.');
     }
-    if ($data['category_id'] <= 0) {
+    if ($data['category_id'] === '') {
         throw new Exception('Kategori wajib dipilih.');
     }
 
@@ -69,8 +69,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         // Aksi 2: Edit Produk
         elseif ($action === 'edit') {
-            $product_id = (int)($_POST['product_id'] ?? 0);
-            if ($product_id <= 0) {
+            $product_id = trim($_POST['product_id'] ?? '');
+            if ($product_id === '') {
                 throw new Exception('Data produk tidak valid.');
             }
             $in = get_product_input();
@@ -91,8 +91,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         // Aksi 3: Hapus Produk
         elseif ($action === 'hapus') {
-            $product_id = (int)($_POST['product_id'] ?? 0);
-            if ($product_id <= 0) {
+            $product_id = trim($_POST['product_id'] ?? '');
+            if ($product_id === '') {
                 throw new Exception('ID produk tidak valid.');
             }
             product_delete($koneksi, $product_id, $store_id);

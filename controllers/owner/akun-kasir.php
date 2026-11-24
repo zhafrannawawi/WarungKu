@@ -10,7 +10,7 @@ require_once __DIR__ . '/../../config/app.php';
 if (empty($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'owner') {
     redirect('/login');
 }
-$store_id = (int)($_SESSION['store_id'] ?? 0);
+$store_id = (string)($_SESSION['store_id'] ?? '');
 
 // 2. HELPER VALIDASI INPUT FORM
 function get_cashier_input(): array
@@ -42,10 +42,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         // Aksi 2: Edit Data Kasir
         elseif ($action === 'edit') {
-            $user_id   = (int)($_POST['user_id'] ?? 0);
+            $user_id   = trim($_POST['user_id'] ?? '');
             $is_active = (int)($_POST['is_active'] ?? 1);
 
-            if ($user_id <= 0) {
+            if ($user_id === '') {
                 throw new Exception('Data kasir tidak lengkap.');
             }
             $in = get_cashier_input();
@@ -54,8 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         // Aksi 3: Hapus Akun Kasir (Soft Delete)
         elseif ($action === 'hapus') {
-            $user_id = (int)($_POST['user_id'] ?? 0);
-            if ($user_id <= 0) {
+            $user_id = trim($_POST['user_id'] ?? '');
+            if ($user_id === '') {
                 throw new Exception('ID kasir tidak valid.');
             }
             user_delete($koneksi, $user_id, $store_id);

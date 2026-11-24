@@ -74,12 +74,7 @@
         <!-- Search Bar -->
         <div class="position-relative topbar-search-wrapper w-100-mobile">
             <i data-lucide="search" class="search-icon-pos icon-sm"></i>
-            <input type="text" id="kategori-table-search" class="search-input-box" placeholder="Cari nama atau kode kategori..." oninput="filterKategoriTable()">
-        </div>
-
-        <!-- Quick Tool Info -->
-        <div class="text-muted small">
-            <span>Daftar kategori untuk memudahkan pengelompokan produk di kasir</span>
+            <input type="text" id="kategori-table-search" class="search-input-box" placeholder="Cari nama kategori..." oninput="filterKategoriTable()">
         </div>
     </div>
 
@@ -101,8 +96,8 @@
                     </tr>
                 <?php else: ?>
                     <?php foreach ($category_list as $c): ?>
-                        <?php $kode_kategori = '#CAT-' . str_pad($c['CategoryID'], 3, '0', STR_PAD_LEFT); ?>
-                        <tr class="kategori-row" data-name="<?= htmlspecialchars(strtolower($c['CategoryName'] . ' ' . $kode_kategori)) ?>">
+                        <?php $kode_kategori = '#' . $c['CategoryID']; ?>
+                        <tr class="kategori-row" data-name="<?= htmlspecialchars(strtolower($c['CategoryName'])) ?>">
                             <td class="ps-4">
                                 <div class="d-flex align-items-center gap-2">
                                     <span class="trx-avatar"><?= strtoupper(substr($c['CategoryName'], 0, 2)) ?></span>
@@ -114,7 +109,7 @@
                                 </div>
                             </td>
                             <td>
-                                <span class="trx-faktur"><?= $kode_kategori ?></span>
+                                <span class="trx-faktur"><?= htmlspecialchars($kode_kategori) ?></span>
                             </td>
                             <td class="text-center">
                                 <span class="badge bg-light text-dark border fw-semibold">
@@ -126,7 +121,7 @@
                                     <button class="btn btn-sm btn-outline-secondary rounded-btn-sm p-1" title="Edit Kategori" onclick="editCategory(<?= htmlspecialchars(json_encode($c), ENT_QUOTES, 'UTF-8') ?>)">
                                         <i data-lucide="edit-3" class="icon-xs"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-outline-danger rounded-btn-sm p-1" title="Hapus Kategori" onclick="deleteCategory(<?= $c['CategoryID'] ?>, '<?= htmlspecialchars($c['CategoryName'], ENT_QUOTES) ?>')">
+                                    <button class="btn btn-sm btn-outline-danger rounded-btn-sm p-1" title="Hapus Kategori" onclick="deleteCategory('<?= htmlspecialchars($c['CategoryID'], ENT_QUOTES) ?>', '<?= htmlspecialchars($c['CategoryName'], ENT_QUOTES) ?>')">
                                         <i data-lucide="trash-2" class="icon-xs"></i>
                                     </button>
                                 </div>

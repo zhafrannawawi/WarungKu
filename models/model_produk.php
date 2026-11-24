@@ -5,7 +5,7 @@
 // ============================================================
 
 // 1. Ambil Semua Produk Milik Toko (Aktif & Belum Dihapus)
-function product_get_all(PDO $koneksi, int $store_id): array
+function product_get_all(PDO $koneksi, string $store_id): array
 {
     $sql = "SELECT p.*, c.CategoryName 
             FROM tblproduct p 
@@ -18,7 +18,7 @@ function product_get_all(PDO $koneksi, int $store_id): array
 }
 
 // 2. Tambah Produk Baru
-function product_add(PDO $koneksi, int $store_id, int $category_id, string $name, string $unit, float $buy_price, float $sell_price, int $stock, int $min_stock, string $location): bool
+function product_add(PDO $koneksi, string $store_id, string $category_id, string $name, string $unit, float $buy_price, float $sell_price, int $stock, int $min_stock, string $location): bool
 {
     $check_category = $koneksi->prepare("SELECT CategoryID FROM tblcategory WHERE CategoryID = ? AND StoreID = ? AND DeletedAt IS NULL");
     $check_category->execute([$category_id, $store_id]);
@@ -26,15 +26,16 @@ function product_add(PDO $koneksi, int $store_id, int $category_id, string $name
         throw new Exception('Gagal: Kategori tidak ditemukan atau sudah dihapus.');
     }
 
+    $id   = generate_id($koneksi, 'tblproduct', 'ProductID', 'PRD-');
     $stmt = $koneksi->prepare(
-        "INSERT INTO tblproduct (StoreID, CategoryID, ProductName, Unit, PurchasePrice, SellingPrice, Stock, MinimumStock, Location, IsActive, CreatedAt)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW())"
+        "INSERT INTO tblproduct (ProductID, StoreID, CategoryID, ProductName, Unit, PurchasePrice, SellingPrice, Stock, MinimumStock, Location, IsActive, CreatedAt)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW())"
     );
-    return $stmt->execute([$store_id, $category_id, $name, $unit, $buy_price, $sell_price, $stock, $min_stock, $location]);
+    return $stmt->execute([$id, $store_id, $category_id, $name, $unit, $buy_price, $sell_price, $stock, $min_stock, $location]);
 }
 
 // 3. Perbarui / Edit Data Produk
-function product_update(PDO $koneksi, int $product_id, int $store_id, int $category_id, string $name, string $unit, float $buy_price, float $sell_price, int $stock, int $min_stock, string $location): bool
+function product_update(PDO $koneksi, string $product_id, string $store_id, string $category_id, string $name, string $unit, float $buy_price, float $sell_price, int $stock, int $min_stock, string $location): bool
 {
     $stmt = $koneksi->prepare(
         "UPDATE tblproduct 
@@ -45,14 +46,14 @@ function product_update(PDO $koneksi, int $product_id, int $store_id, int $categ
 }
 
 // 4. Hapus Produk (Soft Delete)
-function product_delete(PDO $koneksi, int $product_id, int $store_id): bool
+function product_delete(PDO $koneksi, string $product_id, string $store_id): bool
 {
     $stmt = $koneksi->prepare("UPDATE tblproduct SET DeletedAt = NOW() WHERE ProductID = ? AND StoreID = ?");
     return $stmt->execute([$product_id, $store_id]);
 }
 
 // 5. Ambil Data Laporan Stok & Perputaran Barang per Periode
-function product_get_stock_report(PDO $koneksi, int $store_id, string $from_date, string $to_date): array
+function product_get_stock_report(PDO $koneksi, string $store_id, string $from_date, string $to_date): array
 {
     $start = $from_date . ' 00:00:00';
     $end   = $to_date   . ' 23:59:59';

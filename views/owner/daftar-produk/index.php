@@ -77,7 +77,7 @@
         <!-- Search Bar -->
         <div class="position-relative topbar-search-wrapper w-100-mobile">
             <i data-lucide="search" class="search-icon-pos icon-sm"></i>
-            <input type="text" id="produk-table-search" class="search-input-box" placeholder="Cari nama produk, kode..." oninput="filterProdukTable()">
+            <input type="text" id="produk-table-search" class="search-input-box" placeholder="Cari nama produk..." oninput="filterProdukTable()">
         </div>
 
         <!-- Filter Controls -->
@@ -125,17 +125,17 @@
                 <?php else: ?>
                     <?php foreach ($product_list as $p): ?>
                         <?php
-                        $kode_produk = '#PRD-' . str_pad($p['ProductID'], 3, '0', STR_PAD_LEFT);
+                        $kode_produk = '#' . $p['ProductID'];
                         $cat_name = $p['CategoryName'] ?: 'Umum';
                         $is_low = (int)$p['Stock'] <= (int)$p['MinimumStock'];
                         ?>
-                        <tr class="produk-row" data-category="<?= htmlspecialchars($cat_name) ?>" data-stock="<?= (int)$p['Stock'] ?>" data-name="<?= htmlspecialchars(strtolower($p['ProductName'] . ' ' . $kode_produk)) ?>">
+                        <tr class="produk-row" data-category="<?= htmlspecialchars($cat_name) ?>" data-stock="<?= (int)$p['Stock'] ?>" data-name="<?= htmlspecialchars(strtolower($p['ProductName'])) ?>">
                             <td class="ps-4">
                                 <span class="fw-semibold text-dark d-block"><?= htmlspecialchars($p['ProductName']) ?></span>
                                 <small class="text-muted">Satuan: <?= htmlspecialchars($p['Unit']) ?><?= !empty($p['Location']) ? ' | Lokasi: ' . htmlspecialchars($p['Location']) : '' ?></small>
                             </td>
                             <td>
-                                <span class="trx-faktur"><?= $kode_produk ?></span>
+                                <span class="trx-faktur"><?= htmlspecialchars($kode_produk) ?></span>
                             </td>
                             <td>
                                 <span class="badge bg-light text-dark border"><?= htmlspecialchars($cat_name) ?></span>
@@ -152,7 +152,7 @@
                                     <button class="btn btn-sm btn-outline-secondary rounded-btn-sm p-1" title="Edit Produk" onclick="editProduct(<?= htmlspecialchars(json_encode($p), ENT_QUOTES, 'UTF-8') ?>)">
                                         <i data-lucide="edit-3" class="icon-xs"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-outline-danger rounded-btn-sm p-1" title="Hapus Produk" onclick="deleteProduct(<?= $p['ProductID'] ?>, '<?= htmlspecialchars($p['ProductName'], ENT_QUOTES) ?>')">
+                                    <button class="btn btn-sm btn-outline-danger rounded-btn-sm p-1" title="Hapus Produk" onclick="deleteProduct('<?= htmlspecialchars($p['ProductID'], ENT_QUOTES) ?>', '<?= htmlspecialchars($p['ProductName'], ENT_QUOTES) ?>')">
                                         <i data-lucide="trash-2" class="icon-xs"></i>
                                     </button>
                                 </div>

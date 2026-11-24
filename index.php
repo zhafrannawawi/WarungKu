@@ -15,6 +15,7 @@ $routes = [
     'login'                  => __DIR__ . '/controllers/auth/login.php',
     'logout'                 => __DIR__ . '/controllers/auth/logout.php',
     'register'               => __DIR__ . '/controllers/auth/register.php',
+    'profile/update'         => __DIR__ . '/controllers/auth/profile.php',
     'owner/dashboard'        => __DIR__ . '/controllers/owner/dashboard.php',
     'owner/akun-kasir'       => __DIR__ . '/controllers/owner/akun-kasir.php',
     'owner/produk'           => __DIR__ . '/controllers/owner/daftar-produk.php',
@@ -26,7 +27,6 @@ $routes = [
     'owner/laporan/laba-rugi' => __DIR__ . '/controllers/owner/laporan_laba_rugi.php',
     'owner/laporan/stok'     => __DIR__ . '/controllers/owner/laporan_stok.php',
     'owner/laporan/terlaris' => __DIR__ . '/controllers/owner/laporan_terlaris.php',
-    'owner/change-password'  => __DIR__ . '/controllers/owner/change_password.php',
     'cashier/dashboard'      => __DIR__ . '/controllers/cashier/dashboard.php',
 ];
 

@@ -5,20 +5,20 @@ if (empty($_SESSION['user_id']) || $_SESSION['role'] !== 'owner') {
     redirect('/login');
 }
 
-$store_id = $_SESSION['store_id'];
+$store_id = (string)($_SESSION['store_id'] ?? '');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        $product_id = (int)($_POST['product_id'] ?? 0);
+        $product_id = trim($_POST['product_id'] ?? '');
         $qty        = (int)($_POST['quantity'] ?? 0);
         $price      = (float)($_POST['purchase_price'] ?? 0);
         $note       = trim($_POST['note'] ?? '');
 
-        if ($product_id <= 0 || $qty <= 0) {
+        if ($product_id === '' || $qty <= 0) {
             throw new Exception('Pilih produk dan masukkan jumlah barang yang valid.');
         }
 
-        $saved = restock_add($koneksi, $store_id, $product_id, $_SESSION['user_id'], $qty, $price, $note);
+        $saved = restock_add($koneksi, $store_id, $product_id, (string)$_SESSION['user_id'], $qty, $price, $note);
         if (!$saved) {
             throw new Exception('Gagal mencatat restock.');
         }

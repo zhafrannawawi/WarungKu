@@ -76,7 +76,7 @@
     <div class="p-3 border-bottom d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
         <div class="position-relative topbar-search-wrapper w-100-mobile">
             <i data-lucide="search" class="search-icon-pos icon-sm"></i>
-            <input type="text" id="produk-table-search" class="search-input-box" placeholder="Cari nama produk, kode..." oninput="filterProdukTable()">
+            <input type="text" id="produk-table-search" class="search-input-box" placeholder="Cari nama produk..." oninput="filterProdukTable()">
         </div>
 
         <div class="d-flex flex-wrap align-items-center gap-2">
@@ -120,17 +120,17 @@
                     </tr>
                 <?php else: ?>
                     <?php foreach ($product_list as $p):
-                        $kode_produk = '#PRD-' . str_pad($p['ProductID'], 3, '0', STR_PAD_LEFT);
+                        $kode_produk = '#' . $p['ProductID'];
                         $cat_name    = $p['CategoryName'] ?: 'Umum';
                         $is_low      = (int)$p['Stock'] <= (int)$p['MinimumStock'];
                     ?>
-                        <tr class="produk-row" data-category="<?= htmlspecialchars($cat_name) ?>" data-stock="<?= (int)$p['Stock'] ?>" data-name="<?= htmlspecialchars(strtolower($p['ProductName'] . ' ' . $kode_produk)) ?>">
+                        <tr class="produk-row" data-category="<?= htmlspecialchars($cat_name) ?>" data-stock="<?= (int)$p['Stock'] ?>" data-name="<?= htmlspecialchars(strtolower($p['ProductName'])) ?>">
                             <td class="ps-4">
                                 <div class="d-flex align-items-center gap-2">
                                     <span class="trx-avatar"><?= strtoupper(substr($p['ProductName'], 0, 2)) ?></span>
                                     <div>
                                         <span class="fw-semibold text-dark d-block"><?= htmlspecialchars($p['ProductName']) ?></span>
-                                        <small class="text-muted"><?= $kode_produk ?></small>
+                                        <small class="text-muted"><?= htmlspecialchars($kode_produk) ?></small>
                                     </div>
                                 </div>
                             </td>

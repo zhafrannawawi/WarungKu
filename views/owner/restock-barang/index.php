@@ -87,7 +87,7 @@
     <div class="p-3 border-bottom d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
         <div class="position-relative topbar-search-wrapper w-100-mobile">
             <i data-lucide="search" class="search-icon-pos icon-sm"></i>
-            <input type="text" id="restock-table-search" class="search-input-box" placeholder="Cari nomor restock atau nama barang..." oninput="filterRestockTable()">
+            <input type="text" id="restock-table-search" class="search-input-box" placeholder="Cari nama produk..." oninput="filterRestockTable()">
         </div>
 
         <div class="d-flex flex-wrap align-items-center gap-2">

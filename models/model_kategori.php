@@ -5,7 +5,7 @@
 // ============================================================
 
 // 1. Ambil Semua Kategori Milik Toko (Aktif & Belum Dihapus)
-function category_get_all(PDO $koneksi, int $store_id): array
+function category_get_all(PDO $koneksi, string $store_id): array
 {
     $sql = "SELECT c.*, COUNT(p.ProductID) AS ProductCount 
             FROM tblcategory c 
@@ -19,21 +19,22 @@ function category_get_all(PDO $koneksi, int $store_id): array
 }
 
 // 2. Tambah Kategori Baru
-function category_add(PDO $koneksi, int $store_id, string $category_name): bool
+function category_add(PDO $koneksi, string $store_id, string $category_name): bool
 {
-    $stmt = $koneksi->prepare("INSERT INTO tblcategory (StoreID, CategoryName, IsActive, CreatedAt) VALUES (?, ?, 1, NOW())");
-    return $stmt->execute([$store_id, $category_name]);
+    $id   = generate_id($koneksi, 'tblcategory', 'CategoryID', 'CAT-');
+    $stmt = $koneksi->prepare("INSERT INTO tblcategory (CategoryID, StoreID, CategoryName, IsActive, CreatedAt) VALUES (?, ?, ?, 1, NOW())");
+    return $stmt->execute([$id, $store_id, $category_name]);
 }
 
 // 3. Perbarui / Edit Nama Kategori
-function category_update(PDO $koneksi, int $category_id, int $store_id, string $category_name): bool
+function category_update(PDO $koneksi, string $category_id, string $store_id, string $category_name): bool
 {
     $stmt = $koneksi->prepare("UPDATE tblcategory SET CategoryName = ? WHERE CategoryID = ? AND StoreID = ? AND DeletedAt IS NULL");
     return $stmt->execute([$category_name, $category_id, $store_id]);
 }
 
 // 4. Hapus Kategori (Soft Delete)
-function category_delete(PDO $koneksi, int $category_id, int $store_id): bool
+function category_delete(PDO $koneksi, string $category_id, string $store_id): bool
 {
     $stmt = $koneksi->prepare("UPDATE tblcategory SET DeletedAt = NOW() WHERE CategoryID = ? AND StoreID = ?");
     return $stmt->execute([$category_id, $store_id]);
