@@ -6,7 +6,7 @@
  * ============================================================ */
 
 /* ============================================================
- * 1. GLOBAL & LAYOUT
+ * GLOBAL — LAYOUT & INISIALISASI
  * ============================================================
  * Digunakan untuk fungsionalitas umum seperti navigasi sidebar
  * responsif di perangkat mobile dan tablet.
@@ -23,7 +23,7 @@ document.querySelectorAll("input[type=number]").forEach(function (el) {
 });
 
 /* ============================================================
- * 2. MENU: LOGIN & AUTENTIKASI
+ * MENU — AUTH (LOGIN & REGISTER)
  * ============================================================
  * Menangani toggle visibilitas password (show/hide) dan
  * inisialisasi modal verifikasi reset password.
@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 /* ============================================================
- * 3. MENU: OWNER - MANAJEMEN AKUN KASIR
+ * MENU — OWNER: MANAJEMEN AKUN KASIR
  * ============================================================
  * Menangani pembukaan modal edit, modal hapus kasir dengan data
  * dinamis, dan pencarian/filter real-time pada tabel staf kasir.
@@ -112,7 +112,7 @@ function filterAkunTable() {
 }
 
 /* ============================================================
- * 4. MENU: OWNER - PRODUK, KATEGORI & RESTOCK
+ * MENU — OWNER: DAFTAR PRODUK
  * ============================================================
  * Form submission dan modal handling untuk katalog produk,
  * kategori barang, dan pencatatan restock barang.
@@ -209,7 +209,7 @@ function exportDataProduk() {
 }
 
 /* ============================================================
- * 5. MENU: OWNER - KATEGORI PRODUK
+ * MENU — OWNER: KATEGORI PRODUK
  * ============================================================ */
 function openAddCategoryModal() {
   const form = document.getElementById("form-kategori");
