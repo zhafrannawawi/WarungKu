@@ -24,7 +24,7 @@ require_once __DIR__ . '/../models/model_pengguna.php';
 require_once __DIR__ . '/../models/model_toko.php';
 require_once __DIR__ . '/../models/model_produk.php';
 require_once __DIR__ . '/../models/model_kategori.php';
-require_once __DIR__ . '/../models/restock_model.php';
+require_once __DIR__ . '/../models/model_restock.php';
 
 // 4. Fungsi Pembantu Sederhana
 function redirect(string $url): void {

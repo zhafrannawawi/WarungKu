@@ -1,15 +1,18 @@
 <?php
+// ============================================================
+// CONTROLLER: Daftar Produk
+// Mengelola tampilan, penambahan, pengeditan, dan penghapusan produk
+// ============================================================
+
+// 1. KEAMANAN & SESI (Wajib Login sebagai Owner)
 require_once __DIR__ . '/../../config/app.php';
 
 if (empty($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'owner') {
     redirect('/login');
 }
-
 $store_id = (int)($_SESSION['store_id'] ?? 0);
 
-/**
- * Ambil dan validasi input produk dari form (dipakai oleh tambah & edit).
- */
+// 2. HELPER VALIDASI INPUT FORM
 function get_product_input(): array
 {
     $data = [
@@ -35,7 +38,6 @@ function get_product_input(): array
     if ($data['stock'] < 0 || $data['min_stock'] < 0) {
         throw new Exception('Stok tidak boleh bernilai negatif.');
     }
-
     if ($data['category_id'] <= 0) {
         throw new Exception('Kategori wajib dipilih.');
     }
@@ -43,69 +45,58 @@ function get_product_input(): array
     return $data;
 }
 
-// Menangani Form Aksi Produk
+// 3. PROSES AKSI FORM (POST: Tambah, Edit, Hapus)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = trim($_POST['action'] ?? '');
 
     try {
-        switch ($action) {
-
-            // 1. Tambah Produk
-            case 'tambah':
-                $in = get_product_input();
-
-                product_add(
-                    $koneksi,
-                    $store_id,
-                    $in['category_id'],
-                    $in['name'],
-                    $in['unit'],
-                    $in['purchase_price'],
-                    $in['selling_price'],
-                    $in['stock'],
-                    $in['min_stock'],
-                    $in['location']
-                );
-                set_alert('success', 'Produk baru berhasil ditambahkan!');
-                break;
-
-            // 2. Edit Produk
-            case 'edit':
-                $product_id = (int)($_POST['product_id'] ?? 0);
-                if ($product_id <= 0) {
-                    throw new Exception('Data produk tidak valid.');
-                }
-                $in = get_product_input();
-
-                product_update(
-                    $koneksi,
-                    $product_id,
-                    $store_id,
-                    $in['category_id'],
-                    $in['name'],
-                    $in['unit'],
-                    $in['purchase_price'],
-                    $in['selling_price'],
-                    $in['stock'],
-                    $in['min_stock'],
-                    $in['location']
-                );
-                set_alert('success', 'Data produk berhasil diperbarui!');
-                break;
-
-            // 3. Hapus Produk
-            case 'hapus':
-                $product_id = (int)($_POST['product_id'] ?? 0);
-                if ($product_id <= 0) {
-                    throw new Exception('ID produk tidak valid.');
-                }
-
-                product_delete($koneksi, $product_id, $store_id);
-                set_alert('success', 'Produk berhasil dihapus!');
-                break;
-
-            default:
-                throw new Exception('Aksi tidak dikenali.');
+        // Aksi 1: Tambah Produk Baru
+        if ($action === 'tambah') {
+            $in = get_product_input();
+            product_add(
+                $koneksi,
+                $store_id,
+                $in['category_id'],
+                $in['name'],
+                $in['unit'],
+                $in['purchase_price'],
+                $in['selling_price'],
+                $in['stock'],
+                $in['min_stock'],
+                $in['location']
+            );
+            set_alert('success', 'Produk baru berhasil ditambahkan!');
+        }
+        // Aksi 2: Edit Produk
+        elseif ($action === 'edit') {
+            $product_id = (int)($_POST['product_id'] ?? 0);
+            if ($product_id <= 0) {
+                throw new Exception('Data produk tidak valid.');
+            }
+            $in = get_product_input();
+            product_update(
+                $koneksi,
+                $product_id,
+                $store_id,
+                $in['category_id'],
+                $in['name'],
+                $in['unit'],
+                $in['purchase_price'],
+                $in['selling_price'],
+                $in['stock'],
+                $in['min_stock'],
+                $in['location']
+            );
+            set_alert('success', 'Data produk berhasil diperbarui!');
+        }
+        // Aksi 3: Hapus Produk
+        elseif ($action === 'hapus') {
+            $product_id = (int)($_POST['product_id'] ?? 0);
+            if ($product_id <= 0) {
+                throw new Exception('ID produk tidak valid.');
+            }
+            product_delete($koneksi, $product_id, $store_id);
+            set_alert('success', 'Produk berhasil dihapus!');
         }
     } catch (Exception $e) {
         set_alert('danger', $e->getMessage());
@@ -114,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     redirect('/owner/produk');
 }
 
-// Ambil Data untuk Tampilan
+// 4. AMBIL DATA DARI DATABASE & HITUNG RINGKASAN
 $product_list  = product_get_all($koneksi, $store_id);
 $category_list = category_get_all($koneksi, $store_id);
 
@@ -136,6 +127,7 @@ foreach ($product_list as $p) {
 }
 $total_kategori = count($category_list);
 
+// 5. TAMPILKAN HALAMAN VIEW
 $page_title = 'Daftar Produk';
 $page_name  = 'product';
 include __DIR__ . '/../../views/owner/daftar-produk/index.php';
