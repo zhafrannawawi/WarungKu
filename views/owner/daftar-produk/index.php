@@ -179,6 +179,5 @@
 </form>
 
 <?php include __DIR__ . '/modal-tambah-produk.php'; ?>
-<?php include __DIR__ . '/modal-edit-produk.php'; ?>
 
 <?php include __DIR__ . '/../../partials/footer.php'; ?>

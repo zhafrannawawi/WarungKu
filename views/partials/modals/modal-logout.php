@@ -1,15 +1,60 @@
-<!-- Modal Logout -->
-<div class="modal fade" id="modalLogout" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered" style="max-width: 380px;">
-        <div class="modal-content border-0 shadow text-center p-4">
-            <div class="mb-3 text-danger">
-                <i data-lucide="log-out" style="width:48px;height:48px;"></i>
+<!-- Modal Konfirmasi Logout -->
+<div class="modal fade" id="modalLogout" tabindex="-1" aria-labelledby="modalLogoutLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 410px;">
+        <div class="modal-content border-0 shadow rounded-4 overflow-hidden position-relative">
+            <!-- Tombol Tutup -->
+            <button type="button" class="btn-close position-absolute top-0 end-0 m-3 z-3" data-bs-dismiss="modal" aria-label="Tutup"></button>
+
+            <!-- Modal Body (Hero & Konten) -->
+            <div class="modal-body p-4 text-center">
+                <!-- Danger Icon Badge -->
+                <div class="mx-auto mb-3 d-inline-flex align-items-center justify-content-center rounded-circle bg-danger-subtle text-danger" style="width: 58px; height: 58px; border: 4px solid #fef2f2;">
+                    <i data-lucide="log-out" style="width: 24px; height: 24px;"></i>
+                </div>
+
+                <!-- Judul & Deskripsi -->
+                <h5 class="fw-bold text-dark mb-1" id="modalLogoutLabel">Konfirmasi Keluar</h5>
+                <p class="text-secondary small mb-3">
+                    Apakah Anda yakin ingin keluar? Sesi kerja aktif di aplikasi <strong class="text-dark">WarungKu</strong> akan diakhiri.
+                </p>
+
+                <!-- Akun yang Sedang Aktif -->
+                <div class="p-3 bg-light border rounded-3 text-start d-flex align-items-center justify-content-between mb-3">
+                    <div class="d-flex align-items-center gap-2 overflow-hidden me-2">
+                        <div class="sidebar-user-avatar" style="width: 38px; height: 38px;">
+                            <i data-lucide="user" class="icon-sm"></i>
+                        </div>
+                        <div class="overflow-hidden">
+                            <div class="fw-semibold text-dark text-truncate" style="font-size: 0.875rem;">
+                                <?= htmlspecialchars($username ?? 'User') ?>
+                            </div>
+                            <small class="text-muted d-block text-truncate" style="font-size: 0.75rem;">
+                                <?= ucfirst(htmlspecialchars($role ?? 'owner')) ?>
+                            </small>
+                        </div>
+                    </div>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 rounded-pill d-inline-flex align-items-center gap-1 flex-shrink-0" style="font-size: 0.7rem;">
+                        <span class="rounded-circle bg-success" style="width: 6px; height: 6px; display: inline-block;"></span>
+                        <span>Sesi Aktif</span>
+                    </span>
+                </div>
+
+                <!-- Peringatan Kasir & Data -->
+                <div class="py-2 px-3 bg-warning-subtle text-dark border border-warning-subtle rounded-3 d-flex align-items-center gap-2 text-start mb-0">
+                    <i data-lucide="alert-triangle" class="text-warning flex-shrink-0" style="width: 18px; height: 18px;"></i>
+                    <span style="font-size: 0.8125rem; line-height: 1.35;">Pastikan seluruh transaksi kasir yang sedang berjalan telah selesai dicatat.</span>
+                </div>
             </div>
-            <h5 class="fw-bold mb-1">Keluar dari Akun?</h5>
-            <p class="text-muted small mb-4">Sesi Anda akan berakhir dan harus login kembali.</p>
-            <div class="d-flex gap-2 justify-content-center">
-                <button type="button" class="btn btn-secondary btn-sm px-3" data-bs-dismiss="modal">Batal</button>
-                <a href="/logout" class="btn btn-danger btn-sm px-3">Ya, Keluar</a>
+
+            <!-- Modal Footer (Tombol Aksi) -->
+            <div class="modal-footer border-0 bg-white px-4 pb-4 pt-0 d-flex gap-2 justify-content-center">
+                <button type="button" class="btn btn-light border text-secondary flex-fill py-2 rounded-3 fw-medium" data-bs-dismiss="modal" style="font-size: 0.875rem;">
+                    Batal
+                </button>
+                <a href="/logout" class="btn btn-danger flex-fill py-2 rounded-3 fw-semibold d-inline-flex align-items-center justify-content-center gap-2 shadow-sm text-decoration-none" style="font-size: 0.875rem;">
+                    <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
+                    <span>Ya, Keluar</span>
+                </a>
             </div>
         </div>
     </div>
