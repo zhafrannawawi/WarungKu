@@ -1,11 +1,7 @@
 <?php
 require_once __DIR__ . '/../../config/app.php';
 
-if (empty($_SESSION['user_id']) || $_SESSION['role'] !== 'owner') {
-    redirect('/login');
-}
-
-$store_id = (string)($_SESSION['store_id'] ?? '');
+$store_id = require_auth('owner');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
@@ -33,6 +29,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $restock_list = restock_get_all($koneksi, $store_id);
 $product_list = product_get_all($koneksi, $store_id);
+
+// Ringkasan Metrik Restock
+$today         = date('Y-m-d');
+$this_month    = date('Y-m');
+$today_list    = array_filter($restock_list, fn($r) => substr($r['RestockDate'], 0, 10) === $today);
+$total_beli_hr = array_sum(array_map(fn($r) => (float)$r['PurchasePrice'] * (int)$r['Quantity'], $today_list));
+$unit_masuk_hr = array_sum(array_column($today_list, 'Quantity'));
+$jml_bulan_ini = count(array_filter($restock_list, fn($r) => substr($r['RestockDate'], 0, 7) === $this_month));
+$low_stock     = array_values(array_filter($product_list, fn($p) => (int)$p['Stock'] <= (int)$p['MinimumStock']));
 
 $page_title = 'Restock Barang';
 $page_name  = 'restock';

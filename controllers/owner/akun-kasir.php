@@ -7,10 +7,7 @@
 // 1. KEAMANAN & SESI (Wajib Login sebagai Owner)
 require_once __DIR__ . '/../../config/app.php';
 
-if (empty($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'owner') {
-    redirect('/login');
-}
-$store_id = (string)($_SESSION['store_id'] ?? '');
+$store_id = require_auth('owner');
 
 // 2. HELPER VALIDASI INPUT FORM
 function get_cashier_input(): array

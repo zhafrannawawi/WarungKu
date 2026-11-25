@@ -1,13 +1,10 @@
 <?php
 require_once __DIR__ . '/../../config/app.php';
 
-if (empty($_SESSION['user_id']) || $_SESSION['role'] !== 'owner') {
-    redirect('/login');
-}
+$store_id = require_auth('owner');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        $store_id   = $_SESSION['store_id'];
         $store_name = trim($_POST['store_name'] ?? '');
         $address    = trim($_POST['address'] ?? '');
 

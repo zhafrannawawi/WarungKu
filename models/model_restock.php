@@ -5,7 +5,7 @@
 
 function restock_get_all(PDO $koneksi, string $store_id): array
 {
-    $sql = "SELECT r.*, p.ProductName, u.Fullname as CashierName 
+    $sql = "SELECT r.*, p.ProductName, p.Unit, u.Fullname as CashierName 
             FROM tblrestock r 
             LEFT JOIN tblproduct p ON r.ProductID = p.ProductID 
             LEFT JOIN tbluser u ON r.UserID = u.UserID 

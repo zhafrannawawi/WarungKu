@@ -141,12 +141,6 @@
     </div>
 </div>
 
-<!-- Form Hapus Hidden -->
-<form id="form-delete-kategori" method="POST" action="/owner/kategori" style="display:none;">
-    <input type="hidden" name="action" value="hapus">
-    <input type="hidden" name="category_id" id="delete-category-id">
-</form>
-
 <?php include __DIR__ . '/modal-form.php'; ?>
 
 <?php include __DIR__ . '/../../partials/footer.php'; ?>

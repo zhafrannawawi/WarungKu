@@ -31,10 +31,10 @@
                         <label class="form-label small fw-semibold text-muted mb-1">Kategori <span class="text-danger">*</span></label>
                         <select name="category_id" id="prod-category" class="form-select" required>
                             <?php foreach ($category_list as $c): ?>
-                                <option value="<?= $c['CategoryID'] ?>"><?= htmlspecialchars($c['CategoryName']) ?></option>
+                                <option value="<?= htmlspecialchars($c['CategoryID']) ?>"><?= htmlspecialchars($c['CategoryName']) ?></option>
                             <?php endforeach; ?>
                             <?php if (empty($category_list)): ?>
-                                <option value="0">Belum ada kategori</option>
+                                <option value="">Belum ada kategori</option>
                             <?php endif; ?>
                         </select>
                     </div>
@@ -66,9 +66,17 @@
                     </div>
                 </div>
 
-                <div class="mb-2">
+                <div class="mb-3">
                     <label class="form-label small fw-semibold text-muted mb-1">Lokasi / Rak Penyimpanan (Opsional)</label>
                     <input type="text" name="location" id="prod-location" class="form-control" placeholder="Contoh: Rak A-02">
+                </div>
+
+                <div class="mb-2 d-none" id="prod-status-group">
+                    <label class="form-label small fw-semibold text-muted mb-1">Status Produk</label>
+                    <select name="is_active" id="prod-is-active" class="form-select">
+                        <option value="1">Aktif (Dijual di Kasir)</option>
+                        <option value="0">Non-Aktif Sementara</option>
+                    </select>
                 </div>
             </div>
 

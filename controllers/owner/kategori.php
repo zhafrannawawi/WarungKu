@@ -7,10 +7,7 @@
 // 1. KEAMANAN & SESI (Wajib Login sebagai Owner)
 require_once __DIR__ . '/../../config/app.php';
 
-if (empty($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'owner') {
-    redirect('/login');
-}
-$store_id = (string)($_SESSION['store_id'] ?? '');
+$store_id = require_auth('owner');
 
 // 2. PROSES AKSI FORM (POST: Tambah, Edit, Hapus)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -28,12 +25,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         // Aksi 2: Edit Kategori
         elseif ($action === 'edit') {
-            $id   = trim($_POST['category_id'] ?? '');
-            $name = trim($_POST['category_name'] ?? '');
+            $id        = trim($_POST['category_id'] ?? '');
+            $name      = trim($_POST['category_name'] ?? '');
+            $is_active = (int)($_POST['is_active'] ?? 1);
             if ($id === '' || $name === '') {
                 throw new Exception('Data kategori tidak lengkap.');
             }
-            category_update($koneksi, $id, $store_id, $name);
+            category_update($koneksi, $id, $store_id, $name, $is_active);
             set_alert('success', 'Kategori berhasil diperbarui!');
         }
         // Aksi 3: Hapus Kategori

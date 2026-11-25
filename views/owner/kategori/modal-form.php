@@ -21,9 +21,16 @@
             
             <!-- Modal Body -->
             <div class="modal-body p-4">
-                <div class="mb-2">
+                <div class="mb-3">
                     <label class="form-label small fw-semibold text-muted mb-1">Nama Kategori <span class="text-danger">*</span></label>
                     <input type="text" name="category_name" id="cat-name" class="form-control" placeholder="Contoh: Sembako, Minuman, Snack" required autofocus>
+                </div>
+                <div class="mb-2 d-none" id="cat-status-group">
+                    <label class="form-label small fw-semibold text-muted mb-1">Status Kategori</label>
+                    <select name="is_active" id="cat-is-active" class="form-select">
+                        <option value="1">Aktif (Tampil di Kasir)</option>
+                        <option value="0">Non-Aktif Sementara</option>
+                    </select>
                 </div>
             </div>
             

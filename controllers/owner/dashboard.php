@@ -5,11 +5,7 @@
 
 require_once __DIR__ . '/../../config/app.php';
 
-if (empty($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'owner') {
-    redirect('/login');
-}
-
-$store_id = (string)($_SESSION['store_id'] ?? '');
+$store_id = require_auth('owner');
 
 // 1. Ringkasan Kas & Laba Hari Ini
 $summary     = transaction_get_today_summary($koneksi, $store_id);
@@ -28,10 +24,8 @@ $low_stock_list = array_slice(
     5
 );
 
-// 3. Format Tanggal Indonesia Singkat
-$hari_id  = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-$bulan_id = [1 => 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-$tanggal_hari_ini = $hari_id[(int)date('w')] . ', ' . date('d') . ' ' . $bulan_id[(int)date('n')] . ' ' . date('Y');
+// 3. Format Tanggal Indonesia
+$tanggal_hari_ini = tanggal_id();
 
 $page_title = 'Dashboard Harian';
 $page_name  = 'dashboard';

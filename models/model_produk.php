@@ -26,6 +26,12 @@ function product_add(PDO $koneksi, string $store_id, string $category_id, string
         throw new Exception('Gagal: Kategori tidak ditemukan atau sudah dihapus.');
     }
 
+    $check_name = $koneksi->prepare("SELECT ProductID FROM tblproduct WHERE StoreID = ? AND LOWER(ProductName) = LOWER(?) AND DeletedAt IS NULL");
+    $check_name->execute([$store_id, $name]);
+    if ($check_name->fetch()) {
+        throw new Exception('Gagal: Nama produk sudah ada.');
+    }
+
     $id   = generate_id($koneksi, 'tblproduct', 'ProductID', 'PRD-');
     $stmt = $koneksi->prepare(
         "INSERT INTO tblproduct (ProductID, StoreID, CategoryID, ProductName, Unit, PurchasePrice, SellingPrice, Stock, MinimumStock, Location, IsActive, CreatedAt)
@@ -35,14 +41,20 @@ function product_add(PDO $koneksi, string $store_id, string $category_id, string
 }
 
 // 3. Perbarui / Edit Data Produk
-function product_update(PDO $koneksi, string $product_id, string $store_id, string $category_id, string $name, string $unit, float $buy_price, float $sell_price, int $stock, int $min_stock, string $location): bool
+function product_update(PDO $koneksi, string $product_id, string $store_id, string $category_id, string $name, string $unit, float $buy_price, float $sell_price, int $stock, int $min_stock, string $location, int $is_active = 1): bool
 {
+    $check_name = $koneksi->prepare("SELECT ProductID FROM tblproduct WHERE StoreID = ? AND LOWER(ProductName) = LOWER(?) AND ProductID != ? AND DeletedAt IS NULL");
+    $check_name->execute([$store_id, $name, $product_id]);
+    if ($check_name->fetch()) {
+        throw new Exception('Gagal: Nama produk sudah dipakai.');
+    }
+
     $stmt = $koneksi->prepare(
         "UPDATE tblproduct 
-         SET CategoryID = ?, ProductName = ?, Unit = ?, PurchasePrice = ?, SellingPrice = ?, Stock = ?, MinimumStock = ?, Location = ?
+         SET CategoryID = ?, ProductName = ?, Unit = ?, PurchasePrice = ?, SellingPrice = ?, Stock = ?, MinimumStock = ?, Location = ?, IsActive = ?
          WHERE ProductID = ? AND StoreID = ? AND DeletedAt IS NULL"
     );
-    return $stmt->execute([$category_id, $name, $unit, $buy_price, $sell_price, $stock, $min_stock, $location, $product_id, $store_id]);
+    return $stmt->execute([$category_id, $name, $unit, $buy_price, $sell_price, $stock, $min_stock, $location, $is_active, $product_id, $store_id]);
 }
 
 // 4. Hapus Produk (Soft Delete)
@@ -76,5 +88,18 @@ function product_get_stock_report(PDO $koneksi, string $store_id, string $from_d
             ORDER BY p.ProductName ASC";
     $stmt = $koneksi->prepare($sql);
     $stmt->execute([$start, $end, $start, $end, $end, $end, $store_id]);
+    return $stmt->fetchAll();
+}
+
+
+// 6. Ambil Produk dengan Stok Menipis / Habis (F011: Stock <= MinimumStock)
+function product_get_low_stock(PDO $koneksi, string $store_id): array
+{
+    $sql = "SELECT ProductID, ProductName, Stock, MinimumStock, Unit, Location
+            FROM tblproduct
+            WHERE StoreID = ? AND DeletedAt IS NULL AND IsActive = 1 AND Stock <= MinimumStock
+            ORDER BY Stock ASC, ProductName ASC";
+    $stmt = $koneksi->prepare($sql);
+    $stmt->execute([$store_id]);
     return $stmt->fetchAll();
 }

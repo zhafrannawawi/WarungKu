@@ -87,21 +87,34 @@ function user_count_metrics(PDO $koneksi, string $store_id): array
     return $stmt->fetch();
 }
 
-function user_add_cashier(PDO $koneksi, string $store_id, string $fullname, string $username, string $email, string $phone_number)
+function user_ensure_unique(PDO $koneksi, string $store_id, string $username, string $phone_number, ?string $exclude_user_id = null): void
 {
-    $check_username = $koneksi->prepare("SELECT UserID FROM tbluser WHERE Username = ? AND StoreID = ? AND DeletedAt IS NULL");
-    $check_username->execute([$username, $store_id]);
-    if ($check_username->fetch()) {
-        throw new Exception('Gagal: Username sudah dipakai akun lain.');
-    }
+    $checks = [
+        ['Username', $username, 'Gagal: Username sudah dipakai akun lain.'],
+        ['PhoneNumber', $phone_number, 'Gagal: Nomor telepon/WhatsApp sudah dipakai akun lain.'],
+    ];
 
-    if ($phone_number !== '') {
-        $check_phone = $koneksi->prepare("SELECT UserID FROM tbluser WHERE PhoneNumber = ? AND StoreID = ? AND DeletedAt IS NULL");
-        $check_phone->execute([$phone_number, $store_id]);
-        if ($check_phone->fetch()) {
-            throw new Exception('Gagal: Nomor telepon/WhatsApp sudah dipakai akun lain.');
+    foreach ($checks as [$column, $value, $error]) {
+        if ($value === '') {
+            continue;
+        }
+        $sql    = "SELECT UserID FROM tbluser WHERE $column = ? AND StoreID = ? AND DeletedAt IS NULL";
+        $params = [$value, $store_id];
+        if ($exclude_user_id !== null) {
+            $sql     .= " AND UserID != ?";
+            $params[] = $exclude_user_id;
+        }
+        $stmt = $koneksi->prepare($sql);
+        $stmt->execute($params);
+        if ($stmt->fetch()) {
+            throw new Exception($error);
         }
     }
+}
+
+function user_add_cashier(PDO $koneksi, string $store_id, string $fullname, string $username, string $email, string $phone_number)
+{
+    user_ensure_unique($koneksi, $store_id, $username, $phone_number);
 
     $user_id = generate_id($koneksi, 'tbluser', 'UserID', 'USR-');
     $stmt    = $koneksi->prepare(
@@ -113,19 +126,7 @@ function user_add_cashier(PDO $koneksi, string $store_id, string $fullname, stri
 
 function user_update_cashier(PDO $koneksi, string $user_id, string $store_id, string $fullname, string $username, string $email, string $phone_number, int $is_active)
 {
-    $check_username = $koneksi->prepare("SELECT UserID FROM tbluser WHERE Username = ? AND StoreID = ? AND UserID != ? AND DeletedAt IS NULL");
-    $check_username->execute([$username, $store_id, $user_id]);
-    if ($check_username->fetch()) {
-        throw new Exception('Gagal: Username sudah dipakai akun lain.');
-    }
-
-    if ($phone_number !== '') {
-        $check_phone = $koneksi->prepare("SELECT UserID FROM tbluser WHERE PhoneNumber = ? AND StoreID = ? AND UserID != ? AND DeletedAt IS NULL");
-        $check_phone->execute([$phone_number, $store_id, $user_id]);
-        if ($check_phone->fetch()) {
-            throw new Exception('Gagal: Nomor telepon/WhatsApp sudah dipakai akun lain.');
-        }
-    }
+    user_ensure_unique($koneksi, $store_id, $username, $phone_number, $user_id);
 
     $stmt = $koneksi->prepare(
         "UPDATE tbluser SET Fullname = ?, Username = ?, Email = ?, PhoneNumber = ?, IsActive = ? 
@@ -150,19 +151,7 @@ function user_find_by_id(PDO $koneksi, string $user_id)
 
 function user_update_profile(PDO $koneksi, string $user_id, string $store_id, string $fullname, string $username, string $email, string $phone_number, string $new_password = ''): bool
 {
-    $check_username = $koneksi->prepare("SELECT UserID FROM tbluser WHERE Username = ? AND StoreID = ? AND UserID != ? AND DeletedAt IS NULL");
-    $check_username->execute([$username, $store_id, $user_id]);
-    if ($check_username->fetch()) {
-        throw new Exception('Gagal: Username sudah dipakai akun lain.');
-    }
-
-    if ($phone_number !== '') {
-        $check_phone = $koneksi->prepare("SELECT UserID FROM tbluser WHERE PhoneNumber = ? AND StoreID = ? AND UserID != ? AND DeletedAt IS NULL");
-        $check_phone->execute([$phone_number, $store_id, $user_id]);
-        if ($check_phone->fetch()) {
-            throw new Exception('Gagal: Nomor telepon/WhatsApp sudah dipakai akun lain.');
-        }
-    }
+    user_ensure_unique($koneksi, $store_id, $username, $phone_number, $user_id);
 
     if ($new_password !== '') {
         $hash = password_hash($new_password, PASSWORD_DEFAULT);

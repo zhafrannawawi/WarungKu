@@ -5,17 +5,10 @@
 
 require_once __DIR__ . '/../../config/app.php';
 
-if (empty($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'owner') {
-    redirect('/login');
-}
-$store_id = (string)($_SESSION['store_id'] ?? '');
+$store_id = require_auth('owner');
 
 // Filter Periode Tanggal (Default: Awal Bulan Ini s/d Hari Ini)
-$from_date = $_GET['from'] ?? date('Y-m-01');
-$to_date   = $_GET['to']   ?? date('Y-m-d');
-if ($from_date > $to_date) {
-    [$from_date, $to_date] = [$to_date, $from_date];
-}
+[$from_date, $to_date] = get_date_range();
 
 $product_list  = product_get_stock_report($koneksi, $store_id, $from_date, $to_date);
 $category_list = category_get_all($koneksi, $store_id);

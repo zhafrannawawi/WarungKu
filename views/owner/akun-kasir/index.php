@@ -136,12 +136,6 @@
     </div>
 </div>
 
-<!-- Form Hapus Kasir Hidden -->
-<form id="form-delete-kasir" method="POST" action="/owner/akun-kasir" style="display:none;">
-    <input type="hidden" name="action" value="hapus">
-    <input type="hidden" name="user_id" id="delete-user-id">
-</form>
-
 <?php include __DIR__ . '/modal-tambah.php'; ?>
 <?php include __DIR__ . '/modal-edit.php'; ?>
 

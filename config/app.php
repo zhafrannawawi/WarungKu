@@ -59,3 +59,32 @@ function generate_id(PDO $koneksi, string $table, string $column, string $prefix
     $next = ((int)$stmt->fetchColumn()) + 1;
     return $prefix . str_pad((string)$next, 3, '0', STR_PAD_LEFT);
 }
+
+// Guard autentikasi & role; mengembalikan store_id aktif
+function require_auth(?string $role = null): string
+{
+    if (empty($_SESSION['user_id']) || ($role !== null && ($_SESSION['role'] ?? '') !== $role)) {
+        redirect('/login');
+    }
+    return (string)($_SESSION['store_id'] ?? '');
+}
+
+// Format tanggal hari ini dalam bahasa Indonesia (misal: Rabu, 25 November 2026)
+function tanggal_id(?int $timestamp = null): string
+{
+    $ts    = $timestamp ?? time();
+    $hari  = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    $bulan = [1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    return $hari[(int)date('w', $ts)] . ', ' . date('d', $ts) . ' ' . $bulan[(int)date('n', $ts)] . ' ' . date('Y', $ts);
+}
+
+// Ambil rentang tanggal filter GET (?from=...&to=...) dengan auto-swap jika terbalik
+function get_date_range(): array
+{
+    $from = $_GET['from'] ?? date('Y-m-01');
+    $to   = $_GET['to'] ?? date('Y-m-d');
+    if ($from > $to) {
+        [$from, $to] = [$to, $from];
+    }
+    return [$from, $to];
+}

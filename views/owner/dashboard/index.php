@@ -121,39 +121,62 @@
 
     <!-- Panel Peringatan Stok Menipis -->
     <div class="col-12 col-lg-5">
-        <div class="card-modern h-100 d-flex flex-column justify-content-between">
+        <div class="card-modern h-100 d-flex flex-column">
             <div class="p-3 border-bottom d-flex align-items-center justify-content-between">
                 <div>
                     <h6 class="fw-bold text-dark mb-0">Peringatan Stok Menipis</h6>
                     <small class="text-muted">Barang di bawah batas minimum</small>
                 </div>
-                <a href="/owner/restock" class="btn btn-sm btn-outline-secondary rounded-btn-sm text-decoration-none">
+                <a href="/owner/restock" class="btn btn-sm btn-outline-secondary px-3 fw-semibold rounded-btn-sm text-decoration-none">
                     Restock
                 </a>
             </div>
 
-            <div class="p-3 flex-grow-1 d-flex flex-column justify-content-center">
-                <?php if (empty($low_stock_list)): ?>
-                    <div class="text-center py-3">
-                        <span class="badge-status success mb-2"><i data-lucide="check-circle" class="icon-xs"></i> Stok Aman</span>
-                        <p class="text-muted small mb-0">Seluruh stok barang berada di atas batas minimum.</p>
-                    </div>
-                <?php else: ?>
-                    <div class="d-flex flex-column gap-2">
-                        <?php foreach ($low_stock_list as $lp): ?>
-                            <div class="d-flex align-items-center justify-content-between p-2 rounded border bg-light">
-                                <div>
-                                    <span class="fw-semibold text-dark small d-block"><?= htmlspecialchars($lp['ProductName']) ?></span>
-                                    <small class="text-muted" style="font-size: 0.725rem;">Minimum: <?= (int)$lp['MinimumStock'] ?> <?= htmlspecialchars($lp['Unit']) ?></small>
-                                </div>
-                                <span class="badge-status danger">Sisa <?= (int)$lp['Stock'] ?> <?= htmlspecialchars($lp['Unit']) ?></span>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
+            <div class="table-responsive flex-grow-1">
+                <table class="table table-modern align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">Produk</th>
+                            <th class="text-center">Minimum</th>
+                            <th class="text-end pe-4">Sisa Stok</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($low_stock_list)): ?>
+                            <tr>
+                                <td colspan="3" class="text-center text-muted py-4">
+                                    <span class="badge-status success mb-1"><i data-lucide="check-circle" class="icon-xs"></i> Stok Aman</span>
+                                    <div class="small">Semua stok di atas batas minimum.</div>
+                                </td>
+                            </tr>
+                        <?php else: ?>
+                            <?php foreach ($low_stock_list as $lp):
+                                $habis = (int)$lp['Stock'] <= 0;
+                            ?>
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="trx-avatar"><?= strtoupper(substr($lp['ProductName'], 0, 2)) ?></span>
+                                            <div>
+                                                <span class="fw-semibold text-dark d-block"><?= htmlspecialchars($lp['ProductName']) ?></span>
+                                                <small class="text-muted"><?= !empty($lp['Location']) ? htmlspecialchars($lp['Location']) : '#' . htmlspecialchars($lp['ProductID']) ?></small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center text-muted small"><?= (int)$lp['MinimumStock'] ?> <?= htmlspecialchars($lp['Unit']) ?></td>
+                                    <td class="text-end pe-4">
+                                        <span class="badge-status danger">
+                                            <?= $habis ? 'Habis' : (int)$lp['Stock'] . ' ' . htmlspecialchars($lp['Unit']) ?>
+                                        </span>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
             </div>
 
-            <div class="p-2 border-top bg-light text-center rounded-bottom">
+            <div class="p-2 border-top bg-light text-center rounded-bottom mt-auto">
                 <small class="text-muted" style="font-size: 0.75rem;">Total <strong><?= $total_katalog ?></strong> produk aktif dalam katalog warung</small>
             </div>
         </div>

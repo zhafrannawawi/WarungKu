@@ -124,7 +124,7 @@
                         $cat_name    = $p['CategoryName'] ?: 'Umum';
                         $is_low      = (int)$p['Stock'] <= (int)$p['MinimumStock'];
                     ?>
-                        <tr class="produk-row" data-category="<?= htmlspecialchars($cat_name) ?>" data-stock="<?= (int)$p['Stock'] ?>" data-name="<?= htmlspecialchars(strtolower($p['ProductName'])) ?>">
+                        <tr class="produk-row" data-category="<?= htmlspecialchars($cat_name) ?>" data-stock="<?= (int)$p['Stock'] ?>" data-min-stock="<?= (int)$p['MinimumStock'] ?>" data-name="<?= htmlspecialchars(strtolower($p['ProductName'])) ?>">
                             <td class="ps-4">
                                 <div class="d-flex align-items-center gap-2">
                                     <span class="trx-avatar"><?= strtoupper(substr($p['ProductName'], 0, 2)) ?></span>

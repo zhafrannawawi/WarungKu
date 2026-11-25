@@ -25,13 +25,13 @@
     <div class="col-12 col-sm-6 col-xl-3">
         <div class="card-modern p-3 h-100 metric-card">
             <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="text-muted small fw-medium">Total Pengeluaran Beli</span>
-                <div class="metric-icon-box">
-                    <i data-lucide="wallet" class="icon-sm text-primary"></i>
+                <span class="text-muted small fw-medium">Pengeluaran Beli Hari Ini</span>
+                <div class="metric-icon-box metric-icon-blue">
+                    <i data-lucide="wallet" class="icon-sm"></i>
                 </div>
             </div>
-            <span class="metric-value text-dark" id="stat-total-restock">Rp 1.240.000</span>
-            <small class="text-muted mt-2 d-block" style="font-size: 0.725rem;">Hari ini • 2 restock masuk</small>
+            <span class="metric-value text-dark">Rp <?= number_format($total_beli_hr, 0, ',', '.') ?></span>
+            <small class="text-muted mt-2 d-block" style="font-size: 0.725rem;"><?= count($today_list) ?> restock masuk hari ini</small>
         </div>
     </div>
 
@@ -39,13 +39,11 @@
         <div class="card-modern p-3 h-100 metric-card">
             <div class="d-flex align-items-center justify-content-between mb-2">
                 <span class="text-muted small fw-medium">Barang Masuk Hari Ini</span>
-                <div class="metric-icon-box">
-                    <i data-lucide="package-plus" class="icon-sm text-success"></i>
+                <div class="metric-icon-box metric-icon-green">
+                    <i data-lucide="package-plus" class="icon-sm"></i>
                 </div>
             </div>
-            <div class="d-flex align-items-center justify-content-between gap-2">
-                <span class="metric-value text-success" id="stat-unit-masuk">25 Unit</span>
-            </div>
+            <span class="metric-value text-success"><?= number_format($unit_masuk_hr, 0, ',', '.') ?> Unit</span>
             <small class="text-muted mt-2 d-block" style="font-size: 0.725rem;">Stok langsung diperbarui</small>
         </div>
     </div>
@@ -54,14 +52,14 @@
         <div class="card-modern p-3 h-100 metric-card">
             <div class="d-flex align-items-center justify-content-between mb-2">
                 <span class="text-muted small fw-medium">Stok Hampir Habis</span>
-                <div class="metric-icon-box">
-                    <i data-lucide="alert-triangle" class="icon-sm text-danger"></i>
+                <div class="metric-icon-box metric-icon-orange">
+                    <i data-lucide="alert-triangle" class="icon-sm"></i>
                 </div>
             </div>
-            <div class="d-flex align-items-center justify-content-between gap-2">
-                <span class="metric-value text-danger">1 Item</span>
-            </div>
-            <small class="text-muted mt-2 d-block" style="font-size: 0.725rem;">Beras Ramos Setra (sisa 8)</small>
+            <span class="metric-value <?= count($low_stock) > 0 ? 'text-danger' : 'text-dark' ?>"><?= count($low_stock) ?> Item</span>
+            <small class="text-muted mt-2 d-block text-truncate" style="font-size: 0.725rem;">
+                <?= !empty($low_stock) ? htmlspecialchars($low_stock[0]['ProductName']) . ' (sisa ' . (int)$low_stock[0]['Stock'] . ')' : 'Semua stok aman' ?>
+            </small>
         </div>
     </div>
 
@@ -69,19 +67,18 @@
         <div class="card-modern p-3 h-100 metric-card">
             <div class="d-flex align-items-center justify-content-between mb-2">
                 <span class="text-muted small fw-medium">Restock Bulan Ini</span>
-                <div class="metric-icon-box">
-                    <i data-lucide="calendar-check" class="icon-sm text-primary"></i>
+                <div class="metric-icon-box metric-icon-purple">
+                    <i data-lucide="calendar-check" class="icon-sm"></i>
                 </div>
             </div>
-            <span class="metric-value text-dark">12 Kali</span>
-            <small class="text-muted mt-2 d-block" style="font-size: 0.725rem;">Oktober 2026</small>
+            <span class="metric-value text-dark"><?= $jml_bulan_ini ?> Kali</span>
+            <small class="text-muted mt-2 d-block" style="font-size: 0.725rem;"><?= date('M Y') ?></small>
         </div>
     </div>
 </div>
 
 <!-- Main Table Card -->
 <div class="card-modern">
-    <!-- Filter Toolbar -->
     <div class="p-3 border-bottom d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
         <div class="position-relative topbar-search-wrapper w-100-mobile">
             <i data-lucide="search" class="search-icon-pos icon-sm"></i>
@@ -90,10 +87,10 @@
 
         <div class="d-flex flex-wrap align-items-center gap-2">
             <select id="restock-filter-periode" class="form-select form-select-sm border filter-select" onchange="filterRestockTable()">
+                <option value="all">Semua Periode</option>
                 <option value="today">Hari Ini</option>
                 <option value="7days">7 Hari Terakhir</option>
                 <option value="30days">Bulan Ini</option>
-                <option value="all">Semua</option>
             </select>
 
             <button class="btn btn-sm btn-outline-secondary" title="Reset Filter" onclick="resetRestockFilter()">
@@ -102,7 +99,6 @@
         </div>
     </div>
 
-    <!-- Data Table -->
     <div class="table-responsive">
         <table class="table table-modern align-middle mb-0">
             <thead>
@@ -111,97 +107,52 @@
                     <th>Tanggal &amp; Waktu</th>
                     <th>Nama Barang</th>
                     <th>Qty Masuk</th>
-                    <th>Total Beli</th>
-                    <th>Status</th>
-                    <th class="text-center pe-4" style="width: 100px;">Aksi</th>
+                    <th class="text-end">Total Beli</th>
+                    <th>Dicatat Oleh</th>
+                    <th class="pe-4">Catatan</th>
                 </tr>
             </thead>
             <tbody id="tabel-riwayat-restock">
-                <tr class="restock-row" data-faktur="#RCK-20260924-002" data-produk="Minyak Goreng Bimoli 2L">
-                    <td class="ps-4">
-                        <span class="trx-faktur">#RCK-20260924-002</span>
-                    </td>
-                    <td>
-                        <div class="trx-waktu">
-                            <span class="trx-tanggal">24 Sep 2026</span>
-                            <span class="trx-jam">09:30 WIB</span>
-                        </div>
-                    </td>
-                    <td>
-                        <span class="fw-semibold text-dark d-block">Minyak Goreng Bimoli 2L</span>
-                        <small class="text-muted">Kode: #PRD-002</small>
-                    </td>
-                    <td>
-                        <span class="badge bg-success-subtle text-success border border-success-subtle">+15 Pcs</span>
-                    </td>
-                    <td class="fw-bold text-dark">Rp 465.000</td>
-                    <td>
-                        <span class="badge-status success"><i data-lucide="check-circle" class="icon-xs"></i> Masuk</span>
-                    </td>
-                    <td class="text-center pe-4">
-                        <button class="btn btn-sm btn-outline-primary px-2" onclick="alert('Restock #RCK-20260924-002 sudah tercatat.')">
-                            Detail
-                        </button>
-                    </td>
-                </tr>
-
-                <tr class="restock-row" data-faktur="#RCK-20260924-001" data-produk="Gula Pasir Kristal 1kg">
-                    <td class="ps-4">
-                        <span class="trx-faktur">#RCK-20260924-001</span>
-                    </td>
-                    <td>
-                        <div class="trx-waktu">
-                            <span class="trx-tanggal">24 Sep 2026</span>
-                            <span class="trx-jam">08:15 WIB</span>
-                        </div>
-                    </td>
-                    <td>
-                        <span class="fw-semibold text-dark d-block">Gula Pasir Kristal 1kg</span>
-                        <small class="text-muted">Kode: #PRD-004</small>
-                    </td>
-                    <td>
-                        <span class="badge bg-success-subtle text-success border border-success-subtle">+10 Kg</span>
-                    </td>
-                    <td class="fw-bold text-dark">Rp 145.000</td>
-                    <td>
-                        <span class="badge-status success"><i data-lucide="check-circle" class="icon-xs"></i> Masuk</span>
-                    </td>
-                    <td class="text-center pe-4">
-                        <button class="btn btn-sm btn-outline-primary px-2" onclick="alert('Restock #RCK-20260924-001 sudah tercatat.')">
-                            Detail
-                        </button>
-                    </td>
-                </tr>
-
-                <tr class="restock-row" data-faktur="#RCK-20260923-005" data-produk="Telur Ayam Negeri 1kg">
-                    <td class="ps-4">
-                        <span class="trx-faktur">#RCK-20260923-005</span>
-                    </td>
-                    <td>
-                        <div class="trx-waktu">
-                            <span class="trx-tanggal">23 Sep 2026</span>
-                            <span class="trx-jam">16:40 WIB</span>
-                        </div>
-                    </td>
-                    <td>
-                        <span class="fw-semibold text-dark d-block">Telur Ayam Negeri 1kg</span>
-                        <small class="text-muted">Kode: #PRD-003</small>
-                    </td>
-                    <td>
-                        <span class="badge bg-success-subtle text-success border border-success-subtle">+20 Kg</span>
-                    </td>
-                    <td class="fw-bold text-dark">Rp 520.000</td>
-                    <td>
-                        <span class="badge-status success"><i data-lucide="check-circle" class="icon-xs"></i> Masuk</span>
-                    </td>
-                    <td class="text-center pe-4">
-                        <button class="btn btn-sm btn-outline-primary px-2" onclick="alert('Restock #RCK-20260923-005 sudah tercatat.')">
-                            Detail
-                        </button>
-                    </td>
-                </tr>
+                <?php if (empty($restock_list)): ?>
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">Belum ada riwayat restock barang.</td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($restock_list as $r):
+                        $total_beli = (float)$r['PurchasePrice'] * (int)$r['Quantity'];
+                        $tgl        = substr($r['RestockDate'], 0, 10);
+                    ?>
+                        <tr class="restock-row"
+                            data-produk="<?= htmlspecialchars(strtolower($r['ProductName'] ?? '')) ?>"
+                            data-date="<?= htmlspecialchars($tgl) ?>">
+                            <td class="ps-4">
+                                <span class="trx-faktur">#<?= htmlspecialchars($r['RestockID']) ?></span>
+                            </td>
+                            <td>
+                                <div class="trx-waktu">
+                                    <span class="trx-tanggal"><?= date('d M Y', strtotime($r['RestockDate'])) ?></span>
+                                    <span class="trx-jam"><?= date('H:i', strtotime($r['RestockDate'])) ?> WIB</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="fw-semibold text-dark d-block"><?= htmlspecialchars($r['ProductName'] ?? '-') ?></span>
+                                <small class="text-muted">#<?= htmlspecialchars($r['ProductID']) ?> • @Rp <?= number_format($r['PurchasePrice'], 0, ',', '.') ?></small>
+                            </td>
+                            <td>
+                                <span class="badge-status success">+<?= (int)$r['Quantity'] ?> <?= htmlspecialchars($r['Unit'] ?? 'pcs') ?></span>
+                            </td>
+                            <td class="text-end fw-bold text-dark">Rp <?= number_format($total_beli, 0, ',', '.') ?></td>
+                            <td class="text-muted small"><?= htmlspecialchars($r['CashierName'] ?? '-') ?></td>
+                            <td class="text-muted small pe-4"><?= htmlspecialchars($r['Note'] ?: '-') ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </tbody>
         </table>
+    </div>
+
+    <div class="p-3 border-top d-flex align-items-center justify-content-between bg-white rounded-bottom">
+        <small class="text-muted">Menampilkan <strong><?= count($restock_list) ?></strong> riwayat restock</small>
     </div>
 </div>
 
