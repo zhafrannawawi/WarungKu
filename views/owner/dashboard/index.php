@@ -2,16 +2,31 @@
 
 <!-- Page Header: Dashboard Harian -->
 <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 gap-3">
-    <div>
-        <h4 class="fw-bold text-dark mb-1">Dashboard Harian</h4>
-        <p class="text-muted mb-0 small">Ringkasan aktivitas operasional warung hari ini</p>
+    <div class="d-flex align-items-center gap-3">
+        <div class="bg-primary bg-opacity-10 text-primary rounded-3 shadow-sm d-inline-flex align-items-center justify-content-center flex-shrink-0" style="width: 40px; height: 40px;">
+            <i data-lucide="layout-dashboard" class="icon-sm"></i>
+        </div>
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h4 class="fw-bold text-dark mb-0">Dashboard Harian</h4>
+                <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary fw-semibold px-2 py-1" style="font-size: 0.7rem;">Hari Ini</span>
+            </div>
+            <p class="text-secondary mb-0 small">Pantauan cepat omzet, kas, dan stok warung yang berjalan</p>
+        </div>
     </div>
+
     <div class="d-flex align-items-center gap-2">
-        <span class="btn btn-sm bg-white border text-muted rounded-btn-sm d-inline-flex align-items-center gap-1 pe-none">
-            <i data-lucide="calendar" class="icon-xs"></i> <?= htmlspecialchars($tanggal_hari_ini) ?>
+        <span class="bg-white border-0 text-secondary small fw-medium rounded-3 shadow-sm d-inline-flex align-items-center gap-2 px-3 py-2 pe-none">
+            <span class="bg-primary bg-opacity-10 text-primary rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
+                <i data-lucide="calendar" class="icon-xs"></i>
+            </span>
+            <span><?= htmlspecialchars($tanggal_hari_ini) ?></span>
         </span>
-        <a href="/owner/kasir" class="btn btn-sm btn-primary rounded-btn-sm d-flex align-items-center gap-1 fw-semibold text-decoration-none">
-            <i data-lucide="shopping-cart" class="icon-xs"></i> Buka Kasir
+        <a href="/owner/kasir" class="btn btn-primary rounded-3 shadow-sm d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold text-decoration-none">
+            <span class="bg-white bg-opacity-25 rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
+                <i data-lucide="shopping-cart" class="icon-xs"></i>
+            </span>
+            <span>Buka Kasir</span>
         </a>
     </div>
 </div>
@@ -110,7 +125,7 @@
 <div class="row g-3 mb-4">
     <!-- 5 Transaksi Terkini Hari Ini -->
     <div class="col-12 col-lg-7">
-    <div class="bg-white border rounded-4 shadow-sm h-100">
+    <div class="bg-white border rounded-4 shadow-sm h-100 overflow-hidden">
 
         <!-- Header -->
         <div class="p-3 border-bottom d-flex align-items-center justify-content-between">

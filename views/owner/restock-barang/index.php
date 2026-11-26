@@ -1,18 +1,58 @@
 <?php include __DIR__ . '/../../partials/header.php'; ?>
 
+<style>
+    /* Pencarian pill: efek fokus senada warna primary dashboard */
+    #restock-table-search:focus {
+        border-color: var(--bs-primary);
+        box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.15);
+        background-color: #fff;
+    }
+    /* Filter pill */
+    .restock-pill-select {
+        background-color: #f1f3f5;
+        border: 1px solid transparent;
+        transition: background-color .15s ease, border-color .15s ease;
+    }
+    .restock-pill-select:hover { background-color: #e9ecef; }
+    .restock-pill-select:focus {
+        background-color: #fff;
+        border-color: var(--bs-primary);
+        box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.15);
+    }
+    .restock-pill-btn {
+        background-color: #f1f3f5;
+        border: 1px solid transparent;
+        transition: background-color .15s ease;
+    }
+    .restock-pill-btn:hover { background-color: #e9ecef; }
+</style>
+
 <!-- Page Header: Restock Barang -->
 <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 gap-3">
-    <div>
-        <h4 class="fw-bold text-dark mb-1">Restock Barang</h4>
-        <p class="text-muted mb-0 small">Catat barang masuk dan pantau riwayat restock stok dagangan.</p>
+    <div class="d-flex align-items-center gap-3">
+        <div class="bg-primary bg-opacity-10 text-primary rounded-3 shadow-sm d-inline-flex align-items-center justify-content-center flex-shrink-0" style="width: 40px; height: 40px;">
+            <i data-lucide="package-plus" class="icon-sm"></i>
+        </div>
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h4 class="fw-bold text-dark mb-0">Restock Barang</h4>
+                <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary fw-semibold px-2 py-1" style="font-size: 0.7rem;">Riwayat</span>
+            </div>
+            <p class="text-secondary mb-0 small">Catat barang masuk dan pantau riwayat restock stok dagangan</p>
+        </div>
     </div>
+
     <div class="d-flex align-items-center gap-2">
-        <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2 bg-white" onclick="exportDataRestock()">
-            <i data-lucide="download" class="icon-xs"></i>
+        <button class="btn btn-white bg-white border-0 text-secondary fw-medium rounded-3 shadow-sm d-inline-flex align-items-center gap-2 px-3 py-2" onclick="exportDataRestock()">
+            <span class="bg-primary bg-opacity-10 text-primary rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
+                <i data-lucide="download" class="icon-xs"></i>
+            </span>
             <span>Export Excel</span>
         </button>
-        <button class="btn btn-sm btn-primary d-flex align-items-center gap-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#modalRestock">
-            <i data-lucide="plus" class="icon-xs"></i>
+        <button class="btn btn-primary rounded-3 shadow-sm d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#modalRestock">
+            <span class="bg-white bg-opacity-25 rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
+                <i data-lucide="plus" class="icon-xs"></i>
+            </span>
             <span>Catat Restock Baru</span>
         </button>
     </div>
@@ -23,99 +63,149 @@
 <!-- Summary Metric Cards -->
 <div class="row g-3 mb-4">
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card-modern p-3 h-100 metric-card">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="text-muted small fw-medium">Pengeluaran Beli Hari Ini</span>
-                <div class="metric-icon-box metric-icon-blue">
-                    <i data-lucide="wallet" class="icon-sm"></i>
+        <div class="bg-white border rounded-4 shadow-sm p-4 h-100">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <span class="text-secondary fw-medium">Pengeluaran Beli Hari Ini</span>
+                <div class="bg-primary bg-opacity-10 text-primary rounded-3 p-2">
+                    <i data-lucide="wallet" width="20" height="20"></i>
                 </div>
             </div>
-            <span class="metric-value text-dark">Rp <?= number_format($total_beli_hr, 0, ',', '.') ?></span>
-            <small class="text-muted mt-2 d-block" style="font-size: 0.725rem;"><?= count($today_list) ?> restock masuk hari ini</small>
+
+            <div class="fs-4 fw-bold text-dark">
+                Rp <?= number_format($total_beli_hr, 0, ',', '.') ?>
+            </div>
+
+            <small class="text-secondary mt-2 d-block">
+                <?= count($today_list) ?> restock masuk hari ini
+            </small>
         </div>
     </div>
 
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card-modern p-3 h-100 metric-card">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="text-muted small fw-medium">Barang Masuk Hari Ini</span>
-                <div class="metric-icon-box metric-icon-green">
-                    <i data-lucide="package-plus" class="icon-sm"></i>
+        <div class="bg-white border rounded-4 shadow-sm p-4 h-100">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <span class="text-secondary fw-medium">Barang Masuk Hari Ini</span>
+                <div class="bg-success bg-opacity-10 text-success rounded-3 p-2">
+                    <i data-lucide="package-plus" width="20" height="20"></i>
                 </div>
             </div>
-            <span class="metric-value text-success"><?= number_format($unit_masuk_hr, 0, ',', '.') ?> Unit</span>
-            <small class="text-muted mt-2 d-block" style="font-size: 0.725rem;">Stok langsung diperbarui</small>
+
+            <div class="fs-4 fw-bold text-success">
+                <?= number_format($unit_masuk_hr, 0, ',', '.') ?> Unit
+            </div>
+
+            <small class="text-secondary mt-2 d-block">
+                Stok langsung diperbarui
+            </small>
         </div>
     </div>
 
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card-modern p-3 h-100 metric-card">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="text-muted small fw-medium">Stok Hampir Habis</span>
-                <div class="metric-icon-box metric-icon-orange">
-                    <i data-lucide="alert-triangle" class="icon-sm"></i>
+        <div class="bg-white border rounded-4 shadow-sm p-4 h-100">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <span class="text-secondary fw-medium">Stok Hampir Habis</span>
+                <div class="bg-warning bg-opacity-10 text-warning rounded-3 p-2">
+                    <i data-lucide="alert-triangle" width="20" height="20"></i>
                 </div>
             </div>
-            <span class="metric-value <?= count($low_stock) > 0 ? 'text-danger' : 'text-dark' ?>"><?= count($low_stock) ?> Item</span>
-            <small class="text-muted mt-2 d-block text-truncate" style="font-size: 0.725rem;">
+
+            <div class="fs-4 fw-bold <?= count($low_stock) > 0 ? 'text-danger' : 'text-dark' ?>">
+                <?= count($low_stock) ?> Item
+            </div>
+
+            <small class="text-secondary mt-2 d-block text-truncate">
                 <?= !empty($low_stock) ? htmlspecialchars($low_stock[0]['ProductName']) . ' (sisa ' . (int)$low_stock[0]['Stock'] . ')' : 'Semua stok aman' ?>
             </small>
         </div>
     </div>
 
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card-modern p-3 h-100 metric-card">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="text-muted small fw-medium">Restock Bulan Ini</span>
-                <div class="metric-icon-box metric-icon-purple">
-                    <i data-lucide="calendar-check" class="icon-sm"></i>
+        <div class="bg-white border rounded-4 shadow-sm p-4 h-100">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <span class="text-secondary fw-medium">Restock Bulan Ini</span>
+                <div class="bg-primary bg-opacity-10 text-primary rounded-3 p-2">
+                    <i data-lucide="calendar-check" width="20" height="20"></i>
                 </div>
             </div>
-            <span class="metric-value text-dark"><?= $jml_bulan_ini ?> Kali</span>
-            <small class="text-muted mt-2 d-block" style="font-size: 0.725rem;"><?= date('M Y') ?></small>
+
+            <div class="fs-4 fw-bold text-dark">
+                <?= $jml_bulan_ini ?> Kali
+            </div>
+
+            <small class="text-secondary mt-2 d-block">
+                <?= date('M Y') ?>
+            </small>
         </div>
     </div>
 </div>
 
 <!-- Main Table Card -->
-<div class="card-modern">
-    <div class="p-3 border-bottom d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
-        <div class="position-relative topbar-search-wrapper w-100-mobile">
-            <i data-lucide="search" class="search-icon-pos icon-sm"></i>
-            <input type="text" id="restock-table-search" class="search-input-box" placeholder="Cari nama produk..." oninput="filterRestockTable()">
+<div class="bg-white border rounded-4 shadow-sm overflow-hidden">
+
+    <!-- Header kartu -->
+    <div class="p-3 border-bottom">
+        <h6 class="fw-bold text-dark mb-1">Riwayat Restock Barang</h6>
+        <small class="text-secondary">Catatan barang masuk ke stok warung</small>
+    </div>
+
+    <!-- Toolbar: pencarian (kiri) + filter pill (kanan) -->
+    <div class="px-3 py-3 border-bottom d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between gap-2 gap-md-3">
+
+        <!-- Pencarian pill -->
+        <div class="position-relative flex-grow-1" style="max-width: 360px; min-width: 220px;">
+            <span class="position-absolute top-50 translate-middle-y text-secondary d-inline-flex" style="left: 16px; pointer-events: none;">
+                <i data-lucide="search" width="16" height="16"></i>
+            </span>
+            <input type="text"
+                   id="restock-table-search"
+                   class="form-control rounded-pill bg-white"
+                   style="padding-left: 2.6rem !important; height: 40px; font-size: 0.875rem;"
+                   placeholder="Cari nama produk..."
+                   oninput="filterRestockTable()">
         </div>
 
-        <div class="d-flex flex-wrap align-items-center gap-2">
-            <select id="restock-filter-periode" class="form-select form-select-sm border filter-select" onchange="filterRestockTable()">
+        <!-- Filter pill + reset -->
+        <div class="d-flex flex-nowrap align-items-center gap-2">
+            <select id="restock-filter-periode"
+                    class="form-select restock-pill-select rounded-pill px-3 fw-medium text-secondary flex-grow-1"
+                    style="min-width: 160px; height: 40px; font-size: 0.875rem;"
+                    onchange="filterRestockTable()">
                 <option value="all">Semua Periode</option>
                 <option value="today">Hari Ini</option>
                 <option value="7days">7 Hari Terakhir</option>
                 <option value="30days">Bulan Ini</option>
             </select>
 
-            <button class="btn btn-sm btn-outline-secondary" title="Reset Filter" onclick="resetRestockFilter()">
-                <i data-lucide="rotate-ccw" class="icon-xs"></i>
+            <button class="btn restock-pill-btn text-secondary rounded-circle d-inline-flex align-items-center justify-content-center flex-shrink-0 p-0"
+                    style="width: 40px; height: 40px;"
+                    title="Reset Filter"
+                    onclick="resetRestockFilter()">
+                <i data-lucide="rotate-ccw" width="16" height="16"></i>
             </button>
         </div>
     </div>
 
+    <!-- Table -->
     <div class="table-responsive">
-        <table class="table table-modern align-middle mb-0">
-            <thead>
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
                 <tr>
-                    <th class="ps-4">No. Restock</th>
-                    <th>Tanggal &amp; Waktu</th>
-                    <th>Nama Barang</th>
-                    <th>Qty Masuk</th>
-                    <th class="text-end">Total Beli</th>
-                    <th>Dicatat Oleh</th>
-                    <th class="pe-4">Catatan</th>
+                    <th class="ps-4 py-3 text-secondary small text-uppercase fw-semibold">No. Restock</th>
+                    <th class="py-3 text-secondary small text-uppercase fw-semibold">Tanggal &amp; Waktu</th>
+                    <th class="py-3 text-secondary small text-uppercase fw-semibold">Nama Barang</th>
+                    <th class="py-3 text-secondary small text-uppercase fw-semibold">Qty Masuk</th>
+                    <th class="text-end py-3 text-secondary small text-uppercase fw-semibold">Total Beli</th>
+                    <th class="py-3 text-secondary small text-uppercase fw-semibold">Dicatat Oleh</th>
+                    <th class="pe-4 py-3 text-secondary small text-uppercase fw-semibold">Catatan</th>
                 </tr>
             </thead>
             <tbody id="tabel-riwayat-restock">
                 <?php if (empty($restock_list)): ?>
                     <tr>
-                        <td colspan="7" class="text-center py-4 text-muted">Belum ada riwayat restock barang.</td>
+                        <td colspan="7" class="text-center text-secondary py-5">
+                            <i data-lucide="package-open" width="28" height="28" class="mb-2"></i>
+                            <div class="small">Belum ada riwayat restock barang.</div>
+                        </td>
                     </tr>
                 <?php else: ?>
                     <?php foreach ($restock_list as $r):
@@ -126,24 +216,32 @@
                             data-produk="<?= htmlspecialchars(strtolower($r['ProductName'] ?? '')) ?>"
                             data-date="<?= htmlspecialchars($tgl) ?>">
                             <td class="ps-4">
-                                <span class="trx-faktur">#<?= htmlspecialchars($r['RestockID']) ?></span>
+                                <span class="badge bg-primary bg-opacity-10 text-primary fw-semibold">
+                                    #<?= htmlspecialchars($r['RestockID']) ?>
+                                </span>
                             </td>
+
                             <td>
-                                <div class="trx-waktu">
-                                    <span class="trx-tanggal"><?= date('d M Y', strtotime($r['RestockDate'])) ?></span>
-                                    <span class="trx-jam"><?= date('H:i', strtotime($r['RestockDate'])) ?> WIB</span>
-                                </div>
+                                <span class="fw-medium text-dark d-block"><?= date('d M Y', strtotime($r['RestockDate'])) ?></span>
+                                <small class="text-secondary"><?= date('H:i', strtotime($r['RestockDate'])) ?> WIB</small>
                             </td>
+
                             <td>
                                 <span class="fw-semibold text-dark d-block"><?= htmlspecialchars($r['ProductName'] ?? '-') ?></span>
-                                <small class="text-muted">#<?= htmlspecialchars($r['ProductID']) ?> • @Rp <?= number_format($r['PurchasePrice'], 0, ',', '.') ?></small>
+                                <small class="text-secondary">#<?= htmlspecialchars($r['ProductID']) ?> • @Rp <?= number_format($r['PurchasePrice'], 0, ',', '.') ?></small>
                             </td>
+
                             <td>
-                                <span class="badge-status success">+<?= (int)$r['Quantity'] ?> <?= htmlspecialchars($r['Unit'] ?? 'pcs') ?></span>
+                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 fw-semibold">
+                                    +<?= (int)$r['Quantity'] ?> <?= htmlspecialchars($r['Unit'] ?? 'pcs') ?>
+                                </span>
                             </td>
+
                             <td class="text-end fw-bold text-dark">Rp <?= number_format($total_beli, 0, ',', '.') ?></td>
-                            <td class="text-muted small"><?= htmlspecialchars($r['CashierName'] ?? '-') ?></td>
-                            <td class="text-muted small pe-4"><?= htmlspecialchars($r['Note'] ?: '-') ?></td>
+
+                            <td class="fw-medium text-dark small"><?= htmlspecialchars($r['CashierName'] ?? '-') ?></td>
+
+                            <td class="text-secondary small pe-4"><?= htmlspecialchars($r['Note'] ?: '-') ?></td>
                         </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>
@@ -151,9 +249,13 @@
         </table>
     </div>
 
-    <div class="p-3 border-top d-flex align-items-center justify-content-between bg-white rounded-bottom">
-        <small class="text-muted">Menampilkan <strong><?= count($restock_list) ?></strong> riwayat restock</small>
+    <!-- Footer (center) -->
+    <div class="p-3 border-top bg-light text-center rounded-bottom-4">
+        <small class="text-secondary">
+            Menampilkan <strong class="text-dark"><?= count($restock_list) ?></strong> riwayat restock
+        </small>
     </div>
+
 </div>
 
 <?php include __DIR__ . '/modal-restock.php'; ?>
