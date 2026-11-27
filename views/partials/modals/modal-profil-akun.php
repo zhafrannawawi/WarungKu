@@ -20,23 +20,23 @@
             <div class="modal-body p-4">
                 <div class="mb-3">
                     <label class="form-label small fw-semibold text-muted mb-1">Nama Lengkap <span class="text-danger">*</span></label>
-                    <input type="text" name="full_name" class="form-control" value="<?= htmlspecialchars($user_info['Fullname'] ?? '') ?>" required>
+                    <input type="text" name="full_name" class="form-control" value="<?= escape_html($user_info['Fullname'] ?? '') ?>" required>
                 </div>
 
                 <div class="row g-2 mb-3">
                     <div class="col-6">
                         <label class="form-label small fw-semibold text-muted mb-1">Username <span class="text-danger">*</span></label>
-                        <input type="text" name="user_name" class="form-control" value="<?= htmlspecialchars($user_info['Username'] ?? '') ?>" required>
+                        <input type="text" name="user_name" class="form-control" value="<?= escape_html($user_info['Username'] ?? '') ?>" required>
                     </div>
                     <div class="col-6">
                         <label class="form-label small fw-semibold text-muted mb-1">No. Telepon / WA</label>
-                        <input type="text" name="phone_number" class="form-control" value="<?= htmlspecialchars($user_info['PhoneNumber'] ?? '') ?>">
+                        <input type="text" name="phone_number" class="form-control" value="<?= escape_html($user_info['PhoneNumber'] ?? '') ?>">
                     </div>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label small fw-semibold text-muted mb-1">Email</label>
-                    <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($user_info['Email'] ?? '') ?>">
+                    <input type="email" name="email" class="form-control" value="<?= escape_html($user_info['Email'] ?? '') ?>">
                 </div>
 
                 <hr class="my-3 text-muted">

@@ -9,7 +9,6 @@
         <div>
             <div class="d-flex align-items-center gap-2 mb-1">
                 <h4 class="fw-bold text-dark mb-0">Transaksi Kasir</h4>
-                <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary fw-semibold px-2 py-1" style="font-size: 0.7rem;">Kasir</span>
             </div>
             <p class="text-secondary mb-0 small">Pilih barang pada daftar produk untuk mencatat belanjaan dan pembayaran pelanggan.</p>
         </div>
@@ -20,7 +19,7 @@
             <span class="bg-primary bg-opacity-10 text-primary rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
                 <i data-lucide="calendar" class="icon-xs"></i>
             </span>
-            <span><?= htmlspecialchars($tanggal_hari_ini) ?></span>
+            <span><?= escape_html($tanggal_hari_ini) ?></span>
         </span>
         <a href="<?= $role_prefix ?>/transaksi" class="btn bg-white border-0 text-secondary rounded-3 shadow-sm d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold text-decoration-none">
             <span class="bg-secondary bg-opacity-10 text-secondary rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
@@ -47,7 +46,7 @@
             <select id="pos-filter-category" class="form-select border-0 bg-white text-dark fw-medium rounded-3 shadow-sm ps-3 py-2 w-auto" style="padding-right: 2.25rem; min-width: 180px;" onchange="filterPosProducts()">
                 <option value="all">Semua Kategori</option>
                 <?php foreach ($category_list as $c): ?>
-                    <option value="<?= htmlspecialchars($c['CategoryName']) ?>"><?= htmlspecialchars($c['CategoryName']) ?></option>
+                    <option value="<?= escape_html($c['CategoryName']) ?>"><?= escape_html($c['CategoryName']) ?></option>
                 <?php endforeach; ?>
             </select>
         </div>
@@ -74,27 +73,27 @@
                             'stock' => $stok,
                         ];
                     ?>
-                        <div class="col-6 col-xl-4 px-1 pos-product-row"
-                            data-name="<?= htmlspecialchars(strtolower($p['ProductName'])) ?>"
-                            data-category="<?= htmlspecialchars($cat_name) ?>">
+                        <div class="col-6 col-md-4 px-1 pos-product-row"
+                            data-name="<?= escape_html(strtolower($p['ProductName'])) ?>"
+                            data-category="<?= escape_html($cat_name) ?>">
                             <div class="bg-white border rounded-4 shadow-sm pos-item-card p-3 h-100 d-flex flex-column justify-content-between <?= $habis ? 'is-empty' : '' ?>"
-                                data-product-id="<?= htmlspecialchars($p['ProductID']) ?>"
-                                <?= $habis ? '' : 'onclick="posAddToCart(' . htmlspecialchars(json_encode($item_payload), ENT_QUOTES, 'UTF-8') . ')"' ?>>
+                                data-product-id="<?= escape_html($p['ProductID']) ?>"
+                                <?= $habis ? '' : 'onclick="posAddToCart(' . json_attr($item_payload) . ')"' ?>>
                                 <div>
                                     <div class="d-flex align-items-center justify-content-between gap-1 mb-2">
-                                        <span class="pos-cat-tag text-truncate"><?= htmlspecialchars($cat_name) ?></span>
+                                        <span class="pos-cat-tag text-truncate"><?= escape_html($cat_name) ?></span>
                                         <?php if (!$habis): ?><span class="pos-item-add"><i data-lucide="plus" class="icon-xs"></i></span><?php endif; ?>
                                     </div>
                                     <div class="fw-semibold text-dark pos-item-name" style="font-size: 0.85rem; line-height: 1.3;">
-                                        <?= htmlspecialchars($p['ProductName']) ?>
+                                        <?= escape_html($p['ProductName']) ?>
                                     </div>
                                     <small class="text-secondary d-block text-truncate mt-1" style="font-size: 0.7rem;">
-                                        per <?= htmlspecialchars($p['Unit']) ?><?= !empty($p['Location']) ? ' · ' . htmlspecialchars($p['Location']) : '' ?>
+                                        per <?= escape_html($p['Unit']) ?><?= !empty($p['Location']) ? ' · ' . escape_html($p['Location']) : '' ?>
                                     </small>
                                 </div>
 
                                 <div class="d-flex align-items-center justify-content-between gap-1 pt-3 mt-auto">
-                                    <span class="fw-bold text-dark" style="font-size: 0.925rem;">Rp <?= number_format($p['SellingPrice'], 0, ',', '.') ?></span>
+                                    <span class="fw-bold text-dark" style="font-size: 0.925rem;"><?= format_rupiah($p['SellingPrice']) ?></span>
                                     <span class="pos-stock-dot fw-semibold <?= $habis ? 'text-danger' : ($menipis ? 'text-warning' : 'text-success') ?>">
                                         ● <?= $habis ? 'Habis' : $stok ?>
                                     </span>
@@ -205,20 +204,20 @@
 
                 <div class="modal-body px-4 pt-2 pb-4" id="pos-receipt-printable">
                     <div class="text-center mb-3 pb-2 border-bottom">
-                        <div class="fw-bold text-dark text-uppercase"><?= htmlspecialchars($store_info['StoreName'] ?? 'WarungKu') ?></div>
+                        <div class="fw-bold text-dark text-uppercase"><?= escape_html($store_info['StoreName'] ?? 'WarungKu') ?></div>
                         <?php if (!empty($store_info['Address'])): ?>
-                            <small class="text-secondary d-block" style="font-size: 0.75rem;"><?= htmlspecialchars($store_info['Address']) ?></small>
+                            <small class="text-secondary d-block" style="font-size: 0.75rem;"><?= escape_html($store_info['Address']) ?></small>
                         <?php endif; ?>
                     </div>
 
                     <div class="small text-secondary mb-3 pb-2 border-bottom">
                         <div class="d-flex justify-content-between">
-                            <span>No: <strong class="text-dark">#<?= htmlspecialchars($receipt_data['TransactionID']) ?></strong></span>
+                            <span>No: <strong class="text-dark">#<?= escape_html($receipt_data['TransactionID']) ?></strong></span>
                             <span><?= date('d/m/Y H:i', strtotime($receipt_data['TransactionDate'])) ?></span>
                         </div>
                         <div class="d-flex justify-content-between">
-                            <span>Kasir: <?= htmlspecialchars($receipt_data['CashierName'] ?? '-') ?></span>
-                            <span>Bayar: <strong class="text-uppercase text-dark"><?= htmlspecialchars($receipt_data['PaymentMethod']) ?></strong></span>
+                            <span>Kasir: <?= escape_html($receipt_data['CashierName'] ?? '-') ?></span>
+                            <span>Bayar: <strong class="text-uppercase text-dark"><?= escape_html($receipt_data['PaymentMethod']) ?></strong></span>
                         </div>
                     </div>
 
@@ -226,25 +225,25 @@
                         <?php foreach ($receipt_data['Items'] as $rit): ?>
                             <div class="d-flex justify-content-between align-items-start small">
                                 <div>
-                                    <span class="fw-semibold text-dark d-block"><?= htmlspecialchars($rit['ProductName'] ?? $rit['ProductID']) ?></span>
-                                    <small class="text-secondary"><?= (int)$rit['Quantity'] ?> <?= htmlspecialchars($rit['Unit'] ?? 'pcs') ?> × Rp <?= number_format($rit['SellingPriceAtTransaction'], 0, ',', '.') ?></small>
+                                    <span class="fw-semibold text-dark d-block"><?= escape_html($rit['ProductName'] ?? $rit['ProductID']) ?></span>
+                                    <small class="text-secondary"><?= (int)$rit['Quantity'] ?> <?= escape_html($rit['Unit'] ?? 'pcs') ?> × <?= format_rupiah($rit['SellingPriceAtTransaction']) ?></small>
                                 </div>
-                                <span class="fw-semibold text-dark">Rp <?= number_format($rit['Subtotal'], 0, ',', '.') ?></span>
+                                <span class="fw-semibold text-dark"><?= format_rupiah($rit['Subtotal']) ?></span>
                             </div>
                         <?php endforeach; ?>
                     </div>
 
                     <div class="d-flex justify-content-between fw-bold text-dark mb-1">
                         <span>TOTAL</span>
-                        <span>Rp <?= number_format($receipt_data['TotalAmount'], 0, ',', '.') ?></span>
+                        <span><?= format_rupiah($receipt_data['TotalAmount']) ?></span>
                     </div>
                     <div class="d-flex justify-content-between small text-secondary mb-1">
                         <span>Dibayar</span>
-                        <span>Rp <?= number_format($receipt_data['AmountPaid'], 0, ',', '.') ?></span>
+                        <span><?= format_rupiah($receipt_data['AmountPaid']) ?></span>
                     </div>
                     <div class="d-flex justify-content-between small text-secondary">
                         <span>Kembalian</span>
-                        <span>Rp <?= number_format($receipt_data['ChangeAmount'], 0, ',', '.') ?></span>
+                        <span><?= format_rupiah($receipt_data['ChangeAmount']) ?></span>
                     </div>
 
                     <div class="text-center mt-3 pt-2 border-top">

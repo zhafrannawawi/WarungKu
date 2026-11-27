@@ -6,16 +6,25 @@
 require_once __DIR__ . '/../../config/app.php';
 
 $store_id = require_auth();
-$is_owner = ($_SESSION['role'] ?? '') === 'owner';
 
 // Filter Periode Tanggal (Default: Awal Bulan Ini s/d Hari Ini)
 [$from_date, $to_date] = get_date_range();
 
-$trx_list     = transaction_get_history($koneksi, $store_id, $from_date, $to_date);
-$total_trx    = count($trx_list);
-$total_omzet  = array_sum(array_column($trx_list, 'TotalAmount'));
-$total_tunai  = array_sum(array_map(fn($t) => $t['PaymentMethod'] === 'cash' ? (float)$t['TotalAmount'] : 0, $trx_list));
-$total_qris   = array_sum(array_map(fn($t) => $t['PaymentMethod'] === 'qris' ? (float)$t['TotalAmount'] : 0, $trx_list));
+$trx_list    = transaction_get_history($koneksi, $store_id, $from_date, $to_date);
+$total_trx   = count($trx_list);
+$total_omzet = 0;
+$total_tunai = 0;
+$total_qris  = 0;
+
+foreach ($trx_list as $t) {
+    $amount       = (float)$t['TotalAmount'];
+    $total_omzet += $amount;
+    if ($t['PaymentMethod'] === 'cash') {
+        $total_tunai += $amount;
+    } elseif ($t['PaymentMethod'] === 'qris') {
+        $total_qris += $amount;
+    }
+}
 
 $page_title = 'Riwayat Transaksi';
 $page_name  = 'transaksi';

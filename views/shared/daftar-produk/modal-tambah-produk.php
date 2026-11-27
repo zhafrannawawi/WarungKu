@@ -41,7 +41,7 @@
                             <label class="form-label small text-secondary fw-medium mb-1">Kategori <span class="text-danger">*</span></label>
                             <select name="category_id" id="prod-category" class="form-select rounded-3 px-3 py-2" required>
                                 <?php foreach ($category_list as $c): ?>
-                                    <option value="<?= htmlspecialchars($c['CategoryID']) ?>"><?= htmlspecialchars($c['CategoryName']) ?></option>
+                                    <option value="<?= escape_html($c['CategoryID']) ?>"><?= escape_html($c['CategoryName']) ?></option>
                                 <?php endforeach; ?>
                                 <?php if (empty($category_list)): ?>
                                     <option value="">Belum ada kategori</option>
@@ -103,7 +103,7 @@
                         </div>
                     </div>
 
-                    <div class="<?php /* spacing */ ?>mb-0" id="prod-location-group">
+                    <div class="mb-0" id="prod-location-group">
                         <label class="form-label small text-secondary fw-medium mb-1">Lokasi / Rak Penyimpanan <span class="text-secondary fw-normal">(Opsional)</span></label>
                         <input type="text" name="location" id="prod-location" class="form-control rounded-3 px-3 py-2" placeholder="Contoh: Rak A-02">
                     </div>

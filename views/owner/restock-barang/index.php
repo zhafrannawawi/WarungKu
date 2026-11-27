@@ -1,32 +1,5 @@
 <?php include __DIR__ . '/../../partials/header.php'; ?>
 
-<style>
-    /* Pencarian pill: efek fokus senada warna primary dashboard */
-    #restock-table-search:focus {
-        border-color: var(--bs-primary);
-        box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.15);
-        background-color: #fff;
-    }
-    /* Filter pill */
-    .restock-pill-select {
-        background-color: #f1f3f5;
-        border: 1px solid transparent;
-        transition: background-color .15s ease, border-color .15s ease;
-    }
-    .restock-pill-select:hover { background-color: #e9ecef; }
-    .restock-pill-select:focus {
-        background-color: #fff;
-        border-color: var(--bs-primary);
-        box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.15);
-    }
-    .restock-pill-btn {
-        background-color: #f1f3f5;
-        border: 1px solid transparent;
-        transition: background-color .15s ease;
-    }
-    .restock-pill-btn:hover { background-color: #e9ecef; }
-</style>
-
 <!-- Page Header: Restock Barang -->
 <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 gap-3">
     <div class="d-flex align-items-center gap-3">
@@ -36,7 +9,6 @@
         <div>
             <div class="d-flex align-items-center gap-2 mb-1">
                 <h4 class="fw-bold text-dark mb-0">Restock Barang</h4>
-                <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary fw-semibold px-2 py-1" style="font-size: 0.7rem;">Riwayat</span>
             </div>
             <p class="text-secondary mb-0 small">Catat barang masuk dan pantau riwayat restock stok dagangan</p>
         </div>
@@ -72,7 +44,7 @@
             </div>
 
             <div class="fs-4 fw-bold text-dark">
-                Rp <?= number_format($total_beli_hr, 0, ',', '.') ?>
+                <?= format_rupiah($total_beli_hr) ?>
             </div>
 
             <small class="text-secondary mt-2 d-block">
@@ -91,7 +63,7 @@
             </div>
 
             <div class="fs-4 fw-bold text-success">
-                <?= number_format($unit_masuk_hr, 0, ',', '.') ?> Unit
+                <?= format_number($unit_masuk_hr) ?> Unit
             </div>
 
             <small class="text-secondary mt-2 d-block">
@@ -114,7 +86,7 @@
             </div>
 
             <small class="text-secondary mt-2 d-block text-truncate">
-                <?= !empty($low_stock) ? htmlspecialchars($low_stock[0]['ProductName']) . ' (sisa ' . (int)$low_stock[0]['Stock'] . ')' : 'Semua stok aman' ?>
+                <?= !empty($low_stock) ? escape_html($low_stock[0]['ProductName']) . ' (sisa ' . (int)$low_stock[0]['Stock'] . ')' : 'Semua stok aman' ?>
             </small>
         </div>
     </div>
@@ -157,19 +129,19 @@
                 <i data-lucide="search" width="16" height="16"></i>
             </span>
             <input type="text"
-                   id="restock-table-search"
-                   class="form-control rounded-pill bg-white"
-                   style="padding-left: 2.6rem !important; height: 40px; font-size: 0.875rem;"
-                   placeholder="Cari nama produk..."
-                   oninput="filterRestockTable()">
+                id="restock-table-search"
+                class="form-control rounded-pill bg-white"
+                style="padding-left: 2.6rem !important; height: 40px; font-size: 0.875rem;"
+                placeholder="Cari nama produk..."
+                oninput="filterRestockTable()">
         </div>
 
         <!-- Filter pill + reset -->
         <div class="d-flex flex-nowrap align-items-center gap-2">
             <select id="restock-filter-periode"
-                    class="form-select restock-pill-select rounded-pill px-3 fw-medium text-secondary flex-grow-1"
-                    style="min-width: 160px; height: 40px; font-size: 0.875rem;"
-                    onchange="filterRestockTable()">
+                class="form-select restock-pill-select rounded-pill px-3 fw-medium text-secondary flex-grow-1"
+                style="min-width: 160px; height: 40px; font-size: 0.875rem;"
+                onchange="filterRestockTable()">
                 <option value="all">Semua Periode</option>
                 <option value="today">Hari Ini</option>
                 <option value="7days">7 Hari Terakhir</option>
@@ -177,9 +149,9 @@
             </select>
 
             <button class="btn restock-pill-btn text-secondary rounded-circle d-inline-flex align-items-center justify-content-center flex-shrink-0 p-0"
-                    style="width: 40px; height: 40px;"
-                    title="Reset Filter"
-                    onclick="resetRestockFilter()">
+                style="width: 40px; height: 40px;"
+                title="Reset Filter"
+                onclick="resetRestockFilter()">
                 <i data-lucide="rotate-ccw" width="16" height="16"></i>
             </button>
         </div>
@@ -213,11 +185,11 @@
                         $tgl        = substr($r['RestockDate'], 0, 10);
                     ?>
                         <tr class="restock-row"
-                            data-produk="<?= htmlspecialchars(strtolower($r['ProductName'] ?? '')) ?>"
-                            data-date="<?= htmlspecialchars($tgl) ?>">
+                            data-produk="<?= escape_html(strtolower($r['ProductName'] ?? '')) ?>"
+                            data-date="<?= escape_html($tgl) ?>">
                             <td class="ps-4">
                                 <span class="badge bg-primary bg-opacity-10 text-primary fw-semibold">
-                                    #<?= htmlspecialchars($r['RestockID']) ?>
+                                    #<?= escape_html($r['RestockID']) ?>
                                 </span>
                             </td>
 
@@ -227,21 +199,21 @@
                             </td>
 
                             <td>
-                                <span class="fw-semibold text-dark d-block"><?= htmlspecialchars($r['ProductName'] ?? '-') ?></span>
-                                <small class="text-secondary">#<?= htmlspecialchars($r['ProductID']) ?> • @Rp <?= number_format($r['PurchasePrice'], 0, ',', '.') ?></small>
+                                <span class="fw-semibold text-dark d-block"><?= escape_html($r['ProductName'] ?? '-') ?></span>
+                                <small class="text-secondary">#<?= escape_html($r['ProductID']) ?> • @<?= format_rupiah($r['PurchasePrice']) ?></small>
                             </td>
 
                             <td>
                                 <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 fw-semibold">
-                                    +<?= (int)$r['Quantity'] ?> <?= htmlspecialchars($r['Unit'] ?? 'pcs') ?>
+                                    +<?= (int)$r['Quantity'] ?> <?= escape_html($r['Unit'] ?? 'pcs') ?>
                                 </span>
                             </td>
 
-                            <td class="text-end fw-bold text-dark">Rp <?= number_format($total_beli, 0, ',', '.') ?></td>
+                            <td class="text-end fw-bold text-dark"><?= format_rupiah($total_beli) ?></td>
 
-                            <td class="fw-medium text-dark small"><?= htmlspecialchars($r['CashierName'] ?? '-') ?></td>
+                            <td class="fw-medium text-dark small"><?= escape_html($r['CashierName'] ?? '-') ?></td>
 
-                            <td class="text-secondary small pe-4"><?= htmlspecialchars($r['Note'] ?: '-') ?></td>
+                            <td class="text-secondary small pe-4"><?= escape_html($r['Note'] ?: '-') ?></td>
                         </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>

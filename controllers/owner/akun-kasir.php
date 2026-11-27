@@ -39,14 +39,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         // Aksi 2: Edit Data Kasir
         elseif ($action === 'edit') {
-            $user_id   = trim($_POST['user_id'] ?? '');
-            $is_active = (int)($_POST['is_active'] ?? 1);
+            $user_id = trim($_POST['user_id'] ?? '');
 
             if ($user_id === '') {
                 throw new Exception('Data kasir tidak lengkap.');
             }
             $in = get_cashier_input();
-            user_update_cashier($koneksi, $user_id, $store_id, $in['full_name'], $in['user_name'], $in['email'], $in['phone_number'], $is_active);
+            user_update_cashier($koneksi, $user_id, $store_id, $in['full_name'], $in['user_name'], $in['email'], $in['phone_number']);
             set_alert('success', 'Data akun kasir berhasil diperbarui!');
         }
         // Aksi 3: Hapus Akun Kasir (Soft Delete)

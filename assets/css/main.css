@@ -5,19 +5,15 @@
  * - GLOBAL: DESIGN TOKENS & RESET
  * - GLOBAL: APP LAYOUT & SHELL
  * - GLOBAL: REUSABLE UI COMPONENTS
- *   - Cards & Containers
- *   - Metric Cards & Icon Boxes
+ *   - Cards & Metric Cards
  *   - Modern Table Base
  *   - Form Controls & Search
  *   - Buttons & Badges
- *   - Icons & Avatars
- *   - Notifications & Profile Dropdowns
- *   - Floating Toast/Alert
+ *   - Icons
  * - MENU: AUTH (LOGIN & REGISTER)
- * - MENU: OWNER — AKUN KASIR
- * - MENU: OWNER — DAFTAR PRODUK
- * - MENU: OWNER — KATEGORI PRODUK
- * - MENU: TRANSAKSI & KASIR (POS)
+ * - MENU: OWNER, FILTER PILL & LAPORAN
+ * - SHARED: KASIR POS & PRINT NOTA
+ * - GLOBAL: RESPONSIVE (TABLET & MOBILE)
  * ============================================================ */
 
 /* ============================================================
@@ -77,10 +73,6 @@ body,
   background-color: var(--bg-app) !important;
   color: var(--text-main);
   overflow-x: hidden;
-}
-
-.cursor-pointer {
-  cursor: pointer;
 }
 
 /* ============================================================
@@ -154,17 +146,6 @@ body,
   max-width: 175px;
   object-fit: contain;
   display: block;
-}
-
-.brand-icon-box {
-  width: 34px;
-  height: 34px;
-  background-color: var(--primary-light);
-  color: var(--primary-color);
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 /* Navigation Links */
@@ -262,7 +243,7 @@ body,
   border-radius: var(--radius-md);
   background-color: var(--bg-surface);
   border: 1px solid var(--border-color);
-  color: var(--text-secondary);
+  color: var(--text-muted);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -274,6 +255,27 @@ body,
   background-color: var(--bg-subtle);
   color: var(--primary-color);
   border-color: #cbd5e1;
+}
+
+.notif-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background-color: var(--danger-color);
+  color: #ffffff;
+  border: 2px solid var(--bg-surface);
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.35);
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Sidebar User Profile Widget */
@@ -347,8 +349,8 @@ body,
   color: var(--primary-color);
 }
 
-/* Responsive Mobile Layout */
-@media (max-width: 768px) {
+/* Responsive Mobile & Tablet Layout */
+@media (max-width: 991.98px) {
   #sidebar-wrapper {
     position: fixed;
     z-index: 1040;
@@ -374,7 +376,7 @@ body,
  * GLOBAL — REUSABLE UI COMPONENTS
  * ============================================================ */
 
-/* --- Cards --- */
+/* --- Cards & Metric Cards --- */
 .card-modern {
   background: var(--bg-surface);
   border-radius: var(--radius-lg);
@@ -382,15 +384,6 @@ body,
   box-shadow: none;
 }
 
-.card-header-clean {
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid var(--border-color);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-/* --- Metric Cards & Icon Boxes --- */
 .metric-card {
   min-height: 124px;
   display: flex;
@@ -477,7 +470,17 @@ body,
   background-color: var(--bg-subtle);
 }
 
-/* --- Form Controls & Inputs --- */
+.table-modern th.ps-4,
+.table-modern td.ps-4 {
+  padding-left: 1.25rem;
+}
+
+.table-modern th.pe-4,
+.table-modern td.pe-4 {
+  padding-right: 1.25rem;
+}
+
+/* --- Form Controls & Search --- */
 .form-control-standard {
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
@@ -521,12 +524,7 @@ body,
   pointer-events: none;
 }
 
-.filter-select {
-  width: auto;
-  border-radius: var(--radius-sm);
-}
-
-/* --- Buttons --- */
+/* --- Buttons & Badges --- */
 .btn-standard {
   display: inline-flex;
   align-items: center;
@@ -542,28 +540,18 @@ body,
     border-color 0.15s ease;
 }
 
-.btn-circle {
-  width: 38px;
-  height: 38px;
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  color: var(--text-muted);
-}
-
-.btn-circle:hover {
-  background-color: var(--bg-subtle);
-  color: var(--text-main);
-}
-
 .rounded-btn-sm {
   border-radius: var(--radius-sm);
 }
 
-/* --- Badges & Status --- */
+/* Fix Bootstrap .bg-white overriding .btn-outline-secondary:hover background */
+.btn-outline-secondary.bg-white:hover,
+.btn-outline-secondary.bg-white:focus-visible {
+  background-color: var(--bg-subtle) !important;
+  color: var(--text-main) !important;
+  border-color: #cbd5e1 !important;
+}
+
 .badge-status {
   font-size: 0.7rem;
   font-weight: 600;
@@ -583,33 +571,13 @@ body,
   border-color: #bbf7d0;
 }
 
-.badge-status.warning {
-  background-color: var(--warning-light);
-  color: var(--warning-color);
-  border-color: #fde68a;
-}
-
 .badge-status.danger {
   background-color: var(--danger-light);
   color: var(--danger-color);
   border-color: #fecaca;
 }
 
-.badge-status.neutral {
-  background-color: var(--bg-subtle);
-  color: var(--text-muted);
-  border-color: var(--border-color);
-}
-
-/* --- Avatars & Icons --- */
-.avatar-box {
-  width: 34px;
-  height: 34px;
-  border-radius: var(--radius-sm);
-  object-fit: cover;
-  border: 1px solid var(--border-color);
-}
-
+/* --- Icons --- */
 .icon-xs {
   width: 0.85rem;
   height: 0.85rem;
@@ -628,33 +596,6 @@ body,
 .icon-lg {
   width: 1.25rem;
   height: 1.25rem;
-}
-
-.icon-xl {
-  width: 1.65rem;
-  height: 1.65rem;
-}
-
-/* --- User Profile Dropdown --- */
-.user-profile-menu-compact {
-  min-width: 170px;
-}
-
-.user-profile-menu-compact .dropdown-item {
-  font-size: 0.8rem;
-}
-
-/* --- Global Alert Floating --- */
-.alert-fixed-container {
-  position: fixed;
-  top: calc(var(--topbar-height) + 0.75rem);
-  right: 1.25rem;
-  z-index: 9999;
-  width: 320px;
-  max-width: calc(100vw - 2rem);
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
 }
 
 /* ============================================================
@@ -680,8 +621,7 @@ body,
 }
 
 /* Branding Panel Kiri (Biru Gradasi) */
-.login-brand-panel,
-.register-brand-panel {
+.auth-brand-panel {
   background: linear-gradient(155deg, #1d4ed8 0%, #2563eb 55%, #3b82f6 100%);
   color: #ffffff;
   padding: 2.75rem 2.25rem;
@@ -692,8 +632,7 @@ body,
   overflow: hidden;
 }
 
-.login-brand-panel::before,
-.register-brand-panel::before {
+.auth-brand-panel::before {
   content: "";
   position: absolute;
   top: -70px;
@@ -705,32 +644,28 @@ body,
   pointer-events: none;
 }
 
-.login-brand-logo,
-.register-brand-logo {
+.auth-brand-logo {
   width: 40px;
   height: 40px;
   object-fit: contain;
   border-radius: 10px;
 }
 
-.login-brand-name,
-.register-brand-name {
+.auth-brand-name {
   font-size: 1.35rem;
   font-weight: 800;
   color: #ffffff;
   letter-spacing: -0.02em;
 }
 
-.login-feature-item,
-.brand-feature-item {
+.auth-feature-item {
   display: flex;
   align-items: flex-start;
   gap: 0.85rem;
   margin-bottom: 1.25rem;
 }
 
-.login-feature-icon,
-.brand-feature-icon {
+.auth-feature-icon {
   width: 34px;
   height: 34px;
   border-radius: 10px;
@@ -741,8 +676,7 @@ body,
   flex-shrink: 0;
 }
 
-.login-mini-info,
-.brand-testimonial-box {
+.auth-mini-info {
   background: rgba(255, 255, 255, 0.12);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
@@ -823,7 +757,7 @@ body,
 }
 
 /* ============================================================
- * MENU — OWNER & TRANSAKSI
+ * MENU — OWNER, FILTER PILL & LAPORAN
  * ============================================================ */
 .trx-faktur {
   font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
@@ -835,36 +769,6 @@ body,
   border-radius: var(--radius-sm);
   letter-spacing: -0.01em;
   display: inline-block;
-}
-
-/* Date/time column */
-.trx-waktu {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  line-height: 1.25;
-}
-
-.trx-tanggal {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text-main);
-}
-
-.trx-jam {
-  font-size: 0.725rem;
-  color: var(--text-subtle);
-}
-
-/* Table ps-4/pe-4 alignment */
-.table-modern th.ps-4,
-.table-modern td.ps-4 {
-  padding-left: 1.25rem;
-}
-
-.table-modern th.pe-4,
-.table-modern td.pe-4 {
-  padding-right: 1.25rem;
 }
 
 .trx-avatar {
@@ -882,13 +786,87 @@ body,
   letter-spacing: 0.03em;
 }
 
+/* Pencarian & Filter Pill (Daftar Produk, Restock, Laporan Stok & Terlaris) */
+#produk-table-search:focus,
+#restock-table-search:focus {
+  border-color: var(--bs-primary);
+  box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.15);
+  background-color: #fff;
+}
 
-/* Fix Bootstrap .bg-white overriding .btn-outline-secondary:hover background */
-.btn-outline-secondary.bg-white:hover,
-.btn-outline-secondary.bg-white:focus-visible {
-  background-color: var(--bg-subtle) !important;
-  color: var(--text-main) !important;
-  border-color: #cbd5e1 !important;
+.produk-pill-select,
+.restock-pill-select {
+  background-color: #f1f3f5;
+  border: 1px solid transparent;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.produk-pill-select:hover,
+.restock-pill-select:hover {
+  background-color: #e9ecef;
+}
+
+.produk-pill-select:focus,
+.restock-pill-select:focus {
+  background-color: #fff;
+  border-color: var(--bs-primary);
+  box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.15);
+}
+
+.produk-pill-btn,
+.restock-pill-btn {
+  background-color: #f1f3f5;
+  border: 1px solid transparent;
+  transition: background-color 0.15s ease;
+}
+
+.produk-pill-btn:hover,
+.restock-pill-btn:hover {
+  background-color: #e9ecef;
+}
+
+/* Filter Tanggal Kapsul & Tabel Laporan */
+.laporan-date-group {
+  background-color: #fff;
+  border: 1px solid transparent;
+  min-height: 44px;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.laporan-date-group:focus-within {
+  border-color: var(--bs-primary);
+  box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.15);
+}
+
+.laporan-date-group input[type="date"] {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  font-size: 0.875rem;
+  height: 36px;
+  padding: 0 0.35rem;
+  width: auto;
+  color: #495057;
+}
+
+.laporan-date-group input[type="date"]:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.laporan-table td,
+.laporan-table th {
+  white-space: nowrap;
+}
+
+.laporan-num {
+  font-variant-numeric: tabular-nums;
+}
+
+.rank-badge {
+  min-width: 42px;
+  display: inline-block;
+  text-align: center;
 }
 
 /* ============================================================
@@ -999,6 +977,114 @@ body,
 .pos-qty-btn:hover {
   background-color: var(--bg-subtle);
   color: var(--primary-color);
+}
+
+/* ============================================================
+ * GLOBAL — RESPONSIVE (TABLET & MOBILE)
+ * ============================================================ */
+.table-responsive .table thead th {
+  white-space: nowrap;
+}
+
+.table-pagination-nav .pagination {
+  flex-wrap: wrap;
+  row-gap: 0.25rem;
+}
+
+.topbar-search-wrapper {
+  width: 260px;
+}
+
+main > .d-flex:first-child > .d-flex:first-child {
+  min-width: 0;
+}
+
+main > .d-flex:first-child > .d-flex:nth-child(2),
+main > .d-flex:first-child > form {
+  flex-shrink: 0;
+}
+
+main > .d-flex:first-child > .d-flex:nth-child(2) > *,
+main > .d-flex:first-child > form > .btn {
+  white-space: nowrap;
+}
+
+@media (max-width: 991.98px) {
+  main > .d-flex:first-child {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  main > .d-flex:first-child > .d-flex:nth-child(2),
+  main > .d-flex:first-child > form {
+    flex-wrap: wrap;
+  }
+
+  .topbar-search-wrapper,
+  .position-relative:has(#produk-table-search),
+  .position-relative:has(#restock-table-search) {
+    max-width: 100% !important;
+    min-width: 0 !important;
+    width: 100%;
+  }
+
+  .pos-catalog-scroll {
+    max-height: none;
+  }
+}
+
+@media (max-width: 575.98px) {
+  main > .d-flex:first-child h4 {
+    font-size: 1.2rem;
+  }
+
+  main > .d-flex:first-child > .d-flex:nth-child(2) > *,
+  main > .d-flex:first-child > form > .btn {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  #pos-quick-cash,
+  .modal-footer {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .register-form-panel .col-6,
+  #modalProfilAkun .col-6,
+  .laporan-date-group,
+  #akun-filter-status,
+  #trx-filter-method,
+  #pos-filter-category {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .input-group:has(#akun-table-search),
+  .input-group:has(#trx-table-search) {
+    min-width: 0 !important;
+    width: 100%;
+  }
+
+  .laporan-date-group input[type="date"] {
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 0.8rem;
+  }
+
+  .auth-container {
+    padding: 1rem;
+  }
+
+  .login-form-panel,
+  .register-form-panel {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .alert-auto-dismiss {
+    min-width: 0 !important;
+    max-width: calc(100vw - 2rem) !important;
+  }
 }
 
 @media print {

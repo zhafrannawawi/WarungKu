@@ -29,13 +29,13 @@
                         <?php foreach ($notif_low_stock as $np): ?>
                             <div class="list-group-item px-4 py-3 d-flex align-items-center justify-content-between gap-2">
                                 <div>
-                                    <span class="fw-semibold text-dark small d-block"><?= htmlspecialchars($np['ProductName']) ?></span>
+                                    <span class="fw-semibold text-dark small d-block"><?= escape_html($np['ProductName']) ?></span>
                                     <small class="text-muted" style="font-size: 0.725rem;">
-                                        Batas min: <?= (int)$np['MinimumStock'] ?> <?= htmlspecialchars($np['Unit']) ?><?= !empty($np['Location']) ? ' • ' . htmlspecialchars($np['Location']) : '' ?>
+                                        Batas min: <?= (int)$np['MinimumStock'] ?> <?= escape_html($np['Unit']) ?><?= !empty($np['Location']) ? ' • ' . escape_html($np['Location']) : '' ?>
                                     </small>
                                 </div>
                                 <span class="badge-status danger">
-                                    <?= (int)$np['Stock'] <= 0 ? 'Habis (0)' : 'Sisa ' . (int)$np['Stock'] . ' ' . htmlspecialchars($np['Unit']) ?>
+                                    <?= (int)$np['Stock'] <= 0 ? 'Habis (0)' : 'Sisa ' . (int)$np['Stock'] . ' ' . escape_html($np['Unit']) ?>
                                 </span>
                             </div>
                         <?php endforeach; ?>

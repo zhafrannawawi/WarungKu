@@ -4,26 +4,36 @@
 // Fungsi database untuk mengelola data kategori
 // ============================================================
 
-// 1. Ambil Semua Kategori Milik Toko (Aktif & Belum Dihapus)
-function category_get_all(PDO $koneksi, string $store_id): array
+// 1. Ambil Semua Kategori Milik Toko (Belum Dihapus)
+function category_get_all(PDO $koneksi, string $store_id, bool $only_active = false): array
 {
-    $sql = "SELECT c.*, COUNT(p.ProductID) AS ProductCount 
-            FROM tblcategory c 
-            LEFT JOIN tblproduct p ON c.CategoryID = p.CategoryID AND p.DeletedAt IS NULL 
-            WHERE c.StoreID = ? AND c.DeletedAt IS NULL 
-            GROUP BY c.CategoryID 
+    $active_filter = $only_active ? " AND c.IsActive = 1" : "";
+    $sql = "SELECT c.*, COUNT(p.ProductID) AS ProductCount
+            FROM tblcategory c
+            LEFT JOIN tblproduct p ON c.CategoryID = p.CategoryID AND p.DeletedAt IS NULL
+            WHERE c.StoreID = ? AND c.DeletedAt IS NULL{$active_filter}
+            GROUP BY c.CategoryID
             ORDER BY c.CategoryName ASC";
     $stmt = $koneksi->prepare($sql);
     $stmt->execute([$store_id]);
     return $stmt->fetchAll();
 }
 
+// Helper: Cek apakah nama kategori sudah dipakai di toko ini
+function category_name_exists(PDO $koneksi, string $store_id, string $category_name, string $exclude_id = ''): bool
+{
+    $stmt = $koneksi->prepare(
+        "SELECT CategoryID FROM tblcategory
+         WHERE StoreID = ? AND LOWER(CategoryName) = LOWER(?) AND CategoryID != ? AND DeletedAt IS NULL"
+    );
+    $stmt->execute([$store_id, $category_name, $exclude_id]);
+    return (bool)$stmt->fetch();
+}
+
 // 2. Tambah Kategori Baru
 function category_add(PDO $koneksi, string $store_id, string $category_name): bool
 {
-    $check = $koneksi->prepare("SELECT CategoryID FROM tblcategory WHERE StoreID = ? AND LOWER(CategoryName) = LOWER(?) AND DeletedAt IS NULL");
-    $check->execute([$store_id, $category_name]);
-    if ($check->fetch()) {
+    if (category_name_exists($koneksi, $store_id, $category_name)) {
         throw new Exception('Gagal: Nama kategori sudah ada.');
     }
 
@@ -35,9 +45,7 @@ function category_add(PDO $koneksi, string $store_id, string $category_name): bo
 // 3. Perbarui / Edit Nama & Status Kategori
 function category_update(PDO $koneksi, string $category_id, string $store_id, string $category_name, int $is_active = 1): bool
 {
-    $check = $koneksi->prepare("SELECT CategoryID FROM tblcategory WHERE StoreID = ? AND LOWER(CategoryName) = LOWER(?) AND CategoryID != ? AND DeletedAt IS NULL");
-    $check->execute([$store_id, $category_name, $category_id]);
-    if ($check->fetch()) {
+    if (category_name_exists($koneksi, $store_id, $category_name, $category_id)) {
         throw new Exception('Gagal: Nama kategori sudah dipakai.');
     }
 

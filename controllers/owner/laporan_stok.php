@@ -14,10 +14,19 @@ $product_list  = product_get_stock_report($koneksi, $store_id, $from_date, $to_d
 $category_list = category_get_all($koneksi, $store_id);
 
 // Ringkasan Metrik Laporan Stok
-$total_nilai  = array_sum(array_column($product_list, 'Valuasi'));
-$total_fisik  = array_sum(array_column($product_list, 'Stock'));
-$total_keluar = array_sum(array_column($product_list, 'Keluar'));
-$stok_menipis = count(array_filter($product_list, fn($p) => (int)$p['Stock'] <= (int)$p['MinimumStock']));
+$total_nilai  = 0;
+$total_fisik  = 0;
+$total_keluar = 0;
+$stok_menipis = 0;
+
+foreach ($product_list as $p) {
+    $total_nilai  += (float)$p['Valuasi'];
+    $total_fisik  += (int)$p['Stock'];
+    $total_keluar += (int)$p['Keluar'];
+    if ((int)$p['Stock'] <= (int)$p['MinimumStock']) {
+        $stok_menipis++;
+    }
+}
 
 $page_title = 'Laporan Stok & Inventaris';
 $page_name  = 'laporan-stok';

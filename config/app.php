@@ -1,4 +1,8 @@
 <?php
+date_default_timezone_set('Asia/Jakarta');
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Pragma: no-cache');
+
 // 1. Mulai Sesi
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -15,6 +19,7 @@ try {
         PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
     ]);
+    $koneksi->exec("SET time_zone = '+07:00'");
 } catch (PDOException $e) {
     die("Koneksi Database Gagal: " . $e->getMessage());
 }
@@ -60,12 +65,22 @@ function generate_id(PDO $koneksi, string $table, string $column, string $prefix
     return $prefix . str_pad((string)$next, 3, '0', STR_PAD_LEFT);
 }
 
-// Guard autentikasi & role; mengembalikan store_id aktif
+// Guard autentikasi, role & status IsActive; mengembalikan store_id aktif
 function require_auth(?string $role = null): string
 {
+    global $koneksi;
+
     if (empty($_SESSION['user_id']) || ($role !== null && ($_SESSION['role'] ?? '') !== $role)) {
         redirect('/login');
     }
+
+    $active_user = user_find_by_id($koneksi, (string)$_SESSION['user_id']);
+    if (!$active_user || !(int)$active_user['IsActive']) {
+        $_SESSION = [];
+        session_destroy();
+        redirect('/login');
+    }
+
     return (string)($_SESSION['store_id'] ?? '');
 }
 
@@ -87,4 +102,35 @@ function get_date_range(): array
         [$from, $to] = [$to, $from];
     }
     return [$from, $to];
+}
+
+// Escape teks agar aman ditampilkan di HTML
+function escape_html($text): string
+{
+    return htmlspecialchars((string)($text ?? ''), ENT_QUOTES, 'UTF-8');
+}
+
+// Format angka ribuan Indonesia (misal: 15.000)
+function format_number($value): string
+{
+    return number_format((float)$value, 0, ',', '.');
+}
+
+// Format mata uang Rupiah (misal: Rp 15.000)
+function format_rupiah($value): string
+{
+    return 'Rp ' . format_number($value);
+}
+
+// Encode data PHP menjadi atribut JSON yang aman untuk onclick HTML
+function json_attr($data): string
+{
+    return htmlspecialchars(json_encode($data), ENT_QUOTES, 'UTF-8');
+}
+
+// URL dashboard sesuai role pengguna
+function dashboard_url(?string $role = null): string
+{
+    $active_role = $role ?? ($_SESSION['role'] ?? '');
+    return $active_role === 'owner' ? '/owner/dashboard' : '/cashier/dashboard';
 }

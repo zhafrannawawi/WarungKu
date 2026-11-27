@@ -57,12 +57,13 @@ $category_list = category_get_all($koneksi, $store_id);
 $total_kategori         = count($category_list);
 $total_produk_terdaftar = 0;
 $kategori_terbanyak     = '-';
-$max_produk             = -1;
+$max_produk             = 0;
 
 foreach ($category_list as $c) {
-    $total_produk_terdaftar += (int)$c['ProductCount'];
-    if ((int)$c['ProductCount'] > $max_produk && (int)$c['ProductCount'] > 0) {
-        $max_produk         = (int)$c['ProductCount'];
+    $jumlah                  = (int)$c['ProductCount'];
+    $total_produk_terdaftar += $jumlah;
+    if ($jumlah > $max_produk) {
+        $max_produk         = $jumlah;
         $kategori_terbanyak = $c['CategoryName'];
     }
 }

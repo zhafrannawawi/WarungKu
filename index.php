@@ -40,8 +40,8 @@ $routes = [
     'cashier/kasir'           => __DIR__ . '/controllers/shared/kasir.php',
 ];
 
-if (isset($routes[$path])) {
-    if (file_exists($routes[$path])) {
+if ($path !== '') {
+    if (isset($routes[$path]) && file_exists($routes[$path])) {
         require $routes[$path];
         exit;
     }
@@ -50,20 +50,5 @@ if (isset($routes[$path])) {
     exit;
 }
 
-if ($path !== '') {
-    http_response_code(404);
-    require __DIR__ . '/views/404.php';
-    exit;
-}
-
 require_once __DIR__ . '/config/app.php';
-
-if (empty($_SESSION['user_id'])) {
-    redirect('/login');
-}
-
-if (($_SESSION['role'] ?? '') === 'owner') {
-    redirect('/owner/dashboard');
-} else {
-    redirect('/cashier/dashboard');
-}
+redirect(empty($_SESSION['user_id']) ? '/login' : dashboard_url());

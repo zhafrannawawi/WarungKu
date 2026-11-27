@@ -31,10 +31,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Ambil Katalog Produk Aktif & Kategori
-$all_products  = product_get_all($koneksi, $store_id);
-$product_list  = array_values(array_filter($all_products, fn($p) => (int)$p['IsActive'] === 1));
-$category_list = array_values(array_filter(category_get_all($koneksi, $store_id), fn($c) => (int)$c['IsActive'] === 1));
+// Ambil Katalog Produk Aktif & Kategori Aktif
+$product_list  = product_get_all($koneksi, $store_id, true);
+$category_list = category_get_all($koneksi, $store_id, true);
 
 // Cek jika baru selesai transaksi untuk memunculkan Modal Struk
 $receipt_data = null;

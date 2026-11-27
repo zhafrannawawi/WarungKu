@@ -21,11 +21,11 @@
                 <div class="modal-body p-4">
                     <div class="mb-3">
                         <label class="form-label small fw-semibold text-muted mb-1">Nama Toko / Usaha <span class="text-danger">*</span></label>
-                        <input type="text" name="store_name" class="form-control" value="<?= htmlspecialchars($store_info['StoreName'] ?? '') ?>" placeholder="Contoh: WarungKu Sembako" required>
+                        <input type="text" name="store_name" class="form-control" value="<?= escape_html($store_info['StoreName'] ?? '') ?>" placeholder="Contoh: WarungKu Sembako" required>
                     </div>
                     <div>
                         <label class="form-label small fw-semibold text-muted mb-1">Alamat Toko</label>
-                        <textarea name="address" class="form-control" rows="3" placeholder="Jl. Contoh No. 123, RT 01/RW 02"><?= htmlspecialchars($store_info['Address'] ?? '') ?></textarea>
+                        <textarea name="address" class="form-control" rows="3" placeholder="Jl. Contoh No. 123, RT 01/RW 02"><?= escape_html($store_info['Address'] ?? '') ?></textarea>
                     </div>
                 </div>
 

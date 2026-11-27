@@ -1,32 +1,5 @@
 <?php include __DIR__ . '/../../partials/header.php'; ?>
 
-<style>
-    /* Pencarian pill: efek fokus senada warna primary dashboard */
-    #produk-table-search:focus {
-        border-color: var(--bs-primary);
-        box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.15);
-        background-color: #fff;
-    }
-    /* Filter pill */
-    .produk-pill-select {
-        background-color: #f1f3f5;
-        border: 1px solid transparent;
-        transition: background-color .15s ease, border-color .15s ease;
-    }
-    .produk-pill-select:hover { background-color: #e9ecef; }
-    .produk-pill-select:focus {
-        background-color: #fff;
-        border-color: var(--bs-primary);
-        box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.15);
-    }
-    .produk-pill-btn {
-        background-color: #f1f3f5;
-        border: 1px solid transparent;
-        transition: background-color .15s ease;
-    }
-    .produk-pill-btn:hover { background-color: #e9ecef; }
-</style>
-
 <!-- Page Header: Daftar Produk -->
 <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 gap-3">
     <div class="d-flex align-items-center gap-3">
@@ -36,7 +9,6 @@
         <div>
             <div class="d-flex align-items-center gap-2 mb-1">
                 <h4 class="fw-bold text-dark mb-0">Daftar Produk</h4>
-                <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary fw-semibold px-2 py-1" style="font-size: 0.7rem;">Katalog</span>
             </div>
             <p class="text-secondary mb-0 small">
                 <?= $is_owner ? 'Kelola data inventaris, harga jual, kategori, dan pantau stok barang warung.' : 'Daftar harga jual, posisi rak penyimpanan, dan ketersediaan stok barang di toko.' ?>
@@ -98,7 +70,7 @@
                 </div>
 
                 <div class="fs-4 fw-bold text-dark">
-                    Rp <?= number_format($total_nilai_stok, 0, ',', '.') ?>
+                    <?= format_rupiah($total_nilai_stok) ?>
                 </div>
 
                 <small class="text-secondary mt-2 d-block">
@@ -143,7 +115,7 @@
             </div>
 
             <small class="text-secondary mt-2 d-block">
-                <?= htmlspecialchars($produk_kritis_nama) ?>
+                <?= escape_html($produk_kritis_nama) ?>
             </small>
         </div>
     </div>
@@ -167,39 +139,39 @@
                 <i data-lucide="search" width="16" height="16"></i>
             </span>
             <input type="text"
-                   id="produk-table-search"
-                   class="form-control rounded-pill bg-white"
-                   style="padding-left: 2.6rem !important; height: 40px; font-size: 0.875rem;"
-                   placeholder="Cari nama produk..."
-                   oninput="filterProdukTable()">
+                id="produk-table-search"
+                class="form-control rounded-pill bg-white"
+                style="padding-left: 2.6rem !important; height: 40px; font-size: 0.875rem;"
+                placeholder="Cari nama produk..."
+                oninput="filterProdukTable()">
         </div>
 
         <!-- Filter pill + reset -->
         <div class="d-flex flex-wrap flex-md-nowrap align-items-center gap-2">
             <select id="produk-filter-category"
-                    class="form-select produk-pill-select rounded-pill px-3 fw-medium text-secondary flex-grow-1"
-                    style="min-width: 160px; height: 40px; font-size: 0.875rem;"
-                    onchange="filterProdukTable()">
+                class="form-select produk-pill-select rounded-pill px-3 fw-medium text-secondary flex-grow-1"
+                style="min-width: 160px; height: 40px; font-size: 0.875rem;"
+                onchange="filterProdukTable()">
                 <option value="all">Semua Kategori</option>
                 <?php foreach ($category_list as $c): ?>
-                    <option value="<?= htmlspecialchars($c['CategoryName']) ?>"><?= htmlspecialchars($c['CategoryName']) ?></option>
+                    <option value="<?= escape_html($c['CategoryName']) ?>"><?= escape_html($c['CategoryName']) ?></option>
                 <?php endforeach; ?>
             </select>
 
             <select id="produk-filter-stock"
-                    class="form-select produk-pill-select rounded-pill px-3 fw-medium text-secondary flex-grow-1"
-                    style="min-width: 180px; height: 40px; font-size: 0.875rem;"
-                    onchange="filterProdukTable()">
+                class="form-select produk-pill-select rounded-pill px-3 fw-medium text-secondary flex-grow-1"
+                style="min-width: 180px; height: 40px; font-size: 0.875rem;"
+                onchange="filterProdukTable()">
                 <option value="all">Semua Status Stok</option>
-                <option value="in_stock">Stok Tersedia (>10)</option>
-                <option value="low_stock">Stok Menipis (≤10)</option>
+                <option value="in_stock">Stok Aman</option>
+                <option value="low_stock">Stok Menipis</option>
             </select>
 
             <button type="button"
-                    class="btn produk-pill-btn text-secondary rounded-circle d-inline-flex align-items-center justify-content-center flex-shrink-0 p-0"
-                    style="width: 40px; height: 40px;"
-                    title="Reset Filter"
-                    onclick="resetProdukFilter()">
+                class="btn produk-pill-btn text-secondary rounded-circle d-inline-flex align-items-center justify-content-center flex-shrink-0 p-0"
+                style="width: 40px; height: 40px;"
+                title="Reset Filter"
+                onclick="resetProdukFilter()">
                 <i data-lucide="rotate-ccw" width="16" height="16"></i>
             </button>
         </div>
@@ -238,7 +210,7 @@
                         $cat_name    = $p['CategoryName'] ?: 'Umum';
                         $is_low      = (int)$p['Stock'] <= (int)$p['MinimumStock'];
                     ?>
-                        <tr class="produk-row" data-category="<?= htmlspecialchars($cat_name) ?>" data-stock="<?= (int)$p['Stock'] ?>" data-min-stock="<?= (int)$p['MinimumStock'] ?>" data-name="<?= htmlspecialchars(strtolower($p['ProductName'])) ?>">
+                        <tr class="produk-row" data-category="<?= escape_html($cat_name) ?>" data-stock="<?= (int)$p['Stock'] ?>" data-min-stock="<?= (int)$p['MinimumStock'] ?>" data-name="<?= escape_html(strtolower($p['ProductName'])) ?>">
                             <td class="ps-4">
                                 <div class="d-flex align-items-center gap-2">
                                     <span class="bg-primary bg-opacity-10 text-primary rounded-3 fw-bold small d-inline-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px;">
@@ -246,42 +218,42 @@
                                     </span>
 
                                     <div>
-                                        <span class="fw-semibold text-dark d-block"><?= htmlspecialchars($p['ProductName']) ?></span>
-                                        <small class="text-secondary">Satuan: <?= htmlspecialchars($p['Unit']) ?><?= !empty($p['Location']) ? ' | Lokasi: ' . htmlspecialchars($p['Location']) : '' ?></small>
+                                        <span class="fw-semibold text-dark d-block"><?= escape_html($p['ProductName']) ?></span>
+                                        <small class="text-secondary">Satuan: <?= escape_html($p['Unit']) ?><?= !empty($p['Location']) ? ' | Lokasi: ' . escape_html($p['Location']) : '' ?></small>
                                     </div>
                                 </div>
                             </td>
 
                             <td>
                                 <span class="badge bg-primary bg-opacity-10 text-primary fw-semibold">
-                                    <?= htmlspecialchars($kode_produk) ?>
+                                    <?= escape_html($kode_produk) ?>
                                 </span>
                             </td>
 
                             <td>
                                 <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25">
-                                    <?= htmlspecialchars($cat_name) ?>
+                                    <?= escape_html($cat_name) ?>
                                 </span>
                             </td>
 
                             <?php if ($is_owner): ?>
                                 <td class="text-end text-secondary">
-                                    Rp <?= number_format($p['PurchasePrice'], 0, ',', '.') ?>
+                                    <?= format_rupiah($p['PurchasePrice']) ?>
                                 </td>
                             <?php endif; ?>
 
                             <td class="text-end fw-bold text-dark">
-                                Rp <?= number_format($p['SellingPrice'], 0, ',', '.') ?>
+                                <?= format_rupiah($p['SellingPrice']) ?>
                             </td>
 
                             <td class="text-center <?= $is_owner ? '' : 'pe-4' ?>">
                                 <?php if ($is_low): ?>
                                     <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 fw-semibold">
-                                        <?= (int)$p['Stock'] ?> <?= htmlspecialchars($p['Unit']) ?>
+                                        <?= (int)$p['Stock'] ?> <?= escape_html($p['Unit']) ?>
                                     </span>
                                 <?php else: ?>
                                     <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 fw-semibold">
-                                        <?= (int)$p['Stock'] ?> <?= htmlspecialchars($p['Unit']) ?>
+                                        <?= (int)$p['Stock'] ?> <?= escape_html($p['Unit']) ?>
                                     </span>
                                 <?php endif; ?>
                             </td>
@@ -289,10 +261,10 @@
                             <?php if ($is_owner): ?>
                                 <td class="text-center pe-4">
                                     <div class="d-inline-flex align-items-center gap-1">
-                                        <button type="button" class="btn btn-sm bg-primary bg-opacity-10 text-primary border-0 rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="Edit Produk" onclick="editProduct(<?= htmlspecialchars(json_encode($p), ENT_QUOTES, 'UTF-8') ?>)">
+                                        <button type="button" class="btn btn-sm bg-primary bg-opacity-10 text-primary border-0 rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="Edit Produk" onclick="editProduct(<?= json_attr($p) ?>)">
                                             <i data-lucide="edit-3" class="icon-xs"></i>
                                         </button>
-                                        <button type="button" class="btn btn-sm bg-danger bg-opacity-10 text-danger border-0 rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="Hapus Produk" onclick="deleteProduct('<?= htmlspecialchars($p['ProductID'], ENT_QUOTES) ?>', '<?= htmlspecialchars($p['ProductName'], ENT_QUOTES) ?>')">
+                                        <button type="button" class="btn btn-sm bg-danger bg-opacity-10 text-danger border-0 rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="Hapus Produk" onclick="deleteProduct('<?= escape_html($p['ProductID']) ?>', '<?= escape_html($p['ProductName']) ?>')">
                                             <i data-lucide="trash-2" class="icon-xs"></i>
                                         </button>
                                     </div>

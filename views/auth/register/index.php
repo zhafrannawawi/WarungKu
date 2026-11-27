@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/main.css?v=<?= filemtime(__DIR__ . '/../../../assets/css/main.css') ?>">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
@@ -18,20 +18,20 @@
         <div class="row g-0">
 
             <!-- Kolom Kiri: Visual Branding (Desktop) -->
-            <div class="col-lg-5 d-none d-lg-flex register-brand-panel">
+            <div class="col-lg-5 d-none d-lg-flex auth-brand-panel">
                 <div>
                     <!-- Header Brand: Logo + Tulisan WarungKu -->
                     <div class="d-flex align-items-center gap-2 mb-3">
-                        <img src="/assets/image/logo.png" alt="Logo WarungKu" class="register-brand-logo">
-                        <span class="register-brand-name">WarungKu</span>
+                        <img src="/assets/image/logo.png" alt="Logo WarungKu" class="auth-brand-logo">
+                        <span class="auth-brand-name">WarungKu</span>
                     </div>
 
                     <h4 class="fw-bold text-white mb-2 lh-sm">Solusi Cerdas Kelola Warung</h4>
                     <p class="text-white-50 small mb-4">Kelola kasir, pantau stok barang, dan rekap omzet harian dengan mudah.</p>
 
                     <div class="brand-features mt-3">
-                        <div class="brand-feature-item">
-                            <div class="brand-feature-icon">
+                        <div class="auth-feature-item">
+                            <div class="auth-feature-icon">
                                 <i data-lucide="zap" class="text-white icon-sm"></i>
                             </div>
                             <div>
@@ -40,8 +40,8 @@
                             </div>
                         </div>
 
-                        <div class="brand-feature-item">
-                            <div class="brand-feature-icon">
+                        <div class="auth-feature-item">
+                            <div class="auth-feature-icon">
                                 <i data-lucide="package" class="text-white icon-sm"></i>
                             </div>
                             <div>
@@ -50,8 +50,8 @@
                             </div>
                         </div>
 
-                        <div class="brand-feature-item">
-                            <div class="brand-feature-icon">
+                        <div class="auth-feature-item">
+                            <div class="auth-feature-icon">
                                 <i data-lucide="trending-up" class="text-white icon-sm"></i>
                             </div>
                             <div>
@@ -62,7 +62,7 @@
                     </div>
                 </div>
 
-                <div class="brand-testimonial-box mt-3">
+                <div class="auth-mini-info mt-3">
                     <div class="d-flex align-items-center gap-2 mb-1">
                         <i data-lucide="store" class="text-warning icon-sm"></i>
                         <span class="text-white fw-semibold small">Dirancang Khusus Warung & UMKM</span>
@@ -76,7 +76,7 @@
 
                 <!-- Header Mobile -->
                 <div class="d-lg-none d-flex align-items-center gap-2 mb-3">
-                    <img src="/assets/image/logo.png" alt="Logo WarungKu" class="register-brand-logo">
+                    <img src="/assets/image/logo.png" alt="Logo WarungKu" class="auth-brand-logo">
                     <span class="fs-5 fw-bold text-primary">WarungKu</span>
                 </div>
 
@@ -105,7 +105,7 @@
                                 </label>
                                 <input type="text" id="store_name" name="store_name"
                                        class="form-control form-control-standard"
-                                       value="<?= htmlspecialchars($old_input['store_name'] ?? '') ?>"
+                                       value="<?= escape_html($old_input['store_name'] ?? '') ?>"
                                        placeholder="Contoh: Warung Berkah" required>
                             </div>
                             <div class="col-6">
@@ -114,7 +114,7 @@
                                 </label>
                                 <input type="text" id="store_address" name="store_address"
                                        class="form-control form-control-standard"
-                                       value="<?= htmlspecialchars($old_input['store_address'] ?? '') ?>"
+                                       value="<?= escape_html($old_input['store_address'] ?? '') ?>"
                                        placeholder="Jl. Merdeka No. 10">
                             </div>
                         </div>
@@ -136,7 +136,7 @@
                                 </label>
                                 <input type="text" id="full_name" name="full_name"
                                        class="form-control form-control-standard"
-                                       value="<?= htmlspecialchars($old_input['full_name'] ?? '') ?>"
+                                       value="<?= escape_html($old_input['full_name'] ?? '') ?>"
                                        placeholder="Budi Santoso" required>
                             </div>
                             <div class="col-6">
@@ -145,7 +145,7 @@
                                 </label>
                                 <input type="text" id="user_name" name="user_name"
                                        class="form-control form-control-standard"
-                                       value="<?= htmlspecialchars($old_input['user_name'] ?? '') ?>"
+                                       value="<?= escape_html($old_input['user_name'] ?? '') ?>"
                                        placeholder="budisantoso" required>
                             </div>
                         </div>
@@ -157,7 +157,7 @@
                                 </label>
                                 <input type="email" id="email" name="email"
                                        class="form-control form-control-standard"
-                                       value="<?= htmlspecialchars($old_input['email'] ?? '') ?>"
+                                       value="<?= escape_html($old_input['email'] ?? '') ?>"
                                        placeholder="nama@email.com" required>
                             </div>
                             <div class="col-6">
@@ -166,7 +166,7 @@
                                 </label>
                                 <input type="tel" id="phone_number" name="phone_number"
                                        class="form-control form-control-standard"
-                                       value="<?= htmlspecialchars($old_input['phone_number'] ?? '') ?>"
+                                       value="<?= escape_html($old_input['phone_number'] ?? '') ?>"
                                        placeholder="08123456789" required>
                             </div>
                         </div>
@@ -211,6 +211,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/assets/js/main.js"></script>
+<script src="/assets/js/main.js?v=<?= filemtime(__DIR__ . '/../../../assets/js/main.js') ?>"></script>
 </body>
 </html>

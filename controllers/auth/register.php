@@ -1,6 +1,10 @@
 <?php
 require_once __DIR__ . '/../../config/app.php';
 
+if (!empty($_SESSION['user_id'])) {
+    redirect(dashboard_url());
+}
+
 $error_text = '';
 $old_input  = [];
 
@@ -14,14 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password      = $_POST['user_password'] ?? '';
     $pass_again    = $_POST['password_again'] ?? '';
 
-    $old_input = [
-        'store_name'    => $store_name,
-        'store_address' => $store_address,
-        'full_name'     => $full_name,
-        'email'         => $email,
-        'phone_number'  => $phone_number,
-        'user_name'     => $user_name,
-    ];
+    $old_input = compact('store_name', 'store_address', 'full_name', 'email', 'phone_number', 'user_name');
 
     if ($store_name === '' || $full_name === '' || $user_name === '' || $email === '' || $phone_number === '') {
         $error_text = 'Semua data bertanda bintang (*) wajib diisi.';

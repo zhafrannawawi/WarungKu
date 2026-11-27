@@ -1,68 +1,5 @@
 <?php include __DIR__ . '/../../partials/header.php'; ?>
 
-<style>
-    /* Pencarian pill: efek fokus senada warna primary dashboard */
-    #produk-table-search:focus {
-        border-color: var(--bs-primary);
-        box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.15);
-        background-color: #fff;
-    }
-    /* Filter pill */
-    .produk-pill-select {
-        background-color: #f1f3f5;
-        border: 1px solid transparent;
-        transition: background-color .15s ease, border-color .15s ease;
-    }
-    .produk-pill-select:hover { background-color: #e9ecef; }
-    .produk-pill-select:focus {
-        background-color: #fff;
-        border-color: var(--bs-primary);
-        box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.15);
-    }
-    .produk-pill-btn {
-        background-color: #f1f3f5;
-        border: 1px solid transparent;
-        transition: background-color .15s ease;
-    }
-    .produk-pill-btn:hover { background-color: #e9ecef; }
-
-    /* Filter tanggal: satu kapsul putih berisi dua input */
-    .laporan-date-group {
-        background-color: #fff;
-        border: 1px solid transparent;
-        transition: box-shadow .15s ease, border-color .15s ease;
-    }
-    .laporan-date-group:focus-within {
-        border-color: var(--bs-primary);
-        box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.15);
-    }
-    .laporan-date-group input[type="date"] {
-        border: 0;
-        background: transparent;
-        box-shadow: none;
-        font-size: 0.875rem;
-        height: 36px;
-        padding: 0 .35rem;
-        width: auto;
-        color: #495057;
-    }
-    .laporan-date-group input[type="date"]:focus {
-        outline: none;
-        box-shadow: none;
-    }
-
-    /* Tabel: angka rapi dan tidak patah baris */
-    .laporan-table td, .laporan-table th { white-space: nowrap; }
-    .laporan-num { font-variant-numeric: tabular-nums; }
-
-    /* Badge peringkat */
-    .rank-badge {
-        min-width: 42px;
-        display: inline-block;
-        text-align: center;
-    }
-</style>
-
 <!-- Page Header: Laporan Produk Terlaris -->
 <div class="d-flex flex-column flex-xl-row align-items-xl-center justify-content-between mb-4 gap-3">
     <div class="d-flex align-items-center gap-3">
@@ -72,7 +9,6 @@
         <div>
             <div class="d-flex align-items-center gap-2 mb-1">
                 <h4 class="fw-bold text-dark mb-0">Laporan Produk Terlaris</h4>
-                <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary fw-semibold px-2 py-1" style="font-size: 0.7rem;">Peringkat</span>
             </div>
             <p class="text-secondary mb-0 small">Peringkat barang paling banyak terjual berdasarkan kuantitas dan kontribusi omzet.</p>
         </div>
@@ -84,9 +20,9 @@
             <span class="text-secondary d-inline-flex ps-1">
                 <i data-lucide="calendar" width="16" height="16"></i>
             </span>
-            <input type="date" name="from" value="<?= htmlspecialchars($from_date) ?>" class="form-control">
+            <input type="date" name="from" value="<?= escape_html($from_date) ?>" class="form-control">
             <span class="text-secondary small fw-medium">s/d</span>
-            <input type="date" name="to" value="<?= htmlspecialchars($to_date) ?>" class="form-control">
+            <input type="date" name="to" value="<?= escape_html($to_date) ?>" class="form-control">
         </div>
 
         <button type="submit" class="btn btn-primary rounded-3 shadow-sm d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold">
@@ -120,11 +56,11 @@
             </div>
 
             <div class="fs-4 fw-bold text-dark text-truncate">
-                <?= $produk_juara ? htmlspecialchars($produk_juara['ProductName']) : '-' ?>
+                <?= $produk_juara ? escape_html($produk_juara['ProductName']) : '-' ?>
             </div>
 
             <small class="text-secondary mt-2 d-block">
-                <?= $produk_juara ? number_format($produk_juara['Terjual'], 0, ',', '.') . ' ' . htmlspecialchars($produk_juara['Unit']) . ' terjual' : 'Belum ada penjualan' ?>
+                <?= $produk_juara ? format_number($produk_juara['Terjual']) . ' ' . escape_html($produk_juara['Unit']) . ' terjual' : 'Belum ada penjualan' ?>
             </small>
         </div>
     </div>
@@ -140,7 +76,7 @@
             </div>
 
             <div class="fs-4 fw-bold text-dark">
-                <?= number_format($total_terjual, 0, ',', '.') ?> Unit
+                <?= format_number($total_terjual) ?> Unit
             </div>
 
             <small class="text-secondary mt-2 d-block">
@@ -160,11 +96,11 @@
             </div>
 
             <div class="fs-4 fw-bold text-dark text-truncate">
-                <?= htmlspecialchars($kategori_juara) ?>
+                <?= escape_html($kategori_juara) ?>
             </div>
 
             <small class="text-secondary mt-2 d-block">
-                <?= $kategori_juara_qty > 0 ? number_format($kategori_juara_qty, 0, ',', '.') . ' unit terjual' : 'Belum ada penjualan' ?>
+                <?= $kategori_juara_qty > 0 ? format_number($kategori_juara_qty) . ' unit terjual' : 'Belum ada penjualan' ?>
             </small>
         </div>
     </div>
@@ -203,7 +139,7 @@
                     onchange="filterProdukTable()">
                 <option value="all">Semua Kategori</option>
                 <?php foreach ($category_list as $c): ?>
-                    <option value="<?= htmlspecialchars($c['CategoryName']) ?>"><?= htmlspecialchars($c['CategoryName']) ?></option>
+                    <option value="<?= escape_html($c['CategoryName']) ?>"><?= escape_html($c['CategoryName']) ?></option>
                 <?php endforeach; ?>
             </select>
 
@@ -245,9 +181,9 @@
                         $is_low = (int)$tp['Stock'] <= (int)$tp['MinimumStock'];
                     ?>
                         <tr class="produk-row"
-                            data-category="<?= htmlspecialchars($tp['CategoryName']) ?>"
+                            data-category="<?= escape_html($tp['CategoryName']) ?>"
                             data-stock="<?= (int)$tp['Stock'] ?>"
-                            data-name="<?= htmlspecialchars(strtolower($tp['ProductName'])) ?>">
+                            data-name="<?= escape_html(strtolower($tp['ProductName'])) ?>">
                             <td class="ps-4">
                                 <span class="rank-badge badge fw-bold <?= $idx === 0 ? 'bg-warning bg-opacity-25 text-warning-emphasis border border-warning border-opacity-50' : 'bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25' ?>">
                                     #<?= $idx + 1 ?>
@@ -261,40 +197,40 @@
                                     </span>
 
                                     <div>
-                                        <span class="fw-semibold text-dark d-block"><?= htmlspecialchars($tp['ProductName']) ?></span>
-                                        <small class="text-secondary">Kode: #<?= htmlspecialchars($tp['ProductID']) ?></small>
+                                        <span class="fw-semibold text-dark d-block"><?= escape_html($tp['ProductName']) ?></span>
+                                        <small class="text-secondary">Kode: #<?= escape_html($tp['ProductID']) ?></small>
                                     </div>
                                 </div>
                             </td>
 
                             <td>
                                 <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25">
-                                    <?= htmlspecialchars($tp['CategoryName']) ?>
+                                    <?= escape_html($tp['CategoryName']) ?>
                                 </span>
                             </td>
 
                             <td class="text-center fw-bold text-primary laporan-num">
-                                <?= number_format($tp['Terjual'], 0, ',', '.') ?> <?= htmlspecialchars($tp['Unit']) ?>
+                                <?= format_number($tp['Terjual']) ?> <?= escape_html($tp['Unit']) ?>
                             </td>
 
                             <td class="text-center">
                                 <?php if ($is_low): ?>
                                     <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 fw-semibold">
-                                        <?= (int)$tp['Stock'] ?> <?= htmlspecialchars($tp['Unit']) ?>
+                                        <?= (int)$tp['Stock'] ?> <?= escape_html($tp['Unit']) ?>
                                     </span>
                                 <?php else: ?>
                                     <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 fw-semibold">
-                                        <?= (int)$tp['Stock'] ?> <?= htmlspecialchars($tp['Unit']) ?>
+                                        <?= (int)$tp['Stock'] ?> <?= escape_html($tp['Unit']) ?>
                                     </span>
                                 <?php endif; ?>
                             </td>
 
                             <td class="text-end fw-bold text-dark laporan-num">
-                                Rp <?= number_format($tp['TotalOmzet'], 0, ',', '.') ?>
+                                <?= format_rupiah($tp['TotalOmzet']) ?>
                             </td>
 
                             <td class="text-end fw-semibold text-success pe-4 laporan-num">
-                                Rp <?= number_format($tp['TotalLaba'], 0, ',', '.') ?>
+                                <?= format_rupiah($tp['TotalLaba']) ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -309,7 +245,7 @@
             Menampilkan <strong class="text-dark"><?= count($top_products) ?></strong> produk terjual
         </small>
         <small class="text-secondary">
-            Total Omzet: <strong class="text-dark">Rp <?= number_format($total_omzet, 0, ',', '.') ?></strong>
+            Total Omzet: <strong class="text-dark"><?= format_rupiah($total_omzet) ?></strong>
         </small>
     </div>
 

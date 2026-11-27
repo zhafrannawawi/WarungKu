@@ -9,28 +9,33 @@
         <div>
             <div class="d-flex align-items-center gap-2 mb-1">
                 <h4 class="fw-bold text-dark mb-0">Laporan Laba Rugi</h4>
-                <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary fw-semibold px-2 py-1" style="font-size: 0.7rem;">Periode</span>
             </div>
             <p class="text-secondary mb-0 small">Rekapitulasi omzet penjualan, harga pokok modal (HPP), dan margin keuntungan bersih</p>
         </div>
     </div>
 
     <form method="GET" class="d-flex flex-wrap align-items-center gap-2">
-        <div class="bg-white border-0 shadow-sm rounded-3 d-inline-flex align-items-center gap-2 px-2 py-1">
-            <input type="date" name="from" value="<?= htmlspecialchars($from_date) ?>" class="form-control form-control-sm border-0 bg-transparent shadow-none" style="width: auto;" aria-label="Dari tanggal">
-            <span class="text-secondary small">s/d</span>
-            <input type="date" name="to" value="<?= htmlspecialchars($to_date) ?>" class="form-control form-control-sm border-0 bg-transparent shadow-none" style="width: auto;" aria-label="Sampai tanggal">
+        <!-- Rentang tanggal -->
+        <div class="laporan-date-group d-inline-flex align-items-center gap-1 rounded-3 shadow-sm px-2">
+            <span class="text-secondary d-inline-flex ps-1">
+                <i data-lucide="calendar" width="16" height="16"></i>
+            </span>
+            <input type="date" name="from" value="<?= escape_html($from_date) ?>" class="form-control" aria-label="Dari tanggal">
+            <span class="text-secondary small fw-medium">s/d</span>
+            <input type="date" name="to" value="<?= escape_html($to_date) ?>" class="form-control" aria-label="Sampai tanggal">
         </div>
 
-        <button type="submit" class="btn btn-primary rounded-btn-sm rounded-3 shadow-sm d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold">
-            <span class="bg-white bg-opacity-25 rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
+        <button type="submit" class="btn btn-primary rounded-3 shadow-sm d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold">
+            <span class="bg-white bg-opacity-25 rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
                 <i data-lucide="filter" class="icon-xs"></i>
             </span>
             <span>Filter</span>
         </button>
 
-        <button type="button" class="btn btn-outline-secondary rounded-btn-sm rounded-3 bg-white d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold" onclick="exportDataProduk()">
-            <i data-lucide="download" class="icon-xs"></i>
+        <button type="button" class="btn bg-white border-0 text-secondary rounded-3 shadow-sm d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold" onclick="exportDataProduk()">
+            <span class="bg-secondary bg-opacity-10 text-secondary rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
+                <i data-lucide="download" class="icon-xs"></i>
+            </span>
             <span>Export</span>
         </button>
     </form>
@@ -49,7 +54,7 @@
                     <i data-lucide="banknote" class="icon-sm"></i>
                 </div>
             </div>
-            <div class="metric-value fs-4 fw-bold text-dark">Rp <?= number_format($total_omzet, 0, ',', '.') ?></div>
+            <div class="metric-value fs-4 fw-bold text-dark"><?= format_rupiah($total_omzet) ?></div>
             <small class="text-secondary mt-2 d-block">Pendapatan kotor penjualan</small>
         </div>
     </div>
@@ -63,7 +68,7 @@
                     <i data-lucide="package" class="icon-sm"></i>
                 </div>
             </div>
-            <div class="metric-value fs-4 fw-bold text-dark">Rp <?= number_format($total_modal, 0, ',', '.') ?></div>
+            <div class="metric-value fs-4 fw-bold text-dark"><?= format_rupiah($total_modal) ?></div>
             <small class="text-secondary mt-2 d-block">Harga beli barang terjual</small>
         </div>
     </div>
@@ -78,7 +83,7 @@
                 </div>
             </div>
             <div class="d-flex align-items-center justify-content-between gap-2">
-                <span class="metric-value fs-4 fw-bold <?= $total_laba >= 0 ? 'text-success' : 'text-danger' ?>">Rp <?= number_format($total_laba, 0, ',', '.') ?></span>
+                <span class="metric-value fs-4 fw-bold <?= $total_laba >= 0 ? 'text-success' : 'text-danger' ?>"><?= format_rupiah($total_laba) ?></span>
                 <span class="badge-status <?= $total_laba >= 0 ? 'success' : 'danger' ?> badge <?= $total_laba >= 0 ? 'bg-success text-success border-success' : 'bg-danger text-danger border-danger' ?> bg-opacity-10 border border-opacity-25">
                     <?= $margin_pct ?>%
                 </span>
@@ -96,7 +101,7 @@
                     <i data-lucide="receipt" class="icon-sm"></i>
                 </div>
             </div>
-            <div class="metric-value fs-4 fw-bold text-primary"><?= number_format($total_trx, 0, ',', '.') ?> Nota</div>
+            <div class="metric-value fs-4 fw-bold text-primary"><?= format_number($total_trx) ?> Nota</div>
             <small class="text-secondary mt-2 d-block">Dalam <?= count($daily_report) ?> hari aktif</small>
         </div>
     </div>
@@ -142,9 +147,9 @@
                             <td class="text-center">
                                 <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 fw-semibold"><?= (int)$row['JumlahTransaksi'] ?> Nota</span>
                             </td>
-                            <td class="text-end text-dark">Rp <?= number_format($omzet, 0, ',', '.') ?></td>
-                            <td class="text-end text-secondary">Rp <?= number_format($row['TotalModal'], 0, ',', '.') ?></td>
-                            <td class="text-end fw-bold <?= $laba >= 0 ? 'text-success' : 'text-danger' ?>">Rp <?= number_format($laba, 0, ',', '.') ?></td>
+                            <td class="text-end text-dark"><?= format_rupiah($omzet) ?></td>
+                            <td class="text-end text-secondary"><?= format_rupiah($row['TotalModal']) ?></td>
+                            <td class="text-end fw-bold <?= $laba >= 0 ? 'text-success' : 'text-danger' ?>"><?= format_rupiah($laba) ?></td>
                             <td class="text-center pe-4">
                                 <span class="badge-status <?= $laba >= 0 ? 'success' : 'danger' ?> badge <?= $laba >= 0 ? 'bg-success text-success border-success' : 'bg-danger text-danger border-danger' ?> bg-opacity-10 border border-opacity-25">
                                     <?= $margin ?>%
@@ -159,7 +164,7 @@
 
     <div class="p-3 border-top bg-light rounded-bottom-4 d-flex flex-column flex-sm-row align-items-center justify-content-between gap-2">
         <small class="text-secondary">Menampilkan <strong class="text-dark"><?= count($daily_report) ?></strong> hari transaksi</small>
-        <small class="text-secondary">Total Laba Bersih: <strong class="<?= $total_laba >= 0 ? 'text-success' : 'text-danger' ?>">Rp <?= number_format($total_laba, 0, ',', '.') ?></strong></small>
+        <small class="text-secondary">Total Laba Bersih: <strong class="<?= $total_laba >= 0 ? 'text-success' : 'text-danger' ?>"><?= format_rupiah($total_laba) ?></strong></small>
     </div>
 </div>
 

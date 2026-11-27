@@ -9,7 +9,6 @@
         <div>
             <div class="d-flex align-items-center gap-2 mb-1">
                 <h4 class="fw-bold text-dark mb-0">Kategori Produk</h4>
-                <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary fw-semibold px-2 py-1" style="font-size: 0.7rem;"><?= (int)$total_kategori ?> Kategori</span>
             </div>
             <p class="text-secondary mb-0 small">Kelola pengelompokan barang untuk kemudahan inventaris &amp; kasir</p>
         </div>
@@ -55,7 +54,7 @@
                 </div>
             </div>
             <div class="d-flex align-items-center justify-content-between gap-2">
-                <span class="metric-value fs-4 fw-bold text-success text-truncate" title="<?= htmlspecialchars($kategori_terbanyak) ?>"><?= htmlspecialchars($kategori_terbanyak) ?></span>
+                <span class="metric-value fs-4 fw-bold text-success text-truncate" title="<?= escape_html($kategori_terbanyak) ?>"><?= escape_html($kategori_terbanyak) ?></span>
             </div>
             <small class="text-secondary mt-2 d-block">Varian produk terbanyak</small>
         </div>
@@ -116,19 +115,19 @@
                 <?php else: ?>
                     <?php foreach ($category_list as $c): ?>
                         <?php $kode_kategori = '#' . $c['CategoryID']; ?>
-                        <tr class="kategori-row" data-name="<?= htmlspecialchars(strtolower($c['CategoryName'])) ?>">
+                        <tr class="kategori-row" data-name="<?= escape_html(strtolower($c['CategoryName'])) ?>">
                             <td class="ps-4">
                                 <div class="d-flex align-items-center gap-2">
                                     <span class="trx-avatar bg-primary bg-opacity-10 text-primary rounded-3 fw-bold small"><?= strtoupper(substr($c['CategoryName'], 0, 2)) ?></span>
 
                                     <div>
-                                        <span class="fw-semibold text-dark d-block"><?= htmlspecialchars($c['CategoryName']) ?></span>
+                                        <span class="fw-semibold text-dark d-block"><?= escape_html($c['CategoryName']) ?></span>
                                         <small class="text-secondary">Kelompok Produk</small>
                                     </div>
                                 </div>
                             </td>
                             <td>
-                                <span class="trx-faktur"><?= htmlspecialchars($kode_kategori) ?></span>
+                                <span class="trx-faktur"><?= escape_html($kode_kategori) ?></span>
                             </td>
                             <td class="text-center">
                                 <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 fw-semibold">
@@ -137,10 +136,10 @@
                             </td>
                             <td class="text-center pe-4">
                                 <div class="d-inline-flex align-items-center gap-1">
-                                    <button class="btn btn-sm btn-outline-secondary rounded-btn-sm rounded-3 p-2" title="Edit Kategori" aria-label="Edit kategori" onclick="editCategory(<?= htmlspecialchars(json_encode($c), ENT_QUOTES, 'UTF-8') ?>)">
+                                    <button class="btn btn-sm btn-outline-secondary rounded-btn-sm rounded-3 p-2" title="Edit Kategori" aria-label="Edit kategori" onclick="editCategory(<?= json_attr($c) ?>)">
                                         <i data-lucide="edit-3" class="icon-xs"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-outline-danger rounded-btn-sm rounded-3 p-2" title="Hapus Kategori" aria-label="Hapus kategori" onclick="deleteCategory('<?= htmlspecialchars($c['CategoryID'], ENT_QUOTES) ?>', '<?= htmlspecialchars($c['CategoryName'], ENT_QUOTES) ?>')">
+                                    <button class="btn btn-sm btn-outline-danger rounded-btn-sm rounded-3 p-2" title="Hapus Kategori" aria-label="Hapus kategori" onclick="deleteCategory('<?= escape_html($c['CategoryID']) ?>', '<?= escape_html($c['CategoryName']) ?>')">
                                         <i data-lucide="trash-2" class="icon-xs"></i>
                                     </button>
                                 </div>

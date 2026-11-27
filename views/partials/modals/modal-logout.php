@@ -26,17 +26,14 @@
                         </div>
                         <div class="overflow-hidden">
                             <div class="fw-semibold text-dark text-truncate" style="font-size: 0.875rem;">
-                                <?= htmlspecialchars($username ?? 'User') ?>
+                                <?= escape_html($username ?? 'User') ?>
                             </div>
                             <small class="text-muted d-block text-truncate" style="font-size: 0.75rem;">
-                                <?= ucfirst(htmlspecialchars($role ?? 'owner')) ?>
+                                <?= ucfirst(escape_html($role ?? 'owner')) ?>
                             </small>
                         </div>
                     </div>
-                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 rounded-pill d-inline-flex align-items-center gap-1 flex-shrink-0" style="font-size: 0.7rem;">
-                        <span class="rounded-circle bg-success" style="width: 6px; height: 6px; display: inline-block;"></span>
-                        <span>Sesi Aktif</span>
-                    </span>
+                    
                 </div>
 
                 <!-- Peringatan Kasir & Data -->

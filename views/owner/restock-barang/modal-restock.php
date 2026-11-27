@@ -23,7 +23,7 @@
                     <label class="form-label small fw-semibold text-secondary">Pilih Produk <span class="text-danger">*</span></label>
                     <select name="product_id" class="form-select rounded-3 py-2" required>
                         <?php foreach ($product_list as $p): ?>
-                            <option value="<?= $p['ProductID'] ?>"><?= $p['ProductName'] ?> (Stok saat ini: <?= $p['Stock'] ?> <?= $p['Unit'] ?>)</option>
+                            <option value="<?= escape_html($p['ProductID']) ?>"><?= escape_html($p['ProductName']) ?> (Stok saat ini: <?= (int)$p['Stock'] ?> <?= escape_html($p['Unit']) ?>)</option>
                         <?php endforeach; ?>
                     </select>
                 </div>

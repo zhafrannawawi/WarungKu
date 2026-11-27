@@ -3,11 +3,7 @@ require_once __DIR__ . '/../../config/app.php';
 
 // Jika sudah login, langsung lempar ke dashboard masing-masing
 if (!empty($_SESSION['user_id'])) {
-    if ($_SESSION['role'] === 'owner') {
-        redirect('/owner/dashboard');
-    } else {
-        redirect('/cashier/dashboard');
-    }
+    redirect(dashboard_url());
 }
 
 $error_text   = '';
@@ -27,26 +23,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (!$user_data) {
             $error_text = 'Username atau password salah.';
-        } elseif (!$user_data['IsActive']) {
-            $error_text = 'Akun Anda berstatus non-aktif. Hubungi pemilik warung.';
         } elseif (!empty($user_data['Password']) && password_verify($password, $user_data['Password'])) {
-            // Login sukses via password akun -> langsung ke dashboard
+            // Login sukses via password akun -> tandai aktif & masuk dashboard
             $_SESSION['user_id']   = $user_data['UserID'];
             $_SESSION['user_name'] = $user_data['Username'];
             $_SESSION['full_name'] = $user_data['Fullname'];
             $_SESSION['role']      = $user_data['Role'];
             $_SESSION['store_id']  = $user_data['StoreID'];
 
+            user_set_active($koneksi, $user_data['UserID'], 1);
+
             $store = store_get($koneksi, $user_data['StoreID']);
             $_SESSION['store_name'] = $store['StoreName'] ?? 'WarungKu';
 
-            if ($user_data['Role'] === 'owner') {
-                redirect('/owner/dashboard');
-            } else {
-                redirect('/cashier/dashboard');
-            }
-        } elseif ($password !== '' && $password === ($user_data['PhoneNumber'] ?? '')) {
-            // Login pertama via nomor HP -> munculkan modal buat password baru
+            redirect(dashboard_url($user_data['Role']));
+        } elseif ($password !== '' && $password === ($user_data['PhoneNumber'] ?? '') && $user_data['Password'] === $user_data['PhoneNumber']) {
+            // Login pertama via nomor HP (sebelum membuat password) -> munculkan modal buat password baru
             $reset_user_id = $user_data['UserID'];
         } else {
             $error_text = 'Username atau password salah.';

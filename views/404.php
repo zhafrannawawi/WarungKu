@@ -1,7 +1,4 @@
-<?php
-http_response_code(404);
-$requested = htmlspecialchars($_SERVER['REQUEST_URI'] ?? '/', ENT_QUOTES, 'UTF-8');
-?>
+<?php http_response_code(404); ?>
 <!DOCTYPE html>
 <html lang="id">
 

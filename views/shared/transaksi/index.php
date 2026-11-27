@@ -9,20 +9,19 @@
         <div>
             <div class="d-flex align-items-center gap-2 mb-1">
                 <h4 class="fw-bold text-dark mb-0">Riwayat Transaksi</h4>
-                <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary fw-semibold px-2 py-1" style="font-size: 0.7rem;">Riwayat</span>
             </div>
             <p class="text-secondary mb-0 small">Daftar nota penjualan pelanggan dan rincian barang belanjaan.</p>
         </div>
     </div>
 
     <form method="GET" class="d-flex flex-wrap align-items-center gap-2">
-        <div class="bg-white rounded-3 shadow-sm d-inline-flex align-items-center gap-2 px-3 py-1">
-            <span class="bg-primary bg-opacity-10 text-primary rounded-2 d-inline-flex align-items-center justify-content-center flex-shrink-0" style="width: 28px; height: 28px;">
-                <i data-lucide="calendar" class="icon-xs"></i>
+        <div class="laporan-date-group d-inline-flex align-items-center gap-1 rounded-3 shadow-sm px-2">
+            <span class="text-secondary d-inline-flex ps-1">
+                <i data-lucide="calendar" width="16" height="16"></i>
             </span>
-            <input type="date" name="from" value="<?= htmlspecialchars($from_date) ?>" class="form-control form-control-sm border-0 bg-transparent shadow-none px-1" style="width: auto;">
-            <span class="text-secondary small">s/d</span>
-            <input type="date" name="to" value="<?= htmlspecialchars($to_date) ?>" class="form-control form-control-sm border-0 bg-transparent shadow-none px-1" style="width: auto;">
+            <input type="date" name="from" value="<?= escape_html($from_date) ?>" class="form-control" aria-label="Dari tanggal">
+            <span class="text-secondary small fw-medium">s/d</span>
+            <input type="date" name="to" value="<?= escape_html($to_date) ?>" class="form-control" aria-label="Sampai tanggal">
         </div>
         <button type="submit" class="btn btn-primary rounded-3 shadow-sm d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold">
             <span class="bg-white bg-opacity-25 rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
@@ -48,11 +47,11 @@
             </div>
 
             <div class="fs-4 fw-bold text-dark">
-                <?= number_format($total_trx, 0, ',', '.') ?> Nota
+                <?= format_number($total_trx) ?> Nota
             </div>
 
             <small class="text-secondary mt-2 d-block">
-                Omzet Rp <?= number_format($total_omzet, 0, ',', '.') ?>
+                Omzet <?= format_rupiah($total_omzet) ?>
             </small>
         </div>
     </div>
@@ -68,7 +67,7 @@
             </div>
 
             <div class="fs-4 fw-bold text-success">
-                Rp <?= number_format($total_tunai, 0, ',', '.') ?>
+                <?= format_rupiah($total_tunai) ?>
             </div>
 
             <small class="text-secondary mt-2 d-block">
@@ -88,7 +87,7 @@
             </div>
 
             <div class="fs-4 fw-bold text-primary">
-                Rp <?= number_format($total_qris, 0, ',', '.') ?>
+                <?= format_rupiah($total_qris) ?>
             </div>
 
             <small class="text-secondary mt-2 d-block">
@@ -148,10 +147,10 @@
                     </tr>
                 <?php else: ?>
                     <?php foreach ($trx_list as $t): ?>
-                        <tr class="trx-row" data-faktur="<?= htmlspecialchars(strtolower($t['TransactionID'])) ?>" data-method="<?= htmlspecialchars($t['PaymentMethod']) ?>">
+                        <tr class="trx-row" data-faktur="<?= escape_html(strtolower($t['TransactionID'])) ?>" data-method="<?= escape_html($t['PaymentMethod']) ?>">
                             <td class="ps-4">
                                 <span class="badge bg-primary bg-opacity-10 text-primary fw-semibold">
-                                    #<?= htmlspecialchars($t['TransactionID']) ?>
+                                    #<?= escape_html($t['TransactionID']) ?>
                                 </span>
                             </td>
 
@@ -161,21 +160,21 @@
                             </td>
 
                             <td class="fw-medium text-dark">
-                                <?= htmlspecialchars($t['CashierName'] ?? '-') ?>
+                                <?= escape_html($t['CashierName'] ?? '-') ?>
                             </td>
 
                             <td>
                                 <span class="badge <?= $t['PaymentMethod'] === 'qris' ? 'bg-primary-subtle text-primary' : 'bg-success-subtle text-success' ?> border fw-semibold">
-                                    <?= strtoupper(htmlspecialchars($t['PaymentMethod'])) ?>
+                                    <?= strtoupper(escape_html($t['PaymentMethod'])) ?>
                                 </span>
                             </td>
 
                             <td class="text-end fw-bold text-dark">
-                                Rp <?= number_format($t['TotalAmount'], 0, ',', '.') ?>
+                                <?= format_rupiah($t['TotalAmount']) ?>
                             </td>
 
                             <td class="text-center pe-4">
-                                <button type="button" class="btn btn-sm bg-primary bg-opacity-10 text-primary border-0 rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="Lihat Nota" onclick="openTrxDetail(<?= htmlspecialchars(json_encode($t), ENT_QUOTES, 'UTF-8') ?>)">
+                                <button type="button" class="btn btn-sm bg-primary bg-opacity-10 text-primary border-0 rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="Lihat Nota" onclick="openTrxDetail(<?= json_attr($t) ?>)">
                                     <i data-lucide="eye" class="icon-xs"></i>
                                 </button>
                             </td>
@@ -214,9 +213,9 @@
 
             <div class="modal-body px-4 pt-2 pb-4" id="pos-receipt-printable">
                 <div class="text-center mb-3 pb-2 border-bottom">
-                    <div class="fw-bold text-dark text-uppercase"><?= htmlspecialchars($store_info['StoreName'] ?? 'WarungKu') ?></div>
+                    <div class="fw-bold text-dark text-uppercase"><?= escape_html($store_info['StoreName'] ?? 'WarungKu') ?></div>
                     <?php if (!empty($store_info['Address'])): ?>
-                        <small class="text-secondary d-block" style="font-size: 0.75rem;"><?= htmlspecialchars($store_info['Address']) ?></small>
+                        <small class="text-secondary d-block" style="font-size: 0.75rem;"><?= escape_html($store_info['Address']) ?></small>
                     <?php endif; ?>
                 </div>
 

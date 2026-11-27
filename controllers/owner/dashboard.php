@@ -15,14 +15,18 @@ $top_today   = transaction_get_today_top_products($koneksi, $store_id, 5);
 $rata_trx    = $summary['total_trx'] > 0 ? ($summary['omzet'] / $summary['total_trx']) : 0;
 $margin_pct  = $summary['omzet'] > 0 ? round(($summary['laba_bersih'] / $summary['omzet']) * 100) : 0;
 
-// 2. Status Inventaris & Peringatan Stok Menipis
+// 2. Status Inventaris & Peringatan Stok Menipis (maksimal 5 item)
 $all_products   = product_get_all($koneksi, $store_id);
 $total_katalog  = count($all_products);
-$low_stock_list = array_slice(
-    array_values(array_filter($all_products, fn($p) => (int)$p['Stock'] <= (int)$p['MinimumStock'])),
-    0,
-    5
-);
+$low_stock_list = [];
+foreach ($all_products as $p) {
+    if ((int)$p['Stock'] <= (int)$p['MinimumStock']) {
+        $low_stock_list[] = $p;
+        if (count($low_stock_list) === 5) {
+            break;
+        }
+    }
+}
 
 // 3. Format Tanggal Indonesia
 $tanggal_hari_ini = tanggal_id();

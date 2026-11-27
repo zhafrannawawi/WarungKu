@@ -1,14 +1,11 @@
 <?php
 require_once __DIR__ . '/../../config/app.php';
 
-if (empty($_SESSION['user_id'])) {
-    redirect('/login');
-}
+$store_id = require_auth();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $user_id      = (string)$_SESSION['user_id'];
-        $store_id     = (string)($_SESSION['store_id'] ?? '');
         $fullname     = trim($_POST['full_name'] ?? '');
         $username     = trim($_POST['user_name'] ?? '');
         $email        = trim($_POST['email'] ?? '');
@@ -40,5 +37,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$fallback = ($_SESSION['role'] ?? '') === 'owner' ? '/owner/dashboard' : '/cashier/dashboard';
-redirect($_SERVER['HTTP_REFERER'] ?? $fallback);
+redirect($_SERVER['HTTP_REFERER'] ?? dashboard_url());

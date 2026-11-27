@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/main.css?v=<?= filemtime(__DIR__ . '/../../../assets/css/main.css') ?>">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
@@ -18,20 +18,20 @@
         <div class="row g-0">
 
             <!-- Kolom Kiri: Visual Branding (Desktop) -->
-            <div class="col-lg-5 d-none d-lg-flex login-brand-panel">
+            <div class="col-lg-5 d-none d-lg-flex auth-brand-panel">
                 <div>
                     <!-- Header Brand: Logo + Tulisan WarungKu -->
                     <div class="d-flex align-items-center gap-2 mb-3">
-                        <img src="/assets/image/logo.png" alt="Logo WarungKu" class="login-brand-logo">
-                        <span class="login-brand-name">WarungKu</span>
+                        <img src="/assets/image/logo.png" alt="Logo WarungKu" class="auth-brand-logo">
+                        <span class="auth-brand-name">WarungKu</span>
                     </div>
 
                     <h4 class="fw-bold text-white mb-2 lh-sm">Selamat Datang Kembali</h4>
                     <p class="text-white-50 small mb-4">Masuk untuk melanjutkan operasional warung, shift kasir, dan pantau omzet toko.</p>
 
                     <div class="mt-4">
-                        <div class="login-feature-item">
-                            <div class="login-feature-icon">
+                        <div class="auth-feature-item">
+                            <div class="auth-feature-icon">
                                 <i data-lucide="shield-check" class="text-white icon-sm"></i>
                             </div>
                             <div>
@@ -40,8 +40,8 @@
                             </div>
                         </div>
 
-                        <div class="login-feature-item">
-                            <div class="login-feature-icon">
+                        <div class="auth-feature-item">
+                            <div class="auth-feature-icon">
                                 <i data-lucide="zap" class="text-white icon-sm"></i>
                             </div>
                             <div>
@@ -52,7 +52,7 @@
                     </div>
                 </div>
 
-                <div class="login-mini-info">
+                <div class="auth-mini-info">
                     <div class="d-flex align-items-center gap-2 mb-1">
                         <i data-lucide="store" class="text-warning icon-sm"></i>
                         <span class="text-white fw-semibold small">Dirancang Khusus Warung & UMKM</span>
@@ -66,7 +66,7 @@
 
                 <!-- Header Mobile Saja -->
                 <div class="d-lg-none d-flex align-items-center gap-2 mb-3">
-                    <img src="/assets/image/logo.png" alt="Logo WarungKu" class="login-brand-logo">
+                    <img src="/assets/image/logo.png" alt="Logo WarungKu" class="auth-brand-logo">
                     <span class="fs-5 fw-bold text-primary">WarungKu</span>
                 </div>
 
@@ -102,14 +102,9 @@
                                 Lupa password?
                             </a>
                         </div>
-                        <div class="position-relative">
-                            <input type="password" id="user_password" name="user_password"
-                                   class="form-control form-control-standard pe-5"
-                                   placeholder="Masukkan password" required>
-                            <button type="button" class="btn-toggle-pass" onclick="togglePasswordVisibility()" title="Tampilkan/Sembunyikan Password">
-                                <i data-lucide="eye" id="eye-icon" class="icon-xs"></i>
-                            </button>
-                        </div>
+                        <input type="password" id="user_password" name="user_password"
+                               class="form-control form-control-standard"
+                               placeholder="Masukkan password" required>
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-standard w-100 py-2 fw-semibold shadow-sm mt-3 mb-2">
@@ -135,6 +130,6 @@
 <?php include __DIR__ . '/modal-new-password.php'; ?>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/assets/js/main.js"></script>
+<script src="/assets/js/main.js?v=<?= filemtime(__DIR__ . '/../../../assets/js/main.js') ?>"></script>
 </body>
 </html>

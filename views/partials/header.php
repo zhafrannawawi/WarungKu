@@ -6,7 +6,7 @@ $user_id = (string)($_SESSION['user_id'] ?? '');
 $store_id = (string)($_SESSION['store_id'] ?? '');
 $current_page = $page_name ?? '';
 $role_prefix = $role === 'owner' ? '/owner' : '/cashier';
-$home_url    = $role_prefix . '/dashboard';
+$home_url    = dashboard_url($role);
 
 // Ambil data toko, akun, & notifikasi stok menipis (F011)
 $store_info      = [];
@@ -33,7 +33,7 @@ $is_report_active    = in_array($current_page, ['laporan-laba-rugi', 'laporan-st
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WarungKu | <?= htmlspecialchars($page_title ?? 'Dashboard') ?></title>
+    <title>WarungKu | <?= escape_html($page_title ?? 'Dashboard') ?></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -176,7 +176,7 @@ $is_report_active    = in_array($current_page, ['laporan-laba-rugi', 'laporan-st
                                 </div>
                                 <div class="overflow-hidden">
                                     <div class="fw-semibold text-dark text-truncate" style="font-size: 0.8125rem; line-height: 1.25;">
-                                        <?= htmlspecialchars($username) ?>
+                                        <?= escape_html($username) ?>
                                     </div>
                                     <div class="d-flex align-items-center mt-0.5">
                                         <small class="text-muted text-truncate" style="font-size: 0.675rem;">
@@ -204,7 +204,7 @@ $is_report_active    = in_array($current_page, ['laporan-laba-rugi', 'laporan-st
                         </div>
                     </div>
 
-                    <button type="button" class="btn btn-light border w-100 mt-2 py-2 d-md-none text-muted d-flex align-items-center justify-content-center gap-2" onclick="toggleSidebar()">
+                    <button type="button" class="btn btn-light border w-100 mt-2 py-2 d-lg-none text-muted d-flex align-items-center justify-content-center gap-2" onclick="toggleSidebar()">
                         <i data-lucide="chevron-left" class="icon-sm"></i>
                         <span class="small fw-semibold">Tutup Menu</span>
                     </button>
@@ -212,7 +212,7 @@ $is_report_active    = in_array($current_page, ['laporan-laba-rugi', 'laporan-st
             </div>
         </aside>
 
-        <div id="sidebar-backdrop" class="d-md-none" onclick="toggleSidebar()"></div>
+        <div id="sidebar-backdrop" class="d-lg-none" onclick="toggleSidebar()"></div>
 
         <!-- ========== MAIN CONTENT ========== -->
         <div id="content-wrapper">
@@ -220,7 +220,7 @@ $is_report_active    = in_array($current_page, ['laporan-laba-rugi', 'laporan-st
                 <header class="topbar-header px-3 px-md-4 d-flex align-items-center justify-content-between gap-3">
                     <!-- Sisi Kiri: Toggle Mobile + Identitas Warung & Halaman Aktif -->
                     <div class="d-flex align-items-center gap-3 min-w-0">
-                        <button type="button" class="btn btn-topbar-icon d-md-none flex-shrink-0" onclick="toggleSidebar()" aria-label="Toggle Sidebar">
+                        <button type="button" class="btn btn-topbar-icon d-lg-none flex-shrink-0" onclick="toggleSidebar()" aria-label="Toggle Sidebar">
                             <i data-lucide="menu" class="icon-md"></i>
                         </button>
 
@@ -230,11 +230,11 @@ $is_report_active    = in_array($current_page, ['laporan-laba-rugi', 'laporan-st
                             </div>
                             <div class="min-w-0">
                                 <div class="fw-bold text-dark text-truncate" style="font-size: 0.925rem; line-height: 1.3;">
-                                    <?= htmlspecialchars($store_info['StoreName'] ?? $store_name) ?>
+                                    <?= escape_html($store_info['StoreName'] ?? $store_name) ?>
                                 </div>
                                 <?php if (!empty($store_info['Address'])): ?>
                                     <div class="text-muted text-truncate" style="font-size: 0.75rem; line-height: 1.3;">
-                                        <?= htmlspecialchars($store_info['Address']) ?>
+                                        <?= escape_html($store_info['Address']) ?>
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -246,13 +246,11 @@ $is_report_active    = in_array($current_page, ['laporan-laba-rugi', 'laporan-st
                         <button type="button" class="btn btn-topbar-icon position-relative" data-bs-toggle="modal" data-bs-target="#modalNotification" title="Pusat Notifikasi">
                             <i data-lucide="bell" class="icon-md"></i>
                             <?php if ($notif_count > 0): ?>
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-2 border-white" style="font-size: 0.6rem;">
-                                    <?= $notif_count > 99 ? '99+' : $notif_count ?>
-                                </span>
+                                <span class="notif-badge"><?= $notif_count > 99 ? '99+' : $notif_count ?></span>
                             <?php endif; ?>
                         </button>
                     </div>
                 </header>
             </div>
 
-            <main class="p-4">
+            <main class="p-3 p-md-4">

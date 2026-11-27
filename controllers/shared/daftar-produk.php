@@ -51,19 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
         if ($action === 'tambah') {
-            $in = get_product_input();
-            product_add(
-                $koneksi,
-                $store_id,
-                $in['category_id'],
-                $in['name'],
-                $in['unit'],
-                $in['purchase_price'],
-                $in['selling_price'],
-                $in['stock'],
-                $in['min_stock'],
-                $in['location']
-            );
+            product_add($koneksi, $store_id, get_product_input());
             set_alert('success', 'Produk baru berhasil ditambahkan!');
         } elseif ($action === 'edit') {
             $product_id = trim($_POST['product_id'] ?? '');
@@ -71,21 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($product_id === '') {
                 throw new Exception('Data produk tidak valid.');
             }
-            $in = get_product_input();
-            product_update(
-                $koneksi,
-                $product_id,
-                $store_id,
-                $in['category_id'],
-                $in['name'],
-                $in['unit'],
-                $in['purchase_price'],
-                $in['selling_price'],
-                $in['stock'],
-                $in['min_stock'],
-                $in['location'],
-                $is_active
-            );
+            product_update($koneksi, $product_id, $store_id, get_product_input(), $is_active);
             set_alert('success', 'Data produk berhasil diperbarui!');
         } elseif ($action === 'hapus') {
             $product_id = trim($_POST['product_id'] ?? '');

@@ -33,11 +33,29 @@ $product_list = product_get_all($koneksi, $store_id);
 // Ringkasan Metrik Restock
 $today         = date('Y-m-d');
 $this_month    = date('Y-m');
-$today_list    = array_filter($restock_list, fn($r) => substr($r['RestockDate'], 0, 10) === $today);
-$total_beli_hr = array_sum(array_map(fn($r) => (float)$r['PurchasePrice'] * (int)$r['Quantity'], $today_list));
-$unit_masuk_hr = array_sum(array_column($today_list, 'Quantity'));
-$jml_bulan_ini = count(array_filter($restock_list, fn($r) => substr($r['RestockDate'], 0, 7) === $this_month));
-$low_stock     = array_values(array_filter($product_list, fn($p) => (int)$p['Stock'] <= (int)$p['MinimumStock']));
+$today_list    = [];
+$total_beli_hr = 0;
+$unit_masuk_hr = 0;
+$jml_bulan_ini = 0;
+
+foreach ($restock_list as $r) {
+    $tanggal = substr($r['RestockDate'], 0, 10);
+    if ($tanggal === $today) {
+        $today_list[]   = $r;
+        $total_beli_hr += (float)$r['PurchasePrice'] * (int)$r['Quantity'];
+        $unit_masuk_hr += (int)$r['Quantity'];
+    }
+    if (substr($tanggal, 0, 7) === $this_month) {
+        $jml_bulan_ini++;
+    }
+}
+
+$low_stock = [];
+foreach ($product_list as $p) {
+    if ((int)$p['Stock'] <= (int)$p['MinimumStock']) {
+        $low_stock[] = $p;
+    }
+}
 
 $page_title = 'Restock Barang';
 $page_name  = 'restock';

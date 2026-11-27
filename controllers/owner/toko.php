@@ -19,8 +19,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } catch (Exception $e) {
         set_alert('danger', $e->getMessage());
     }
-
-    redirect($_SERVER['HTTP_REFERER'] ?? '/owner/dashboard');
 }
 
 redirect($_SERVER['HTTP_REFERER'] ?? '/owner/dashboard');

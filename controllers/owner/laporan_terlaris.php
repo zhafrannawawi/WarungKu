@@ -28,4 +28,4 @@ $kategori_juara_qty = $cat_totals[$kategori_juara] ?? 0;
 
 $page_title = 'Laporan Terlaris';
 $page_name  = 'laporan-terlaris';
-include __DIR__ . '/../../views/owner/Laporan-terlaris/index.php';
+include __DIR__ . '/../../views/owner/laporan-terlaris/index.php';

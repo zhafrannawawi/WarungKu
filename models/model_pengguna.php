@@ -10,10 +10,10 @@ function user_find_by_username(PDO $koneksi, string $username)
     return $stmt->fetch();
 }
 
-function user_find_phone_number_by_username(PDO $koneksi, string $username)
+function user_find_by_id(PDO $koneksi, string $user_id)
 {
-    $stmt = $koneksi->prepare("SELECT PhoneNumber FROM tbluser WHERE Username = ? AND DeletedAt IS NULL");
-    $stmt->execute([$username]);
+    $stmt = $koneksi->prepare("SELECT * FROM tbluser WHERE UserID = ? AND DeletedAt IS NULL");
+    $stmt->execute([$user_id]);
     return $stmt->fetch();
 }
 
@@ -24,15 +24,25 @@ function user_find_verify(PDO $koneksi, string $email, string $phone_number)
     return $stmt->fetch();
 }
 
-function user_update_password(PDO $koneksi, string $user_id, string $new_password)
+function user_update_password(PDO $koneksi, string $user_id, string $new_password): bool
 {
     $hash = password_hash($new_password, PASSWORD_DEFAULT);
     $stmt = $koneksi->prepare("UPDATE tbluser SET Password = ? WHERE UserID = ? AND DeletedAt IS NULL");
     return $stmt->execute([$hash, $user_id]);
 }
 
-function user_add_owner(PDO $koneksi, string $store_name, string $store_address, string $fullname, string $email, string $phone_number, string $username, string $password)
+function user_set_active(PDO $koneksi, string $user_id, int $is_active): bool
 {
+    $stmt = $koneksi->prepare("UPDATE tbluser SET IsActive = ? WHERE UserID = ? AND DeletedAt IS NULL");
+    return $stmt->execute([$is_active, $user_id]);
+}
+
+function user_add_owner(PDO $koneksi, string $store_name, string $store_address, string $fullname, string $email, string $phone_number, string $username, string $password): bool
+{
+    if (user_find_by_username($koneksi, $username)) {
+        return false;
+    }
+
     try {
         $koneksi->beginTransaction();
 
@@ -46,7 +56,7 @@ function user_add_owner(PDO $koneksi, string $store_name, string $store_address,
         $hash      = password_hash($password, PASSWORD_DEFAULT);
         $stmt_user = $koneksi->prepare(
             "INSERT INTO tbluser (UserID, StoreID, Username, Email, Password, Fullname, PhoneNumber, Role, IsActive, CreatedAt)
-             VALUES (?, ?, ?, ?, ?, ?, ?, 'owner', 1, NOW())"
+             VALUES (?, ?, ?, ?, ?, ?, ?, 'owner', 0, NOW())"
         );
         $stmt_user->execute([$user_id, $store_id, $username, $email, $hash, $fullname, $phone_number]);
 
@@ -87,52 +97,48 @@ function user_count_metrics(PDO $koneksi, string $store_id): array
     return $stmt->fetch();
 }
 
-function user_ensure_unique(PDO $koneksi, string $store_id, string $username, string $phone_number, ?string $exclude_user_id = null): void
+function user_ensure_unique(PDO $koneksi, string $store_id, string $username, string $phone_number, string $exclude_user_id = ''): void
 {
-    $checks = [
-        ['Username', $username, 'Gagal: Username sudah dipakai akun lain.'],
-        ['PhoneNumber', $phone_number, 'Gagal: Nomor telepon/WhatsApp sudah dipakai akun lain.'],
-    ];
+    $stmt = $koneksi->prepare(
+        "SELECT UserID FROM tbluser WHERE Username = ? AND UserID != ? AND DeletedAt IS NULL"
+    );
+    $stmt->execute([$username, $exclude_user_id]);
+    if ($stmt->fetch()) {
+        throw new Exception('Gagal: Username sudah dipakai akun lain.');
+    }
 
-    foreach ($checks as [$column, $value, $error]) {
-        if ($value === '') {
-            continue;
-        }
-        $sql    = "SELECT UserID FROM tbluser WHERE $column = ? AND StoreID = ? AND DeletedAt IS NULL";
-        $params = [$value, $store_id];
-        if ($exclude_user_id !== null) {
-            $sql     .= " AND UserID != ?";
-            $params[] = $exclude_user_id;
-        }
-        $stmt = $koneksi->prepare($sql);
-        $stmt->execute($params);
+    if ($phone_number !== '') {
+        $stmt = $koneksi->prepare(
+            "SELECT UserID FROM tbluser WHERE PhoneNumber = ? AND StoreID = ? AND UserID != ? AND DeletedAt IS NULL"
+        );
+        $stmt->execute([$phone_number, $store_id, $exclude_user_id]);
         if ($stmt->fetch()) {
-            throw new Exception($error);
+            throw new Exception('Gagal: Nomor telepon/WhatsApp sudah dipakai akun lain.');
         }
     }
 }
 
-function user_add_cashier(PDO $koneksi, string $store_id, string $fullname, string $username, string $email, string $phone_number)
+function user_add_cashier(PDO $koneksi, string $store_id, string $fullname, string $username, string $email, string $phone_number): bool
 {
     user_ensure_unique($koneksi, $store_id, $username, $phone_number);
 
     $user_id = generate_id($koneksi, 'tbluser', 'UserID', 'USR-');
     $stmt    = $koneksi->prepare(
         "INSERT INTO tbluser (UserID, StoreID, Username, Email, Password, Fullname, PhoneNumber, Role, IsActive, CreatedAt)
-         VALUES (?, ?, ?, ?, ?, ?, ?, 'kasir', 1, NOW())"
+         VALUES (?, ?, ?, ?, ?, ?, ?, 'kasir', 0, NOW())"
     );
     return $stmt->execute([$user_id, $store_id, $username, $email, $phone_number, $fullname, $phone_number]);
 }
 
-function user_update_cashier(PDO $koneksi, string $user_id, string $store_id, string $fullname, string $username, string $email, string $phone_number, int $is_active)
+function user_update_cashier(PDO $koneksi, string $user_id, string $store_id, string $fullname, string $username, string $email, string $phone_number): bool
 {
     user_ensure_unique($koneksi, $store_id, $username, $phone_number, $user_id);
 
     $stmt = $koneksi->prepare(
-        "UPDATE tbluser SET Fullname = ?, Username = ?, Email = ?, PhoneNumber = ?, IsActive = ? 
+        "UPDATE tbluser SET Fullname = ?, Username = ?, Email = ?, PhoneNumber = ?
          WHERE UserID = ? AND StoreID = ? AND Role = 'kasir' AND DeletedAt IS NULL"
     );
-    return $stmt->execute([$fullname, $username, $email, $phone_number, $is_active, $user_id, $store_id]);
+    return $stmt->execute([$fullname, $username, $email, $phone_number, $user_id, $store_id]);
 }
 
 function user_delete(PDO $koneksi, string $user_id, string $store_id): bool
@@ -141,30 +147,18 @@ function user_delete(PDO $koneksi, string $user_id, string $store_id): bool
     return $stmt->execute([$user_id, $store_id]);
 }
 
-
-function user_find_by_id(PDO $koneksi, string $user_id)
-{
-    $stmt = $koneksi->prepare("SELECT * FROM tbluser WHERE UserID = ? AND DeletedAt IS NULL");
-    $stmt->execute([$user_id]);
-    return $stmt->fetch();
-}
-
 function user_update_profile(PDO $koneksi, string $user_id, string $store_id, string $fullname, string $username, string $email, string $phone_number, string $new_password = ''): bool
 {
     user_ensure_unique($koneksi, $store_id, $username, $phone_number, $user_id);
 
-    if ($new_password !== '') {
-        $hash = password_hash($new_password, PASSWORD_DEFAULT);
-        $stmt = $koneksi->prepare(
-            "UPDATE tbluser SET Fullname = ?, Username = ?, Email = ?, PhoneNumber = ?, Password = ? 
-             WHERE UserID = ? AND StoreID = ? AND DeletedAt IS NULL"
-        );
-        return $stmt->execute([$fullname, $username, $email, $phone_number, $hash, $user_id, $store_id]);
-    }
-
     $stmt = $koneksi->prepare(
-        "UPDATE tbluser SET Fullname = ?, Username = ?, Email = ?, PhoneNumber = ? 
+        "UPDATE tbluser SET Fullname = ?, Username = ?, Email = ?, PhoneNumber = ?
          WHERE UserID = ? AND StoreID = ? AND DeletedAt IS NULL"
     );
-    return $stmt->execute([$fullname, $username, $email, $phone_number, $user_id, $store_id]);
+    $ok = $stmt->execute([$fullname, $username, $email, $phone_number, $user_id, $store_id]);
+
+    if ($ok && $new_password !== '') {
+        return user_update_password($koneksi, $user_id, $new_password);
+    }
+    return $ok;
 }

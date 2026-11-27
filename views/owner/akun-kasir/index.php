@@ -9,14 +9,13 @@
         <div>
             <div class="d-flex align-items-center gap-2 mb-1">
                 <h4 class="fw-bold text-dark mb-0">Manajemen Akun Kasir</h4>
-                <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary fw-semibold px-2 py-1" style="font-size: 0.7rem;">Staf</span>
             </div>
             <p class="text-secondary mb-0 small">Kelola akun staf kasir, atur status operasional, dan pantau aktivitas transaksi.</p>
         </div>
     </div>
 
     <div class="d-flex align-items-center gap-2">
-        <button type="button" class="btn btn-primary rounded-3 shadow-sm d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#modalTambahKasir">
+        <button type="button" class="btn btn-primary rounded-3 shadow-sm d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold" onclick="openAddCashierModal()">
             <span class="bg-white bg-opacity-25 rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
                 <i data-lucide="user-plus" class="icon-xs"></i>
             </span>
@@ -66,7 +65,7 @@
             </div>
 
             <small class="text-secondary mt-2 d-block">
-                Dapat login shift kasir
+                Sedang login saat ini
             </small>
         </div>
     </div>
@@ -82,7 +81,7 @@
             </div>
 
             <div class="fs-4 fw-bold text-dark">
-                <?= number_format((int)($count_user['trx_bulan_ini'] ?? 0), 0, ',', '.') ?> Trx
+                <?= format_number((int)($count_user['trx_bulan_ini'] ?? 0)) ?> Trx
             </div>
 
             <small class="text-secondary mt-2 d-block">
@@ -142,7 +141,7 @@
                     </tr>
                 <?php else: ?>
                     <?php foreach ($user_list as $u): ?>
-                        <tr class="akun-row" data-name="<?= htmlspecialchars(strtolower($u['Fullname'])) ?>" data-status="<?= $u['IsActive'] ? 'active' : 'inactive' ?>">
+                        <tr class="akun-row" data-name="<?= escape_html(strtolower($u['Fullname'])) ?>" data-status="<?= $u['IsActive'] ? 'active' : 'inactive' ?>">
                             <td class="ps-4">
                                 <div class="d-flex align-items-center gap-2">
                                     <span class="bg-primary bg-opacity-10 text-primary rounded-3 fw-bold small d-inline-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px;">
@@ -151,23 +150,23 @@
 
                                     <div>
                                         <span class="fw-semibold text-dark d-block">
-                                            <?= htmlspecialchars($u['Fullname']) ?>
+                                            <?= escape_html($u['Fullname']) ?>
                                         </span>
-                                        <small class="text-secondary">#<?= htmlspecialchars($u['UserID']) ?></small>
+                                        <small class="text-secondary">#<?= escape_html($u['UserID']) ?></small>
                                     </div>
                                 </div>
                             </td>
 
                             <td>
                                 <span class="badge bg-primary bg-opacity-10 text-primary fw-semibold">
-                                    <?= htmlspecialchars($u['Username']) ?>
+                                    <?= escape_html($u['Username']) ?>
                                 </span>
                             </td>
 
                             <td class="text-secondary small">
                                 <span class="d-inline-flex align-items-center gap-1">
                                     <i data-lucide="phone" width="13" height="13"></i>
-                                    <?= htmlspecialchars($u['PhoneNumber'] ?: '-') ?>
+                                    <?= escape_html($u['PhoneNumber'] ?: '-') ?>
                                 </span>
                             </td>
 
@@ -186,15 +185,15 @@
                             </td>
 
                             <td class="text-end fw-bold text-dark">
-                                <?= number_format((int)$u['TotalTransaksi'], 0, ',', '.') ?> Trx
+                                <?= format_number((int)$u['TotalTransaksi']) ?> Trx
                             </td>
 
                             <td class="text-center pe-4">
                                 <div class="d-inline-flex align-items-center gap-1">
-                                    <button type="button" class="btn btn-sm bg-primary bg-opacity-10 text-primary border-0 rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="Edit Kasir" onclick="bukaModalEdit(<?= htmlspecialchars(json_encode($u), ENT_QUOTES, 'UTF-8') ?>)">
+                                    <button type="button" class="btn btn-sm bg-primary bg-opacity-10 text-primary border-0 rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="Edit Kasir" onclick="editCashier(<?= json_attr($u) ?>)">
                                         <i data-lucide="edit-3" class="icon-xs"></i>
                                     </button>
-                                    <button type="button" class="btn btn-sm bg-danger bg-opacity-10 text-danger border-0 rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="Hapus Kasir" onclick="deleteCashier('<?= htmlspecialchars($u['UserID'], ENT_QUOTES) ?>', '<?= htmlspecialchars($u['Fullname'], ENT_QUOTES) ?>')">
+                                    <button type="button" class="btn btn-sm bg-danger bg-opacity-10 text-danger border-0 rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="Hapus Kasir" onclick="deleteCashier('<?= escape_html($u['UserID']) ?>', '<?= escape_html($u['Fullname']) ?>')">
                                         <i data-lucide="trash-2" class="icon-xs"></i>
                                     </button>
                                 </div>
@@ -215,7 +214,6 @@
 
 </div>
 
-<?php include __DIR__ . '/modal-tambah.php'; ?>
-<?php include __DIR__ . '/modal-edit.php'; ?>
+<?php include __DIR__ . '/modal-form.php'; ?>
 
 <?php include __DIR__ . '/../../partials/footer.php'; ?>
