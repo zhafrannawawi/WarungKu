@@ -12,6 +12,21 @@
     <link rel="stylesheet" href="./assets/css/main.css">
     <link rel="icon" type="image/x-icon" href="./assets/image/logo.ico">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .flow-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 26px;
+            height: 22px;
+            padding: 0 6px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            border-radius: 6px;
+            font-variant-numeric: tabular-nums;
+            flex-shrink: 0;
+        }
+    </style>
 </head>
 
 <body class="bg-body-app py-5">
@@ -21,125 +36,135 @@
                 <img src="./assets/image/logo.png" alt="Logo WarungKu" style="width: 44px; height: 44px;">
                 <div>
                     <h4 class="fw-bold text-dark mb-0">WarungKu — Static HTML Directory</h4>
-                    <p class="text-secondary small mb-0">Tampilan Owner, Cashier, Auth, dan seluruh Modal dipisah ke halaman tersendiri untuk kebutuhan copy UI ke AI Figma.</p>
+                    <p class="text-secondary small mb-0">Urutan alur halaman (Flow 01–40) untuk dokumentasi dan copy UI ke AI Figma.</p>
                 </div>
             </div>
         </div>
 
         <div class="row g-4">
-            <!-- Owner -->
-            <div class="col-12 col-lg-6">
-                <div class="bg-white border rounded-4 shadow-sm overflow-hidden h-100">
-                    <div class="p-3 border-bottom d-flex align-items-center justify-content-between">
-                        <h6 class="fw-bold text-dark mb-0">Tampilan Owner (10 Halaman)</h6>
-                        <span class="badge bg-primary bg-opacity-10 text-primary">owner/</span>
-                    </div>
-                    <div class="list-group list-group-flush small">
-                        <a href="./owner/dashboard.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Dashboard Harian</span><code class="text-secondary">/owner/dashboard.html</code></a>
-                        <a href="./owner/kasir.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Kasir (POS)</span><code class="text-secondary">/owner/kasir.html</code></a>
-                        <a href="./owner/transaksi.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Riwayat Transaksi</span><code class="text-secondary">/owner/transaksi.html</code></a>
-                        <a href="./owner/daftar-produk.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Daftar Produk (Owner)</span><code class="text-secondary">/owner/daftar-produk.html</code></a>
-                        <a href="./owner/restock-barang.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Restock Barang</span><code class="text-secondary">/owner/restock-barang.html</code></a>
-                        <a href="./owner/kategori.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Kategori Produk</span><code class="text-secondary">/owner/kategori.html</code></a>
-                        <a href="./owner/laporan-laba-rugi.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Laporan Laba Rugi</span><code class="text-secondary">/owner/laporan-laba-rugi.html</code></a>
-                        <a href="./owner/laporan-stok.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Laporan Stok &amp; Inventaris</span><code class="text-secondary">/owner/laporan-stok.html</code></a>
-                        <a href="./owner/laporan-terlaris.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Laporan Produk Terlaris</span><code class="text-secondary">/owner/laporan-terlaris.html</code></a>
-                        <a href="./owner/akun-kasir.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Manajemen Akun Kasir</span><code class="text-secondary">/owner/akun-kasir.html</code></a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Cashier + Auth -->
+            <!-- 1. Auth & Error (01–03) -->
             <div class="col-12 col-lg-6 d-flex flex-column gap-4">
                 <div class="bg-white border rounded-4 shadow-sm overflow-hidden">
                     <div class="p-3 border-bottom d-flex align-items-center justify-content-between">
-                        <h6 class="fw-bold text-dark mb-0">Tampilan Cashier (4 Halaman)</h6>
-                        <span class="badge bg-success bg-opacity-10 text-success">cashier/</span>
-                    </div>
-                    <div class="list-group list-group-flush small">
-                        <a href="./cashier/dashboard.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Dashboard Kerja Harian</span><code class="text-secondary">/cashier/dashboard.html</code></a>
-                        <a href="./cashier/kasir.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Kasir (POS)</span><code class="text-secondary">/cashier/kasir.html</code></a>
-                        <a href="./cashier/transaksi.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Riwayat Transaksi</span><code class="text-secondary">/cashier/transaksi.html</code></a>
-                        <a href="./cashier/daftar-produk.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Daftar Produk (Kasir)</span><code class="text-secondary">/cashier/daftar-produk.html</code></a>
-                    </div>
-                </div>
-
-                <div class="bg-white border rounded-4 shadow-sm overflow-hidden">
-                    <div class="p-3 border-bottom d-flex align-items-center justify-content-between">
-                        <h6 class="fw-bold text-dark mb-0">Autentikasi &amp; Error (3 Halaman)</h6>
+                        <div>
+                            <h6 class="fw-bold text-dark mb-0">1. Autentikasi &amp; Error (3 Halaman)</h6>
+                            <small class="text-secondary">Flow 01 – 03</small>
+                        </div>
                         <span class="badge bg-secondary bg-opacity-10 text-secondary">auth/</span>
                     </div>
                     <div class="list-group list-group-flush small">
-                        <a href="./auth/login.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Login</span><code class="text-secondary">/auth/login.html</code></a>
-                        <a href="./auth/register.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Register Warung Baru</span><code class="text-secondary">/auth/register.html</code></a>
-                        <a href="./404.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Halaman 404</span><code class="text-secondary">/404.html</code></a>
+                        <a href="./auth/login.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-secondary bg-opacity-10 text-secondary">01</span>Login</span><code class="text-secondary">/auth/login.html</code></a>
+                        <a href="./auth/register.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-secondary bg-opacity-10 text-secondary">02</span>Register Warung Baru</span><code class="text-secondary">/auth/register.html</code></a>
+                        <a href="./404.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-secondary bg-opacity-10 text-secondary">03</span>Halaman 404</span><code class="text-secondary">/404.html</code></a>
+                    </div>
+                </div>
+
+                <!-- 3. Cashier (14–17) -->
+                <div class="bg-white border rounded-4 shadow-sm overflow-hidden">
+                    <div class="p-3 border-bottom d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="fw-bold text-dark mb-0">3. Tampilan Cashier (4 Halaman)</h6>
+                            <small class="text-secondary">Flow 14 – 17</small>
+                        </div>
+                        <span class="badge bg-success bg-opacity-10 text-success">cashier/</span>
+                    </div>
+                    <div class="list-group list-group-flush small">
+                        <a href="./cashier/dashboard.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-success bg-opacity-10 text-success">14</span>Dashboard Kerja Harian</span><code class="text-secondary">/cashier/dashboard.html</code></a>
+                        <a href="./cashier/kasir.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-success bg-opacity-10 text-success">15</span>Kasir (POS)</span><code class="text-secondary">/cashier/kasir.html</code></a>
+                        <a href="./cashier/transaksi.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-success bg-opacity-10 text-success">16</span>Riwayat Transaksi</span><code class="text-secondary">/cashier/transaksi.html</code></a>
+                        <a href="./cashier/daftar-produk.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-success bg-opacity-10 text-success">17</span>Daftar Produk (Kasir)</span><code class="text-secondary">/cashier/daftar-produk.html</code></a>
                     </div>
                 </div>
             </div>
 
-            <!-- Modals -->
+            <!-- 2. Owner (04–13) -->
+            <div class="col-12 col-lg-6">
+                <div class="bg-white border rounded-4 shadow-sm overflow-hidden h-100">
+                    <div class="p-3 border-bottom d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="fw-bold text-dark mb-0">2. Tampilan Owner (10 Halaman)</h6>
+                            <small class="text-secondary">Flow 04 – 13</small>
+                        </div>
+                        <span class="badge bg-primary bg-opacity-10 text-primary">owner/</span>
+                    </div>
+                    <div class="list-group list-group-flush small">
+                        <a href="./owner/dashboard.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-primary bg-opacity-10 text-primary">04</span>Dashboard Harian</span><code class="text-secondary">/owner/dashboard.html</code></a>
+                        <a href="./owner/kasir.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-primary bg-opacity-10 text-primary">05</span>Kasir (POS)</span><code class="text-secondary">/owner/kasir.html</code></a>
+                        <a href="./owner/transaksi.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-primary bg-opacity-10 text-primary">06</span>Riwayat Transaksi</span><code class="text-secondary">/owner/transaksi.html</code></a>
+                        <a href="./owner/daftar-produk.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-primary bg-opacity-10 text-primary">07</span>Daftar Produk (Owner)</span><code class="text-secondary">/owner/daftar-produk.html</code></a>
+                        <a href="./owner/restock-barang.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-primary bg-opacity-10 text-primary">08</span>Restock Barang</span><code class="text-secondary">/owner/restock-barang.html</code></a>
+                        <a href="./owner/kategori.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-primary bg-opacity-10 text-primary">09</span>Kategori Produk</span><code class="text-secondary">/owner/kategori.html</code></a>
+                        <a href="./owner/laporan-laba-rugi.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-primary bg-opacity-10 text-primary">10</span>Laporan Laba Rugi</span><code class="text-secondary">/owner/laporan-laba-rugi.html</code></a>
+                        <a href="./owner/laporan-stok.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-primary bg-opacity-10 text-primary">11</span>Laporan Stok &amp; Inventaris</span><code class="text-secondary">/owner/laporan-stok.html</code></a>
+                        <a href="./owner/laporan-terlaris.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-primary bg-opacity-10 text-primary">12</span>Laporan Produk Terlaris</span><code class="text-secondary">/owner/laporan-terlaris.html</code></a>
+                        <a href="./owner/akun-kasir.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-primary bg-opacity-10 text-primary">13</span>Manajemen Akun Kasir</span><code class="text-secondary">/owner/akun-kasir.html</code></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Modals (18–36) -->
             <div class="col-12">
                 <div class="bg-white border rounded-4 shadow-sm overflow-hidden">
                     <div class="p-3 border-bottom d-flex align-items-center justify-content-between">
                         <div>
-                            <h6 class="fw-bold text-dark mb-0">Tampilan Modal Tersendiri (19 Halaman)</h6>
-                            <small class="text-secondary">Dikeluarkan dari UI utama agar bisa langsung di-capture oleh AI Figma</small>
+                            <h6 class="fw-bold text-dark mb-0">4. Tampilan Modal Tersendiri (19 Halaman)</h6>
+                            <small class="text-secondary">Flow 18 – 36 · Dikeluarkan dari UI utama agar bisa langsung di-capture oleh AI Figma</small>
                         </div>
                         <span class="badge bg-warning bg-opacity-10 text-warning-emphasis">modals/</span>
                     </div>
                     <div class="row g-0">
                         <div class="col-12 col-md-6 border-end">
                             <div class="list-group list-group-flush small">
-                                <a href="./modals/auth/reset-password.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Auth: Atur Ulang Password</span><code class="text-secondary">/modals/auth/reset-password.html</code></a>
-                                <a href="./modals/auth/new-password.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Auth: Buat Password Baru</span><code class="text-secondary">/modals/auth/new-password.html</code></a>
-                                <a href="./modals/global/notifikasi-owner.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Global: Notifikasi Stok (Owner)</span><code class="text-secondary">/modals/global/notifikasi-owner.html</code></a>
-                                <a href="./modals/global/notifikasi-cashier.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Global: Notifikasi Stok (Kasir)</span><code class="text-secondary">/modals/global/notifikasi-cashier.html</code></a>
-                                <a href="./modals/global/logout-owner.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Global: Konfirmasi Keluar (Owner)</span><code class="text-secondary">/modals/global/logout-owner.html</code></a>
-                                <a href="./modals/global/logout-cashier.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Global: Konfirmasi Keluar (Kasir)</span><code class="text-secondary">/modals/global/logout-cashier.html</code></a>
-                                <a href="./modals/global/profil-warung.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Global: Profil Warung</span><code class="text-secondary">/modals/global/profil-warung.html</code></a>
-                                <a href="./modals/global/profil-akun.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Global: Pengaturan Akun</span><code class="text-secondary">/modals/global/profil-akun.html</code></a>
-                                <a href="./modals/global/hapus.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Global: Konfirmasi Hapus</span><code class="text-secondary">/modals/global/hapus.html</code></a>
-                                <a href="./modals/shared/struk-kasir.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Shared: Struk Transaksi Berhasil</span><code class="text-secondary">/modals/shared/struk-kasir.html</code></a>
+                                <a href="./modals/auth/reset-password.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-warning bg-opacity-10 text-warning-emphasis">18</span>Auth: Atur Ulang Password</span><code class="text-secondary">/modals/auth/reset-password.html</code></a>
+                                <a href="./modals/auth/new-password.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-warning bg-opacity-10 text-warning-emphasis">19</span>Auth: Buat Password Baru</span><code class="text-secondary">/modals/auth/new-password.html</code></a>
+                                <a href="./modals/global/notifikasi-owner.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-warning bg-opacity-10 text-warning-emphasis">20</span>Global: Notifikasi Stok (Owner)</span><code class="text-secondary">/modals/global/notifikasi-owner.html</code></a>
+                                <a href="./modals/global/notifikasi-cashier.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-warning bg-opacity-10 text-warning-emphasis">21</span>Global: Notifikasi Stok (Kasir)</span><code class="text-secondary">/modals/global/notifikasi-cashier.html</code></a>
+                                <a href="./modals/global/profil-warung.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-warning bg-opacity-10 text-warning-emphasis">22</span>Global: Profil Warung</span><code class="text-secondary">/modals/global/profil-warung.html</code></a>
+                                <a href="./modals/global/profil-akun.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-warning bg-opacity-10 text-warning-emphasis">23</span>Global: Pengaturan Akun</span><code class="text-secondary">/modals/global/profil-akun.html</code></a>
+                                <a href="./modals/global/logout-owner.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-warning bg-opacity-10 text-warning-emphasis">24</span>Global: Konfirmasi Keluar (Owner)</span><code class="text-secondary">/modals/global/logout-owner.html</code></a>
+                                <a href="./modals/global/logout-cashier.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-warning bg-opacity-10 text-warning-emphasis">25</span>Global: Konfirmasi Keluar (Kasir)</span><code class="text-secondary">/modals/global/logout-cashier.html</code></a>
+                                <a href="./modals/global/hapus.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-warning bg-opacity-10 text-warning-emphasis">26</span>Global: Konfirmasi Hapus</span><code class="text-secondary">/modals/global/hapus.html</code></a>
+                                <a href="./modals/shared/struk-kasir.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-warning bg-opacity-10 text-warning-emphasis">27</span>Shared: Struk Transaksi Berhasil</span><code class="text-secondary">/modals/shared/struk-kasir.html</code></a>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
                             <div class="list-group list-group-flush small">
-                                <a href="./modals/shared/batas-stok.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Shared: Batas Stok Tercapai</span><code class="text-secondary">/modals/shared/batas-stok.html</code></a>
-                                <a href="./modals/shared/detail-transaksi.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Shared: Detail Nota Transaksi</span><code class="text-secondary">/modals/shared/detail-transaksi.html</code></a>
-                                <a href="./modals/owner/tambah-produk.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Owner: Tambah Produk Baru</span><code class="text-secondary">/modals/owner/tambah-produk.html</code></a>
-                                <a href="./modals/owner/edit-produk.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Owner: Edit Data Produk</span><code class="text-secondary">/modals/owner/edit-produk.html</code></a>
-                                <a href="./modals/owner/restock-barang.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Owner: Catat Restock Barang</span><code class="text-secondary">/modals/owner/restock-barang.html</code></a>
-                                <a href="./modals/owner/tambah-kategori.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Owner: Tambah Kategori Baru</span><code class="text-secondary">/modals/owner/tambah-kategori.html</code></a>
-                                <a href="./modals/owner/edit-kategori.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Owner: Edit Data Kategori</span><code class="text-secondary">/modals/owner/edit-kategori.html</code></a>
-                                <a href="./modals/owner/tambah-akun-kasir.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Owner: Tambah Akun Kasir</span><code class="text-secondary">/modals/owner/tambah-akun-kasir.html</code></a>
-                                <a href="./modals/owner/edit-akun-kasir.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Owner: Edit Akun Kasir</span><code class="text-secondary">/modals/owner/edit-akun-kasir.html</code></a>
+                                <a href="./modals/shared/batas-stok.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-warning bg-opacity-10 text-warning-emphasis">28</span>Shared: Batas Stok Tercapai</span><code class="text-secondary">/modals/shared/batas-stok.html</code></a>
+                                <a href="./modals/shared/detail-transaksi.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-warning bg-opacity-10 text-warning-emphasis">29</span>Shared: Detail Nota Transaksi</span><code class="text-secondary">/modals/shared/detail-transaksi.html</code></a>
+                                <a href="./modals/owner/tambah-produk.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-warning bg-opacity-10 text-warning-emphasis">30</span>Owner: Tambah Produk Baru</span><code class="text-secondary">/modals/owner/tambah-produk.html</code></a>
+                                <a href="./modals/owner/edit-produk.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-warning bg-opacity-10 text-warning-emphasis">31</span>Owner: Edit Data Produk</span><code class="text-secondary">/modals/owner/edit-produk.html</code></a>
+                                <a href="./modals/owner/restock-barang.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-warning bg-opacity-10 text-warning-emphasis">32</span>Owner: Catat Restock Barang</span><code class="text-secondary">/modals/owner/restock-barang.html</code></a>
+                                <a href="./modals/owner/tambah-kategori.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-warning bg-opacity-10 text-warning-emphasis">33</span>Owner: Tambah Kategori Baru</span><code class="text-secondary">/modals/owner/tambah-kategori.html</code></a>
+                                <a href="./modals/owner/edit-kategori.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-warning bg-opacity-10 text-warning-emphasis">34</span>Owner: Edit Data Kategori</span><code class="text-secondary">/modals/owner/edit-kategori.html</code></a>
+                                <a href="./modals/owner/tambah-akun-kasir.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-warning bg-opacity-10 text-warning-emphasis">35</span>Owner: Tambah Akun Kasir</span><code class="text-secondary">/modals/owner/tambah-akun-kasir.html</code></a>
+                                <a href="./modals/owner/edit-akun-kasir.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-warning bg-opacity-10 text-warning-emphasis">36</span>Owner: Edit Akun Kasir</span><code class="text-secondary">/modals/owner/edit-akun-kasir.html</code></a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Alerts -->
+            <!-- 5. Alerts (37–40) -->
             <div class="col-12">
                 <div class="bg-white border rounded-4 shadow-sm overflow-hidden">
                     <div class="p-3 border-bottom d-flex align-items-center justify-content-between">
                         <div>
-                            <h6 class="fw-bold text-dark mb-0">Tampilan Alert Tersendiri (4 Halaman)</h6>
-                            <small class="text-secondary">Toast notifikasi &amp; inline alert form autentikasi</small>
+                            <h6 class="fw-bold text-dark mb-0">5. Tampilan Alert Tersendiri (4 Halaman)</h6>
+                            <small class="text-secondary">Flow 37 – 40 · Toast notifikasi &amp; inline alert form autentikasi</small>
                         </div>
                         <span class="badge bg-danger bg-opacity-10 text-danger">alerts/</span>
                     </div>
                     <div class="row g-0">
                         <div class="col-12 col-md-6 border-end">
                             <div class="list-group list-group-flush small">
-                                <a href="./alerts/toast-success.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Toast Alert Sukses</span><code class="text-secondary">/alerts/toast-success.html</code></a>
-                                <a href="./alerts/toast-danger.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Toast Alert Error</span><code class="text-secondary">/alerts/toast-danger.html</code></a>
+                                <a href="./alerts/toast-success.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-danger bg-opacity-10 text-danger">37</span>Toast Alert Sukses</span><code class="text-secondary">/alerts/toast-success.html</code></a>
+                                <a href="./alerts/toast-danger.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-danger bg-opacity-10 text-danger">38</span>Toast Alert Error</span><code class="text-secondary">/alerts/toast-danger.html</code></a>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
                             <div class="list-group list-group-flush small">
-                                <a href="./alerts/auth-success.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Inline Auth Alert Sukses</span><code class="text-secondary">/alerts/auth-success.html</code></a>
-                                <a href="./alerts/auth-danger.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span>Inline Auth Alert Error</span><code class="text-secondary">/alerts/auth-danger.html</code></a>
+                                <a href="./alerts/auth-success.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-danger bg-opacity-10 text-danger">39</span>Inline Auth Alert Sukses</span><code class="text-secondary">/alerts/auth-success.html</code></a>
+                                <a href="./alerts/auth-danger.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3"><span class="d-inline-flex align-items-center gap-2"><span class="flow-num bg-danger bg-opacity-10 text-danger">40</span>Inline Auth Alert Error</span><code class="text-secondary">/alerts/auth-danger.html</code></a>
                             </div>
                         </div>
                     </div>
