@@ -93,9 +93,14 @@
                                 Lupa password?
                             </a>
                         </div>
-                        <input type="password" id="user_password" name="user_password"
-                               class="form-control form-control-standard"
-                               placeholder="Masukkan password" required>
+                        <div class="position-relative">
+                            <input type="password" id="user_password" name="user_password"
+                                   class="form-control form-control-standard pe-5"
+                                   placeholder="Masukkan password" required>
+                            <button type="button" class="btn-toggle-pass" title="Tampilkan/Sembunyikan Password" onclick="togglePasswordVisibility(this.previousElementSibling, this)">
+                                <i data-lucide="eye" class="icon-xs"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-standard w-100 py-2 fw-semibold shadow-sm mt-3 mb-2">
