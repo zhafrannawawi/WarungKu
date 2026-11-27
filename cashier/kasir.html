@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WarungKu | Kasir</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="icon" type="image/x-icon" href="../assets/image/logo.ico">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body class="bg-body-app">
+    <div id="wrapper">
+
+        <!-- ========== SIDEBAR ========== -->
+        <aside id="sidebar-container">
+            <div id="sidebar-wrapper" class="d-flex flex-column">
+                <!-- Brand Header -->
+                <div class="sidebar-brand-header d-flex align-items-center">
+                    <a href="./dashboard.html" class="brand-logo-container text-decoration-none">
+                        <img src="../assets/image/logo.png" alt="Logo WarungKu" class="brand-logo-img">
+                        <img src="../assets/image/warungku.png" alt="WarungKu" class="brand-text-img">
+                    </a>
+                </div>
+
+                <div class="p-3">
+                    <ul class="nav flex-column gap-1">
+                        <!-- Dashboard -->
+                        <li class="nav-item">
+                            <a href="./dashboard.html" class="nav-link-custom ">
+                                <i data-lucide="layout-grid"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+
+                        <!-- Transaksi (Kasir & Riwayat Transaksi) -->
+                        <li class="nav-item">
+                            <a href="#collapse-transaksi" class="nav-link-custom justify-content-between " data-bs-toggle="collapse" role="button" aria-expanded="true">
+                                <span class="d-flex align-items-center gap-2">
+                                    <i data-lucide="shopping-cart"></i>
+                                    <span>Transaksi</span>
+                                </span>
+                                <i data-lucide="chevron-down" class="rotate-icon"></i>
+                            </a>
+                            <div class="collapse show" id="collapse-transaksi">
+                                <ul class="submenu-nav">
+                                    <li>
+                                        <a href="./kasir.html" class="nav-link-custom active">
+                                            <span>Kasir</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="./transaksi.html" class="nav-link-custom ">
+                                            <span>Riwayat Transaksi</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+
+                        <!-- Produk -->
+                        <li class="nav-item">
+                            <a href="#collapse-produk" class="nav-link-custom justify-content-between collapsed" data-bs-toggle="collapse" role="button" aria-expanded="false">
+                                <span class="d-flex align-items-center gap-2">
+                                    <i data-lucide="package"></i>
+                                    <span>Produk</span>
+                                </span>
+                                <i data-lucide="chevron-down" class="rotate-icon"></i>
+                            </a>
+                            <div class="collapse " id="collapse-produk">
+                                <ul class="submenu-nav">
+                                    <li>
+                                        <a href="./daftar-produk.html" class="nav-link-custom ">
+                                            <span>Daftar Produk</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Sidebar Bottom: Profil Pengguna & Aksi Cepat -->
+                <div class="mt-auto p-3 border-top">
+                    <div class="sidebar-user-card">
+                        <div class="d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom">
+                            <div class="d-flex align-items-center gap-2 overflow-hidden me-1">
+                                <div class="sidebar-user-avatar">
+                                    <i data-lucide="user" class="icon-sm"></i>
+                                </div>
+                                <div class="overflow-hidden">
+                                    <div class="fw-semibold text-dark text-truncate" style="font-size: 0.8125rem; line-height: 1.25;">
+                                        Nawa
+                                    </div>
+                                    <div class="d-flex align-items-center mt-0.5">
+                                        <small class="text-muted text-truncate" style="font-size: 0.675rem;">
+                                            Kasir
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-sidebar-logout">
+                                <i data-lucide="log-out" class="icon-xs"></i>
+                            </button>
+                        </div>
+
+                        <div class="d-flex gap-1.5">
+                            <button type="button" class="btn-sidebar-action">
+                                <i data-lucide="user-cog"></i>
+                                <span>Akun</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-light border w-100 mt-2 py-2 d-lg-none text-muted d-flex align-items-center justify-content-center gap-2" onclick="toggleSidebar()">
+                        <i data-lucide="chevron-left" class="icon-sm"></i>
+                        <span class="small fw-semibold">Tutup Menu</span>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <div id="sidebar-backdrop" class="d-lg-none" onclick="toggleSidebar()"></div>
+
+        <!-- ========== MAIN CONTENT ========== -->
+        <div id="content-wrapper">
+            <div id="topbar-container">
+                <header class="topbar-header px-3 px-md-4 d-flex align-items-center justify-content-between gap-3">
+                    <!-- Sisi Kiri: Toggle Mobile + Identitas Warung & Halaman Aktif -->
+                    <div class="d-flex align-items-center gap-3 min-w-0">
+                        <button type="button" class="btn btn-topbar-icon d-lg-none flex-shrink-0" onclick="toggleSidebar()" aria-label="Toggle Sidebar">
+                            <i data-lucide="menu" class="icon-md"></i>
+                        </button>
+
+                        <div class="d-flex align-items-center gap-3 min-w-0">
+                            <div class="topbar-store-badge d-none d-sm-flex">
+                                <i data-lucide="store" class="icon-sm"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <div class="fw-bold text-dark text-truncate" style="font-size: 0.925rem; line-height: 1.3;">
+                                    Warung Berkah
+                                </div>
+                                <div class="text-muted text-truncate" style="font-size: 0.75rem; line-height: 1.3;">
+                                    Jl. Merdeka No.10
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sisi Kanan: Notifikasi Stok Menipis (F011) -->
+                    <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                        <button type="button" class="btn btn-topbar-icon position-relative" title="Pusat Notifikasi">
+                            <i data-lucide="bell" class="icon-md"></i>
+                            <span class="notif-badge">4</span>
+                        </button>
+                    </div>
+                </header>
+            </div>
+
+            <main class="p-3 p-md-4">
+<!-- Page Header: Transaksi Kasir -->
+<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 gap-3">
+    <div class="d-flex align-items-center gap-3">
+        <div class="bg-primary bg-opacity-10 text-primary rounded-3 shadow-sm d-inline-flex align-items-center justify-content-center flex-shrink-0" style="width: 40px; height: 40px;">
+            <i data-lucide="shopping-cart" class="icon-sm"></i>
+        </div>
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h4 class="fw-bold text-dark mb-0">Transaksi Kasir</h4>
+            </div>
+            <p class="text-secondary mb-0 small">Pilih barang pada daftar produk untuk mencatat belanjaan dan pembayaran pelanggan.</p>
+        </div>
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+        <span class="bg-white border-0 text-secondary small fw-medium rounded-3 shadow-sm d-inline-flex align-items-center gap-2 px-3 py-2 pe-none">
+            <span class="bg-primary bg-opacity-10 text-primary rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
+                <i data-lucide="calendar" class="icon-xs"></i>
+            </span>
+            <span>Jumat, 27 Nov 2026</span>
+        </span>
+        <a href="./transaksi.html" class="btn bg-white border-0 text-secondary rounded-3 shadow-sm d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold text-decoration-none">
+            <span class="bg-secondary bg-opacity-10 text-secondary rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
+                <i data-lucide="receipt" class="icon-xs"></i>
+            </span>
+            <span>Riwayat Transaksi</span>
+        </a>
+    </div>
+</div>
+
+<div class="row g-3 align-items-start">
+    <div class="col-12 col-lg-8">
+        <!-- Toolbar Filter Langsung di Atas Grid -->
+        <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mb-3">
+            <div class="input-group shadow-sm rounded-3 flex-grow-1">
+                <span class="input-group-text bg-white border-0 text-secondary ps-3">
+                    <i data-lucide="search" width="16" height="16"></i>
+                </span>
+                <input type="text" id="pos-product-search" class="form-control bg-white border-0 py-2 shadow-none" placeholder="Cari nama produk..." oninput="filterPosProducts()">
+            </div>
+
+            <select id="pos-filter-category" class="form-select border-0 bg-white text-dark fw-medium rounded-3 shadow-sm ps-3 py-2 w-auto" style="padding-right: 2.25rem; min-width: 180px;" onchange="filterPosProducts()">
+                <option value="all">Semua Kategori</option>
+                <option value="Sembako">Sembako</option>
+                <option value="Minuman">Minuman</option>
+                <option value="Makanan Ringan">Makanan Ringan</option>
+                <option value="Kebutuhan Rumah">Kebutuhan Rumah</option>
+                <option value="Bumbu Dapur">Bumbu Dapur</option>
+            </select>
+        </div>
+
+        <!-- Grid Kartu Produk -->
+        <div class="pos-catalog-scroll">
+            <div class="row g-2 mx-0">
+                    <div class="col-6 col-md-4 px-1 pos-product-row" data-name="beras ramos 5kg" data-category="Sembako">
+                        <div class="bg-white border rounded-4 shadow-sm pos-item-card p-3 h-100 d-flex flex-column justify-content-between " data-product-id="PRD-001">
+                            <div>
+                                <div class="d-flex align-items-center justify-content-between gap-1 mb-2">
+                                    <span class="pos-cat-tag text-truncate">Sembako</span>
+                                    <span class="pos-item-add"><i data-lucide="plus" class="icon-xs"></i></span>
+                                </div>
+                                <div class="fw-semibold text-dark pos-item-name" style="font-size: 0.85rem; line-height: 1.3;">
+                                    Beras Ramos 5kg
+                                </div>
+                                <small class="text-secondary d-block text-truncate mt-1" style="font-size: 0.7rem;">
+                                    per sak · Rak A-01
+                                </small>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between gap-1 pt-3 mt-auto">
+                                <span class="fw-bold text-dark" style="font-size: 0.925rem;">Rp 70.000</span>
+                                <span class="pos-stock-dot fw-semibold text-warning">● 4</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 px-1 pos-product-row" data-name="minyak goreng 1l" data-category="Sembako">
+                        <div class="bg-white border rounded-4 shadow-sm pos-item-card p-3 h-100 d-flex flex-column justify-content-between " data-product-id="PRD-002">
+                            <div>
+                                <div class="d-flex align-items-center justify-content-between gap-1 mb-2">
+                                    <span class="pos-cat-tag text-truncate">Sembako</span>
+                                    <span class="pos-item-add"><i data-lucide="plus" class="icon-xs"></i></span>
+                                </div>
+                                <div class="fw-semibold text-dark pos-item-name" style="font-size: 0.85rem; line-height: 1.3;">
+                                    Minyak Goreng 1L
+                                </div>
+                                <small class="text-secondary d-block text-truncate mt-1" style="font-size: 0.7rem;">
+                                    per pouch · Rak A-02
+                                </small>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between gap-1 pt-3 mt-auto">
+                                <span class="fw-bold text-dark" style="font-size: 0.925rem;">Rp 17.500</span>
+                                <span class="pos-stock-dot fw-semibold text-success">● 28</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 px-1 pos-product-row" data-name="gula pasir 1kg" data-category="Sembako">
+                        <div class="bg-white border rounded-4 shadow-sm pos-item-card p-3 h-100 d-flex flex-column justify-content-between " data-product-id="PRD-003">
+                            <div>
+                                <div class="d-flex align-items-center justify-content-between gap-1 mb-2">
+                                    <span class="pos-cat-tag text-truncate">Sembako</span>
+                                    <span class="pos-item-add"><i data-lucide="plus" class="icon-xs"></i></span>
+                                </div>
+                                <div class="fw-semibold text-dark pos-item-name" style="font-size: 0.85rem; line-height: 1.3;">
+                                    Gula Pasir 1kg
+                                </div>
+                                <small class="text-secondary d-block text-truncate mt-1" style="font-size: 0.7rem;">
+                                    per kg · Rak A-03
+                                </small>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between gap-1 pt-3 mt-auto">
+                                <span class="fw-bold text-dark" style="font-size: 0.925rem;">Rp 18.000</span>
+                                <span class="pos-stock-dot fw-semibold text-success">● 22</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 px-1 pos-product-row" data-name="telur ayam 1kg" data-category="Sembako">
+                        <div class="bg-white border rounded-4 shadow-sm pos-item-card p-3 h-100 d-flex flex-column justify-content-between " data-product-id="PRD-004">
+                            <div>
+                                <div class="d-flex align-items-center justify-content-between gap-1 mb-2">
+                                    <span class="pos-cat-tag text-truncate">Sembako</span>
+                                    <span class="pos-item-add"><i data-lucide="plus" class="icon-xs"></i></span>
+                                </div>
+                                <div class="fw-semibold text-dark pos-item-name" style="font-size: 0.85rem; line-height: 1.3;">
+                                    Telur Ayam 1kg
+                                </div>
+                                <small class="text-secondary d-block text-truncate mt-1" style="font-size: 0.7rem;">
+                                    per kg · Rak A-04
+                                </small>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between gap-1 pt-3 mt-auto">
+                                <span class="fw-bold text-dark" style="font-size: 0.925rem;">Rp 29.000</span>
+                                <span class="pos-stock-dot fw-semibold text-warning">● 3</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 px-1 pos-product-row" data-name="air mineral 600ml" data-category="Minuman">
+                        <div class="bg-white border rounded-4 shadow-sm pos-item-card p-3 h-100 d-flex flex-column justify-content-between " data-product-id="PRD-005">
+                            <div>
+                                <div class="d-flex align-items-center justify-content-between gap-1 mb-2">
+                                    <span class="pos-cat-tag text-truncate">Minuman</span>
+                                    <span class="pos-item-add"><i data-lucide="plus" class="icon-xs"></i></span>
+                                </div>
+                                <div class="fw-semibold text-dark pos-item-name" style="font-size: 0.85rem; line-height: 1.3;">
+                                    Air Mineral 600ml
+                                </div>
+                                <small class="text-secondary d-block text-truncate mt-1" style="font-size: 0.7rem;">
+                                    per botol · Kulkas 1
+                                </small>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between gap-1 pt-3 mt-auto">
+                                <span class="fw-bold text-dark" style="font-size: 0.925rem;">Rp 4.000</span>
+                                <span class="pos-stock-dot fw-semibold text-success">● 48</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 px-1 pos-product-row" data-name="teh botol 350ml" data-category="Minuman">
+                        <div class="bg-white border rounded-4 shadow-sm pos-item-card p-3 h-100 d-flex flex-column justify-content-between " data-product-id="PRD-006">
+                            <div>
+                                <div class="d-flex align-items-center justify-content-between gap-1 mb-2">
+                                    <span class="pos-cat-tag text-truncate">Minuman</span>
+                                    <span class="pos-item-add"><i data-lucide="plus" class="icon-xs"></i></span>
+                                </div>
+                                <div class="fw-semibold text-dark pos-item-name" style="font-size: 0.85rem; line-height: 1.3;">
+                                    Teh Botol 350ml
+                                </div>
+                                <small class="text-secondary d-block text-truncate mt-1" style="font-size: 0.7rem;">
+                                    per botol · Kulkas 1
+                                </small>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between gap-1 pt-3 mt-auto">
+                                <span class="fw-bold text-dark" style="font-size: 0.925rem;">Rp 5.000</span>
+                                <span class="pos-stock-dot fw-semibold text-success">● 36</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 px-1 pos-product-row" data-name="kopi sachet renteng" data-category="Minuman">
+                        <div class="bg-white border rounded-4 shadow-sm pos-item-card p-3 h-100 d-flex flex-column justify-content-between " data-product-id="PRD-007">
+                            <div>
+                                <div class="d-flex align-items-center justify-content-between gap-1 mb-2">
+                                    <span class="pos-cat-tag text-truncate">Minuman</span>
+                                    <span class="pos-item-add"><i data-lucide="plus" class="icon-xs"></i></span>
+                                </div>
+                                <div class="fw-semibold text-dark pos-item-name" style="font-size: 0.85rem; line-height: 1.3;">
+                                    Kopi Sachet Renteng
+                                </div>
+                                <small class="text-secondary d-block text-truncate mt-1" style="font-size: 0.7rem;">
+                                    per pcs · Etalase 1
+                                </small>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between gap-1 pt-3 mt-auto">
+                                <span class="fw-bold text-dark" style="font-size: 0.925rem;">Rp 2.500</span>
+                                <span class="pos-stock-dot fw-semibold text-success">● 60</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 px-1 pos-product-row" data-name="mie instan goreng" data-category="Makanan Ringan">
+                        <div class="bg-white border rounded-4 shadow-sm pos-item-card p-3 h-100 d-flex flex-column justify-content-between " data-product-id="PRD-008">
+                            <div>
+                                <div class="d-flex align-items-center justify-content-between gap-1 mb-2">
+                                    <span class="pos-cat-tag text-truncate">Makanan Ringan</span>
+                                    <span class="pos-item-add"><i data-lucide="plus" class="icon-xs"></i></span>
+                                </div>
+                                <div class="fw-semibold text-dark pos-item-name" style="font-size: 0.85rem; line-height: 1.3;">
+                                    Mie Instan Goreng
+                                </div>
+                                <small class="text-secondary d-block text-truncate mt-1" style="font-size: 0.7rem;">
+                                    per bks · Rak B-01
+                                </small>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between gap-1 pt-3 mt-auto">
+                                <span class="fw-bold text-dark" style="font-size: 0.925rem;">Rp 3.500</span>
+                                <span class="pos-stock-dot fw-semibold text-success">● 55</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 px-1 pos-product-row" data-name="keripik singkong" data-category="Makanan Ringan">
+                        <div class="bg-white border rounded-4 shadow-sm pos-item-card p-3 h-100 d-flex flex-column justify-content-between " data-product-id="PRD-009">
+                            <div>
+                                <div class="d-flex align-items-center justify-content-between gap-1 mb-2">
+                                    <span class="pos-cat-tag text-truncate">Makanan Ringan</span>
+                                    <span class="pos-item-add"><i data-lucide="plus" class="icon-xs"></i></span>
+                                </div>
+                                <div class="fw-semibold text-dark pos-item-name" style="font-size: 0.85rem; line-height: 1.3;">
+                                    Keripik Singkong
+                                </div>
+                                <small class="text-secondary d-block text-truncate mt-1" style="font-size: 0.7rem;">
+                                    per bks · Rak B-02
+                                </small>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between gap-1 pt-3 mt-auto">
+                                <span class="fw-bold text-dark" style="font-size: 0.925rem;">Rp 10.000</span>
+                                <span class="pos-stock-dot fw-semibold text-warning">● 2</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 px-1 pos-product-row" data-name="sabun cuci piring" data-category="Kebutuhan Rumah">
+                        <div class="bg-white border rounded-4 shadow-sm pos-item-card p-3 h-100 d-flex flex-column justify-content-between " data-product-id="PRD-010">
+                            <div>
+                                <div class="d-flex align-items-center justify-content-between gap-1 mb-2">
+                                    <span class="pos-cat-tag text-truncate">Kebutuhan Rumah</span>
+                                    <span class="pos-item-add"><i data-lucide="plus" class="icon-xs"></i></span>
+                                </div>
+                                <div class="fw-semibold text-dark pos-item-name" style="font-size: 0.85rem; line-height: 1.3;">
+                                    Sabun Cuci Piring
+                                </div>
+                                <small class="text-secondary d-block text-truncate mt-1" style="font-size: 0.7rem;">
+                                    per pouch · Rak C-01
+                                </small>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between gap-1 pt-3 mt-auto">
+                                <span class="fw-bold text-dark" style="font-size: 0.925rem;">Rp 12.000</span>
+                                <span class="pos-stock-dot fw-semibold text-success">● 18</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 px-1 pos-product-row" data-name="deterjen bubuk 800g" data-category="Kebutuhan Rumah">
+                        <div class="bg-white border rounded-4 shadow-sm pos-item-card p-3 h-100 d-flex flex-column justify-content-between is-empty" data-product-id="PRD-011">
+                            <div>
+                                <div class="d-flex align-items-center justify-content-between gap-1 mb-2">
+                                    <span class="pos-cat-tag text-truncate">Kebutuhan Rumah</span>
+                                    
+                                </div>
+                                <div class="fw-semibold text-dark pos-item-name" style="font-size: 0.85rem; line-height: 1.3;">
+                                    Deterjen Bubuk 800g
+                                </div>
+                                <small class="text-secondary d-block text-truncate mt-1" style="font-size: 0.7rem;">
+                                    per bks · Rak C-02
+                                </small>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between gap-1 pt-3 mt-auto">
+                                <span class="fw-bold text-dark" style="font-size: 0.925rem;">Rp 20.000</span>
+                                <span class="pos-stock-dot fw-semibold text-danger">● Habis</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 px-1 pos-product-row" data-name="kecap manis 275ml" data-category="Bumbu Dapur">
+                        <div class="bg-white border rounded-4 shadow-sm pos-item-card p-3 h-100 d-flex flex-column justify-content-between " data-product-id="PRD-012">
+                            <div>
+                                <div class="d-flex align-items-center justify-content-between gap-1 mb-2">
+                                    <span class="pos-cat-tag text-truncate">Bumbu Dapur</span>
+                                    <span class="pos-item-add"><i data-lucide="plus" class="icon-xs"></i></span>
+                                </div>
+                                <div class="fw-semibold text-dark pos-item-name" style="font-size: 0.85rem; line-height: 1.3;">
+                                    Kecap Manis 275ml
+                                </div>
+                                <small class="text-secondary d-block text-truncate mt-1" style="font-size: 0.7rem;">
+                                    per botol · Rak D-01
+                                </small>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between gap-1 pt-3 mt-auto">
+                                <span class="fw-bold text-dark" style="font-size: 0.925rem;">Rp 15.000</span>
+                                <span class="pos-stock-dot fw-semibold text-success">● 16</span>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== CARD KANAN: RINGKASAN PESANAN & PEMBAYARAN ==================== -->
+    <div class="col-12 col-lg-4">
+        <form id="pos-checkout-form" class="bg-white border rounded-4 shadow-sm d-flex flex-column pos-cart-sticky" onsubmit="return false;">
+            <!-- Header Card Kanan -->
+            <div class="p-3 border-bottom d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="bg-primary bg-opacity-10 text-primary rounded-3 p-2 d-inline-flex">
+                        <i data-lucide="shopping-bag" width="18" height="18"></i>
+                    </div>
+                    <h6 class="fw-bold text-dark mb-0">Pesanan</h6>
+                    <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary fw-semibold" id="pos-cart-count">0 item</span>
+                </div>
+                <button type="button" id="pos-btn-clear" class="btn btn-sm btn-link text-danger text-decoration-none p-0 small fw-medium d-none">
+                    Kosongkan
+                </button>
+            </div>
+
+            <!-- Daftar Item Pesanan -->
+            <div class="pos-cart-items px-3" id="pos-cart-list">
+                <div class="text-center text-secondary py-5 small">
+                    <i data-lucide="shopping-bag" width="32" height="32" class="d-block mx-auto mb-2 opacity-50"></i>
+                    Belum ada barang dipilih
+                </div>
+            </div>
+
+            <!-- Form Pembayaran -->
+            <div class="p-3 border-top bg-light rounded-bottom-4 mt-auto">
+                <label class="form-label small fw-semibold text-secondary mb-1">Metode Pembayaran</label>
+                <div class="btn-group btn-group-sm w-100 mb-3 shadow-sm rounded-3" role="group">
+                    <button type="button" id="btn-pay-cash" class="btn btn-primary fw-semibold py-2 d-flex align-items-center justify-content-center gap-1">
+                        <i data-lucide="banknote" class="icon-xs"></i> Tunai
+                    </button>
+                    <button type="button" id="btn-pay-qris" class="btn btn-outline-secondary bg-white fw-semibold py-2 d-flex align-items-center justify-content-center gap-1">
+                        <i data-lucide="qr-code" class="icon-xs"></i> QRIS
+                    </button>
+                </div>
+
+                <div id="pos-cash-box" class="mb-3">
+                    <label class="form-label small fw-semibold text-secondary mb-1">Uang Diterima</label>
+                    <div class="input-group mb-2 shadow-sm rounded-3">
+                        <span class="input-group-text bg-white border-0 text-secondary fw-semibold ps-3">Rp</span>
+                        <input type="text" inputmode="numeric" name="amount_paid" id="pos-amount-paid" class="form-control bg-white border-0 shadow-none fw-bold fs-5 py-2" placeholder="0">
+                    </div>
+                    <div id="pos-quick-cash" class="d-flex gap-1">
+                        <button type="button" class="btn btn-sm btn-outline-secondary bg-white rounded-3 py-1 flex-fill small fw-medium">Uang Pas</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary bg-white rounded-3 py-1 flex-fill small fw-medium">20rb</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary bg-white rounded-3 py-1 flex-fill small fw-medium">50rb</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary bg-white rounded-3 py-1 flex-fill small fw-medium">100rb</button>
+                    </div>
+                </div>
+
+                <div class="pt-3 border-top mb-3">
+                    <div class="d-flex justify-content-between align-items-baseline mb-1">
+                        <span class="text-secondary small fw-medium">Total Tagihan</span>
+                        <span class="fw-bold text-primary fs-4" id="pos-total-display">Rp 0</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-secondary small fw-medium">Kembalian</span>
+                        <span class="fw-semibold text-success small" id="pos-change-display">Rp 0</span>
+                    </div>
+                </div>
+
+                <button type="submit" id="pos-submit-btn" class="btn btn-primary w-100 rounded-3 shadow-sm fw-semibold py-2 d-flex align-items-center justify-content-center gap-2" disabled>
+                    <i data-lucide="banknote" class="icon-sm"></i>
+                    <span>Transaksi</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- JS Utama -->
+    <script src="../assets/js/main.js"></script>
+</body>
+
+</html>

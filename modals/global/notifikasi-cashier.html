@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WarungKu Modal | Notifikasi Stok (Kasir)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="icon" type="image/x-icon" href="../../assets/image/logo.ico">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body.modal-standalone-canvas {
+            background-color: #f1f5f9;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+        .modal-standalone-wrap {
+            width: 100%;
+        }
+        .modal-standalone-wrap .modal {
+            position: static;
+            display: block;
+            overflow: visible;
+        }
+        .modal-standalone-wrap .modal-dialog {
+            margin: 0 auto;
+            transform: none !important;
+        }
+    </style>
+</head>
+
+<body class="modal-standalone-canvas">
+    <div class="modal-standalone-wrap">
+        <div class="modal show" tabindex="-1" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
+        <div class="modal-content border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="modal-header border-bottom px-4 py-3 bg-white">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="p-2 bg-warning-subtle text-warning-emphasis rounded-3">
+                        <i data-lucide="bell" class="icon-sm"></i>
+                    </div>
+                    <div>
+                        <h6 class="modal-title fw-bold text-dark mb-0">Notifikasi Stok Barang</h6>
+                        <small class="text-muted" style="font-size: 0.75rem;">Produk dengan stok di bawah atau sama dengan batas minimum</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0" style="max-height: 360px; overflow-y: auto;">
+                <div class="list-group list-group-flush">
+                        <div class="list-group-item px-4 py-3 d-flex align-items-center justify-content-between gap-2">
+                            <div>
+                                <span class="fw-semibold text-dark small d-block">Beras Ramos 5kg</span>
+                                <small class="text-muted" style="font-size: 0.725rem;">Batas min: 5 sak • Rak A-01</small>
+                            </div>
+                            <span class="badge-status danger">Sisa 4 sak</span>
+                        </div>
+                        <div class="list-group-item px-4 py-3 d-flex align-items-center justify-content-between gap-2">
+                            <div>
+                                <span class="fw-semibold text-dark small d-block">Telur Ayam 1kg</span>
+                                <small class="text-muted" style="font-size: 0.725rem;">Batas min: 5 kg • Rak A-04</small>
+                            </div>
+                            <span class="badge-status danger">Sisa 3 kg</span>
+                        </div>
+                        <div class="list-group-item px-4 py-3 d-flex align-items-center justify-content-between gap-2">
+                            <div>
+                                <span class="fw-semibold text-dark small d-block">Keripik Singkong</span>
+                                <small class="text-muted" style="font-size: 0.725rem;">Batas min: 5 bks • Rak B-02</small>
+                            </div>
+                            <span class="badge-status danger">Sisa 2 bks</span>
+                        </div>
+                        <div class="list-group-item px-4 py-3 d-flex align-items-center justify-content-between gap-2">
+                            <div>
+                                <span class="fw-semibold text-dark small d-block">Deterjen Bubuk 800g</span>
+                                <small class="text-muted" style="font-size: 0.725rem;">Batas min: 5 bks • Rak C-02</small>
+                            </div>
+                            <span class="badge-status danger">Habis (0)</span>
+                        </div>
+                </div>
+            </div>
+            <div class="modal-footer border-top py-2 px-4 bg-light d-flex justify-content-between align-items-center">
+                <small class="text-muted" style="font-size: 0.75rem;">4 produk perlu perhatian</small>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-btn-sm">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        if (window.lucide) lucide.createIcons();
+    </script>
+</body>
+
+</html>
