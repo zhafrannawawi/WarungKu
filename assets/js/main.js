@@ -35,6 +35,11 @@ function formatRupiah(n) {
   return "Rp " + Math.round(Number(n) || 0).toLocaleString("id-ID");
 }
 
+function parseRupiah(text) {
+  const digits = String(text || "").replace(/[^\d-]/g, "");
+  return Number(digits) || 0;
+}
+
 function applyTableFilter(rowSelector, matchFn) {
   const rows = document.querySelectorAll(rowSelector);
   rows.forEach((row) => {
@@ -134,6 +139,27 @@ function paginateTable(tbody, page = 1, perPage = 10) {
         ? `${visible.length} dari ${matched.length}`
         : String(matched.length);
   }
+
+  const headers = Array.from(
+    tbody.closest("table")?.querySelectorAll("thead th") || []
+  ).map((th) => th.textContent.trim().toLowerCase());
+
+  const updateFooterSum = (labelText, colKeyword) => {
+    const sumSmall = Array.from(footer.querySelectorAll("small")).find((el) =>
+      el.textContent.includes(labelText)
+    );
+    const sumStrong = sumSmall?.querySelector("strong");
+    const colIdx = headers.findIndex((h) => h.includes(colKeyword));
+    if (!sumStrong || colIdx === -1) return;
+    const total = matched.reduce(
+      (acc, r) => acc + parseRupiah(r.cells[colIdx]?.textContent),
+      0
+    );
+    sumStrong.textContent = formatRupiah(total);
+  };
+
+  updateFooterSum("Total Valuasi", "valuasi aset");
+  updateFooterSum("Total Omzet", "total omzet");
 
   let nav = footer.querySelector(".table-pagination-nav");
   if (totalPages <= 1) {
