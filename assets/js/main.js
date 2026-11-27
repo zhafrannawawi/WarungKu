@@ -98,17 +98,42 @@ function paginateTable(tbody, page = 1, perPage = 10) {
   const nextEl = tableWrap?.nextElementSibling;
   const footer = nextEl?.classList.contains("border-top") ? nextEl : null;
 
-  const allRows = Array.from(tbody.querySelectorAll("tr"));
+  tbody.querySelectorAll(".table-empty-filter-row").forEach((r) => r.remove());
+
+  const allRows = Array.from(tbody.querySelectorAll("tr")).filter(
+    (r) => !r.querySelector("td[colspan]")
+  );
+  if (allRows.length === 0) return;
+
   const matched = allRows.filter((r) => r.dataset.filtered !== "0");
   const totalPages = Math.ceil(matched.length / perPage);
   const current = Math.max(1, Math.min(page, totalPages || 1));
 
   allRows.forEach((r) => (r.style.display = "none"));
-  matched
-    .slice((current - 1) * perPage, current * perPage)
-    .forEach((r) => (r.style.display = ""));
+  const visible = matched.slice((current - 1) * perPage, current * perPage);
+  visible.forEach((r) => (r.style.display = ""));
+
+  if (matched.length === 0) {
+    const colCount =
+      tbody.closest("table")?.querySelectorAll("thead th").length || 1;
+    const emptyTr = document.createElement("tr");
+    emptyTr.className = "table-empty-filter-row";
+    emptyTr.innerHTML = `<td colspan="${colCount}" class="text-center text-secondary py-5"><div class="small">Tidak ada data yang cocok dengan filter.</div></td>`;
+    tbody.appendChild(emptyTr);
+  }
 
   if (!footer) return;
+
+  const countSmall = Array.from(footer.querySelectorAll("small")).find((el) =>
+    el.textContent.includes("Menampilkan")
+  );
+  const countStrong = countSmall?.querySelector("strong");
+  if (countStrong) {
+    countStrong.textContent =
+      totalPages > 1
+        ? `${visible.length} dari ${matched.length}`
+        : String(matched.length);
+  }
 
   let nav = footer.querySelector(".table-pagination-nav");
   if (totalPages <= 1) {
@@ -371,7 +396,7 @@ function filterRestockTable() {
   const query = (document.getElementById("restock-table-search")?.value || "").toLowerCase();
   const periode = document.getElementById("restock-filter-periode")?.value || "all";
   const now = new Date();
-  const todayStr = now.toISOString().slice(0, 10);
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
   applyTableFilter(".restock-row", (row) => {
     const produk = (row.getAttribute("data-produk") || "").toLowerCase();
