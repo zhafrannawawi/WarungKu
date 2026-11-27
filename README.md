@@ -31,6 +31,15 @@
 
 ---
 
+## Alert
+
+- Toast Alert Sukses: `/alerts/toast-success.html`
+- Toast Alert Error: `/alerts/toast-danger.html`
+- Inline Auth Alert Sukses: `/alerts/auth-success.html`
+- Inline Auth Alert Error: `/alerts/auth-danger.html`
+
+---
+
 ## Halaman Utama
 
 ### Portal & Auth
