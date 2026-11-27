@@ -24,9 +24,7 @@
             <input type="date" name="to" value="<?= escape_html($to_date) ?>" class="form-control" aria-label="Sampai tanggal">
         </div>
         <button type="submit" class="btn btn-primary rounded-3 shadow-sm d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold">
-            <span class="bg-white bg-opacity-25 rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
-                <i data-lucide="filter" class="icon-xs"></i>
-            </span>
+            <i data-lucide="filter" width="16" height="16"></i>
             <span>Filter</span>
         </button>
     </form>
@@ -251,9 +249,7 @@
             <div class="modal-footer border-top bg-light px-4 py-3 d-flex justify-content-between d-print-none">
                 <button type="button" class="btn btn-outline-secondary rounded-3 px-3 py-2 fw-medium" data-bs-dismiss="modal">Tutup</button>
                 <button type="button" class="btn btn-primary rounded-3 shadow-sm d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold" onclick="window.print()">
-                    <span class="bg-white bg-opacity-25 rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
-                        <i data-lucide="printer" class="icon-xs"></i>
-                    </span>
+                    <i data-lucide="printer" width="16" height="16"></i>
                     <span>Cetak Nota</span>
                 </button>
             </div>

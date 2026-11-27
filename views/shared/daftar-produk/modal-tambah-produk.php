@@ -124,9 +124,7 @@
                     Batal
                 </button>
                 <button type="submit" class="btn btn-primary rounded-3 shadow-sm px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2">
-                    <span class="bg-white bg-opacity-25 rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
-                        <i data-lucide="check" class="icon-xs"></i>
-                    </span>
+                    <i data-lucide="check" width="16" height="16"></i>
                     <span>Simpan Produk</span>
                 </button>
             </div>

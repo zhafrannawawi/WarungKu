@@ -45,11 +45,21 @@
                 <div class="row g-2">
                     <div class="col-6">
                         <label class="form-label small fw-semibold text-muted mb-1">Password Saat Ini</label>
-                        <input type="password" name="old_password" class="form-control" placeholder="Password lama">
+                        <div class="position-relative">
+                            <input type="password" name="old_password" class="form-control pe-5" placeholder="Password lama">
+                            <button type="button" class="btn-toggle-pass" title="Tampilkan/Sembunyikan Password" onclick="togglePasswordVisibility(this.previousElementSibling, this)">
+                                <i data-lucide="eye" class="icon-xs"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="col-6">
                         <label class="form-label small fw-semibold text-muted mb-1">Password Baru</label>
-                        <input type="password" name="new_password" class="form-control" minlength="6" placeholder="Min. 6 karakter">
+                        <div class="position-relative">
+                            <input type="password" name="new_password" class="form-control pe-5" minlength="6" placeholder="Min. 6 karakter">
+                            <button type="button" class="btn-toggle-pass" title="Tampilkan/Sembunyikan Password" onclick="togglePasswordVisibility(this.previousElementSibling, this)">
+                                <i data-lucide="eye" class="icon-xs"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

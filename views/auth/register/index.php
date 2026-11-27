@@ -176,17 +176,27 @@
                                 <label for="user_password" class="form-label text-muted">
                                     Password <span class="text-danger">*</span>
                                 </label>
-                                <input type="password" id="user_password" name="user_password"
-                                       class="form-control form-control-standard"
-                                       placeholder="Min. 6 karakter" minlength="6" required>
+                                <div class="position-relative">
+                                    <input type="password" id="user_password" name="user_password"
+                                           class="form-control form-control-standard pe-5"
+                                           placeholder="Min. 6 karakter" minlength="6" required>
+                                    <button type="button" class="btn-toggle-pass" title="Tampilkan/Sembunyikan Password" onclick="togglePasswordVisibility(this.previousElementSibling, this)">
+                                        <i data-lucide="eye" class="icon-xs"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div class="col-6">
                                 <label for="password_again" class="form-label text-muted">
                                     Konfirmasi <span class="text-danger">*</span>
                                 </label>
-                                <input type="password" id="password_again" name="password_again"
-                                       class="form-control form-control-standard"
-                                       placeholder="Ulangi password" required>
+                                <div class="position-relative">
+                                    <input type="password" id="password_again" name="password_again"
+                                           class="form-control form-control-standard pe-5"
+                                           placeholder="Ulangi password" required>
+                                    <button type="button" class="btn-toggle-pass" title="Tampilkan/Sembunyikan Password" onclick="togglePasswordVisibility(this.previousElementSibling, this)">
+                                        <i data-lucide="eye" class="icon-xs"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

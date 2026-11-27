@@ -15,9 +15,7 @@
     </div>
     <div class="d-flex align-items-center gap-2">
         <button class="btn btn-primary rounded-btn-sm rounded-3 shadow-sm d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold" onclick="openAddCategoryModal()">
-            <span class="bg-white bg-opacity-25 rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
-                <i data-lucide="plus" class="icon-xs"></i>
-            </span>
+            <i data-lucide="plus" width="16" height="16"></i>
             <span>Tambah Kategori</span>
         </button>
     </div>

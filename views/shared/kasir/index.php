@@ -16,15 +16,11 @@
 
     <div class="d-flex align-items-center gap-2">
         <span class="bg-white border-0 text-secondary small fw-medium rounded-3 shadow-sm d-inline-flex align-items-center gap-2 px-3 py-2 pe-none">
-            <span class="bg-primary bg-opacity-10 text-primary rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
-                <i data-lucide="calendar" class="icon-xs"></i>
-            </span>
+            <i data-lucide="calendar" width="16" height="16"></i>
             <span><?= escape_html($tanggal_hari_ini) ?></span>
         </span>
         <a href="<?= $role_prefix ?>/transaksi" class="btn bg-white border-0 text-secondary rounded-3 shadow-sm d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold text-decoration-none">
-            <span class="bg-secondary bg-opacity-10 text-secondary rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
-                <i data-lucide="receipt" class="icon-xs"></i>
-            </span>
+            <i data-lucide="receipt" width="16" height="16"></i>
             <span>Riwayat Transaksi</span>
         </a>
     </div>
@@ -254,9 +250,7 @@
                 <div class="modal-footer border-top bg-light px-4 py-3 d-flex justify-content-between d-print-none">
                     <a href="<?= $kasir_url ?>" class="btn btn-outline-secondary rounded-3 px-3 py-2 fw-medium text-decoration-none">Transaksi Baru</a>
                     <button type="button" class="btn btn-primary rounded-3 shadow-sm d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold" onclick="window.print()">
-                        <span class="bg-white bg-opacity-25 rounded-2 d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
-                            <i data-lucide="printer" class="icon-xs"></i>
-                        </span>
+                        <i data-lucide="printer" width="16" height="16"></i>
                         <span>Cetak Nota</span>
                     </button>
                 </div>
