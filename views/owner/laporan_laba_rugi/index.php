@@ -75,7 +75,7 @@
             <div class="d-flex align-items-center justify-content-between mb-3">
                 <span class="text-secondary fw-medium">Laba Bersih</span>
                 <div class="metric-icon-box metric-icon-green <?= $total_laba >= 0 ? 'bg-success text-success' : 'bg-danger text-danger' ?> bg-opacity-10 rounded-3 p-2">
-                    <i data-lucide="trending-up" class="icon-sm"></i>
+                    <i data-lucide="<?= $total_laba >= 0 ? 'trending-up' : 'trending-down' ?>" class="icon-sm"></i>
                 </div>
             </div>
             <div class="d-flex align-items-center justify-content-between gap-2">

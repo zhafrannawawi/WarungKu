@@ -90,21 +90,22 @@
         </div>
     </div>
 
+    <?php $is_rugi = (float)$summary['laba_bersih'] < 0; ?>
     <div class="col-12 col-sm-6 col-xl-3">
         <div class="bg-white border rounded-4 shadow-sm p-4 h-100">
             <div class="d-flex align-items-center justify-content-between mb-3">
                 <span class="text-secondary  fw-medium">Estimasi Laba Bersih</span>
-                <div class="bg-success bg-opacity-10 text-success rounded-3 p-2">
-                    <i data-lucide="trending-up" width="20" height="20"></i>
+                <div class="<?= $is_rugi ? 'bg-danger text-danger' : 'bg-success text-success' ?> bg-opacity-10 rounded-3 p-2">
+                    <i data-lucide="<?= $is_rugi ? 'trending-down' : 'trending-up' ?>" width="20" height="20"></i>
                 </div>
             </div>
 
             <div class="d-flex align-items-center justify-content-between gap-2">
-                <span class="fs-4 fw-bold text-dark">
+                <span class="fs-4 fw-bold <?= $is_rugi ? 'text-danger' : 'text-dark' ?>">
                     <?= format_rupiah($summary['laba_bersih']) ?>
                 </span>
 
-                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">
+                <span class="badge <?= $is_rugi ? 'bg-danger text-danger border-danger' : 'bg-success text-success border-success' ?> bg-opacity-10 border border-opacity-25">
                     <?= $margin_pct ?>%
                 </span>
             </div>

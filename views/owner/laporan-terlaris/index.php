@@ -225,7 +225,7 @@
                                 <?= format_rupiah($tp['TotalOmzet']) ?>
                             </td>
 
-                            <td class="text-end fw-semibold text-success pe-4 laporan-num">
+                            <td class="text-end fw-semibold <?= (float)$tp['TotalLaba'] >= 0 ? 'text-success' : 'text-danger' ?> pe-4 laporan-num">
                                 <?= format_rupiah($tp['TotalLaba']) ?>
                             </td>
                         </tr>
